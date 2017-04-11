@@ -73,9 +73,15 @@ endforeach()
 
 set(SRCS
         src/main.cpp
+        src/base/renderer.cpp
+        src/vulkan/vulkanrenderer.cpp
+        src/opengl/openglrenderer.cpp
     )
 
 set(HEADERS
+        src/base/renderer.hpp
+        src/vulkan/vulkanrenderer.hpp
+        src/opengl/openglrenderer.hpp
     )
 
 create_directory_groups(${SRCS} ${HEADERS})
