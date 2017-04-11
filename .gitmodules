@@ -7,3 +7,6 @@
 [submodule "externals/glm"]
 	path = externals/glm
 	url = https://github.com/g-truc/glm.git
+[submodule "externals/glewcmake"]
+	path = externals/glewcmake
+	url = https://github.com/perlmint/glew-cmake.git
