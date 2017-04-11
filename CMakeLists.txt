@@ -10,8 +10,8 @@ endif()
 
 # GLEW
 set(BUILD_UTILS OFF CACHE BOOL "Don't build GLEW utility programs" FORCE)
-add_subdirectory(externals/glewcmake/build/cmake)
-include_directories(externals/glewcmake/include)
+add_subdirectory(externals/glew/build/cmake)
+include_directories(externals/glew/include)
 
 # GLM
 include_directories(externals/glm)
