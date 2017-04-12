@@ -1,4 +1,5 @@
 #pragma once
+#include "Window.hpp"
 
 /// Controls rendering functionality.
 class Renderer {
@@ -17,5 +18,8 @@ class Renderer {
          * @param backend The backend to use for rendering.
          * @return The created renderer.
          */
-        static Renderer* makeRenderer(BACKEND backend);
+        static Renderer* makeRenderer(BACKEND backend, Window & createdWindow);
+
+        /// Static window variable.
+        static Window* window;
 };
