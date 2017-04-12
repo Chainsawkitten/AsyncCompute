@@ -8,6 +8,13 @@ if(UNIX OR MINGW)
     set(CMAKE_CXX_FLAGS "-g -gdwarf-2 -O3 -static-libstdc++ -Wall")
 endif()
 
+# GLFW
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "Don't build GLFW docs" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Don't build GLFW examples" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "Don't build GLFW tests" FORCE)
+add_subdirectory(externals/glfw)
+include_directories(externals/glfw/include)
+
 # GLEW
 set(BUILD_UTILS OFF CACHE BOOL "Don't build GLEW utility programs" FORCE)
 add_subdirectory(externals/glew/build/cmake)
@@ -49,28 +56,7 @@ function(create_directory_groups)
     endforeach()
 endfunction()
 
-# Copy assets
-set(ASSETS
-
-    )
-
-add_custom_target(AssetTarget ALL)
-
-function(CopyAsset inputfile outdir)
-    set(outputfile ${outdir}/${inputfile})
-    
-    add_custom_command(
-        TARGET AssetTarget
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${inputfile} ${outputfile}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMENT "Copying ${inputfile}"
-    )
-endfunction()
-
-foreach(item ${ASSETS})
-    CopyAsset(${item} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-endforeach()
-
+# Target
 set(SRCS
         src/main.cpp
         src/base/renderer.cpp
@@ -86,7 +72,7 @@ set(HEADERS
 
 create_directory_groups(${SRCS} ${HEADERS})
 
-add_executable(Testbench ${SRCS} ${HEADERS})
-target_link_libraries(Testbench glew ${Vulkan_LIBRARY})
-set_property(TARGET Testbench PROPERTY CXX_STANDARD 11)
-set_property(TARGET Testbench PROPERTY CXX_STANDARD_REQUIRED ON)
+add_executable(ParticleSimulator ${SRCS} ${HEADERS})
+target_link_libraries(ParticleSimulator glew glfw ${Vulkan_LIBRARY})
+set_property(TARGET ParticleSimulator PROPERTY CXX_STANDARD 11)
+set_property(TARGET ParticleSimulator PROPERTY CXX_STANDARD_REQUIRED ON)
