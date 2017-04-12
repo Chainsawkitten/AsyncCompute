@@ -7,7 +7,7 @@
 class OpenGLRenderer : public Renderer {
     public:
         /// Create new OpenGL renderer.
-        OpenGLRenderer(Window window);
+        OpenGLRenderer(Window & window);
         
         /// Destructor.
         ~OpenGLRenderer() final;
