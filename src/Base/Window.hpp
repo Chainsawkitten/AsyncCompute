@@ -25,8 +25,12 @@ class Window {
          */
         GLFWwindow* createWindow(const std::string& windowTitle);
 
-    private:
+        /// GLFW window.
         GLFWwindow* window;
+
+        /// Width of window.
         int width = 800;
+
+        /// Height of window.
         int height = 600;
 };
