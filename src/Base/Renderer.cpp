@@ -12,7 +12,7 @@ Renderer* Renderer::makeRenderer(BACKEND backend, Window & window){
         return new OpenGLRenderer(window);
     
     else if(backend == BACKEND::Vulkan)
-        return new VulkanRenderer();
+        return new VulkanRenderer(window);
     
     return nullptr;
 }
