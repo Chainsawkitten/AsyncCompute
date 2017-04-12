@@ -20,6 +20,7 @@ class VulkanRenderer : public Renderer {
         void createInstance();
         void setupDebugCallback();
         void createDevice();
+        void createSurface(GLFWwindow* window);
         
         VkInstance instance;
 #ifndef NDEBUG
@@ -28,4 +29,6 @@ class VulkanRenderer : public Renderer {
         
         VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
         VkDevice device;
+        
+        VkSurfaceKHR surface;
 };

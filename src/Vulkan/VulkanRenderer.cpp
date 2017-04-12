@@ -6,6 +6,9 @@
 #include <vector>
 #include <iostream>
 
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+
 #ifndef NDEBUG
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType, uint64_t obj, size_t location, int32_t code, const char* layerPrefix, const char* msg, void* userData) {
     std::cerr << "Validation layer: " << msg << std::endl;
@@ -21,14 +24,19 @@ VulkanRenderer::VulkanRenderer(Window& window) {
     
     // Create window.
     window.setWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    window.createWindow("Vulkan");
+    GLFWwindow* windowStruct = window.createWindow("Vulkan");
+    
+    // Create surface.
+    createSurface(windowStruct);
     
     // Create logical device.
     createDevice();
 }
 
 VulkanRenderer::~VulkanRenderer() {
-    vkDestroyDevice(device, nullptr);
+    //vkDestroyDevice(device, nullptr);
+    
+    vkDestroySurfaceKHR(instance, surface, nullptr);
     
 #ifndef NDEBUG
     auto DestroyDebugReportCallback = (PFN_vkDestroyDebugReportCallbackEXT) vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
