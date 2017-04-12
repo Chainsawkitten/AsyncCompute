@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Base/Renderer.hpp"
+#include <vulkan/vulkan.h>
 
 /// Vulkan implementation of the renderer.
 class VulkanRenderer : public Renderer {
@@ -10,4 +11,9 @@ class VulkanRenderer : public Renderer {
         
         /// Destructor.
         ~VulkanRenderer() final;
+        
+    private:
+        void createInstance();
+        
+        VkInstance instance;
 };
