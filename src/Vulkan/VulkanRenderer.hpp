@@ -29,6 +29,9 @@ class VulkanRenderer : public Renderer {
         
         VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
         VkDevice device;
+        VkQueue graphicsQueue;
+        VkQueue computeQueue;
+        VkQueue presentQueue;
         
         VkSurfaceKHR surface;
 };

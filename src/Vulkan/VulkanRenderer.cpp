@@ -4,6 +4,7 @@
 #include "VulkanRenderer.hpp"
 
 #include <vector>
+#include <set>
 #include <iostream>
 
 #define GLFW_EXPOSE_NATIVE_WIN32
@@ -34,7 +35,7 @@ VulkanRenderer::VulkanRenderer(Window& window) {
 }
 
 VulkanRenderer::~VulkanRenderer() {
-    //vkDestroyDevice(device, nullptr);
+    vkDestroyDevice(device, nullptr);
     
     vkDestroySurfaceKHR(instance, surface, nullptr);
     
@@ -130,8 +131,8 @@ void VulkanRenderer::createDevice() {
     
     // Find queue families.
     int graphicsFamily = -1;
-    int presentFamily = -1;
     int computeFamily = -1;
+    int presentFamily = -1;
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
     
@@ -158,6 +159,46 @@ void VulkanRenderer::createDevice() {
             break;
         ++i;
     }
+    
+    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+    std::set<int> uniqueQueueFamilies = { graphicsFamily, presentFamily };
+    
+    // Queue priority between 0-1.
+    float queuePriority = 1.0f;
+    for (int queueFamily : uniqueQueueFamilies) {
+        VkDeviceQueueCreateInfo queueCreateInfo = {};
+        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queueCreateInfo.queueFamilyIndex = queueFamily;
+        queueCreateInfo.queueCount = 1;
+        queueCreateInfo.pQueuePriorities = &queuePriority;
+        queueCreateInfos.push_back(queueCreateInfo);
+    }
+    
+    // Device extensions.
+    std::vector<const char*> deviceExtensions;
+    deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+    
+    /// @todo Check if the extensions are actually supported.
+    
+    // Device features.
+    VkPhysicalDeviceFeatures deviceFeatures = {};
+    
+    VkDeviceCreateInfo deviceCreateInfo = {};
+    deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    deviceCreateInfo.queueCreateInfoCount = queueCreateInfos.size();
+    deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
+    deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
+    deviceCreateInfo.enabledExtensionCount = deviceExtensions.size();
+    deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
+    
+    if (vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device) != VK_SUCCESS)
+        std::cerr << "Could not create logical device." << std::endl;
+    else
+        std::cout << "Logical device created." << std::endl;
+    
+    vkGetDeviceQueue(device, graphicsFamily, 0, &graphicsQueue);
+    vkGetDeviceQueue(device, computeFamily, 0, &computeQueue);
+    vkGetDeviceQueue(device, presentFamily, 0, &presentQueue);
 }
 
 void VulkanRenderer::createSurface(GLFWwindow* window) {
