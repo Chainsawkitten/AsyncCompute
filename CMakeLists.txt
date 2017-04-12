@@ -8,6 +8,13 @@ if(UNIX OR MINGW)
     set(CMAKE_CXX_FLAGS "-g -gdwarf-2 -O3 -static-libstdc++ -Wall")
 endif()
 
+# GLFW
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "Don't build GLFW docs" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Don't build GLFW examples" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "Don't build GLFW tests" FORCE)
+add_subdirectory(externals/glfw)
+include_directories(externals/glfw/include)
+
 # GLEW
 set(BUILD_UTILS OFF CACHE BOOL "Don't build GLEW utility programs" FORCE)
 add_subdirectory(externals/glew/build/cmake)
@@ -66,6 +73,6 @@ set(HEADERS
 create_directory_groups(${SRCS} ${HEADERS})
 
 add_executable(ParticleSimulator ${SRCS} ${HEADERS})
-target_link_libraries(ParticleSimulator glew ${Vulkan_LIBRARY})
+target_link_libraries(ParticleSimulator glew glfw ${Vulkan_LIBRARY})
 set_property(TARGET ParticleSimulator PROPERTY CXX_STANDARD 11)
 set_property(TARGET ParticleSimulator PROPERTY CXX_STANDARD_REQUIRED ON)
