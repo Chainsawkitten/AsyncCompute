@@ -6,7 +6,10 @@
 class Window {
     public:
         /// Constructor
-        Window::Window();
+        Window();
+
+        /// Destructor
+        ~Window();
 
         /// Sets a GLFW window hint. Has to be called before creating window.
         /**
