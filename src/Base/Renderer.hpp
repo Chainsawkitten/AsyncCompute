@@ -9,6 +9,9 @@ class Renderer {
             Vulkan ///< Vulkan backend.
         };
         
+        /// Destructor.
+        virtual ~Renderer();
+        
         /// Create a new renderer.
         /**
          * @param backend The backend to use for rendering.

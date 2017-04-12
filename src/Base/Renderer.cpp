@@ -2,6 +2,10 @@
 #include "../OpenGL/OpenGLRenderer.hpp"
 #include "../Vulkan/VulkanRenderer.hpp"
 
+Renderer::~Renderer() {
+    
+}
+
 Renderer* Renderer::makeRenderer(BACKEND backend){
     // Create and return backend.
     if(backend == BACKEND::OpenGL)
