@@ -5,6 +5,9 @@
 /// Class that controls and creates a window.
 class Window {
     public:
+        /// Constructor
+        Window::Window();
+
         /// Sets a GLFW window hint. Has to be called before creating window.
         /**
          * @param field The field that will be set.
