@@ -1,7 +1,7 @@
 #pragma once
 
 class Renderer {
-	public:
+    public:
         enum class BACKEND{OpenGL, Vulkan};
-		static Renderer* makeRenderer(BACKEND backend);
+        static Renderer* makeRenderer(BACKEND backend);
 };

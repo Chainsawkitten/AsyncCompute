@@ -2,5 +2,5 @@
 
 int main() {
     Renderer* renderer = Renderer::makeRenderer(Renderer::BACKEND::OpenGL);
-	return 0;
+    return 0;
 }
