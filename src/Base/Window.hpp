@@ -28,9 +28,19 @@ class Window {
         /// GLFW window.
         GLFWwindow* window;
 
-        /// Width of window.
-        int width = 800;
+        /// Gets window width.
+        /**
+         * @return
+         */
+        int getWidth();
 
-        /// Height of window.
+        /// Gets window height.
+        /**
+         * @return
+         */
+        int getHeight();
+
+    private:
+        int width = 800;
         int height = 600;
 };

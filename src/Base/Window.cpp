@@ -15,3 +15,11 @@ GLFWwindow* Window::createWindow(const std::string & windowTitle) {
 void Window::setWindowHint(int field, int value) {
     glfwWindowHint(field, value);
 }
+
+int Window::getWidth() {
+    return width;
+}
+
+int Window::getHeight() {
+    return height;
+}
