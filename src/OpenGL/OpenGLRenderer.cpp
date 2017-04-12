@@ -2,7 +2,7 @@
 #include "OpenGLRenderer.hpp"
 
 
-OpenGLRenderer::OpenGLRenderer(Window window) {
+OpenGLRenderer::OpenGLRenderer(Window & window) {
     // Setup glfw window.
     window.setWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     window.setWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -16,6 +16,15 @@ OpenGLRenderer::OpenGLRenderer(Window window) {
     if(glewInit() != GLEW_OK){
 
     }
+
+    // Setup viewport
+    int width, height;
+    width = window.width;
+    height = window.height;
+
+    glfwGetFramebufferSize(window.window, &width, &height);
+
+    glViewport(0, 0, width, height);
 }
 
 OpenGLRenderer::~OpenGLRenderer() {
