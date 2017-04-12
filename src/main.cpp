@@ -1,3 +1,6 @@
+#include "Base/renderer.hpp"
+
 int main() {
-	return 0;
+    Renderer* renderer = Renderer::makeRenderer(Renderer::BACKEND::OpenGL);
+    return 0;
 }
