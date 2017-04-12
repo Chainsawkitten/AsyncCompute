@@ -6,7 +6,7 @@ Renderer::~Renderer() {
     
 }
 
-Renderer* Renderer::makeRenderer(BACKEND backend, Window & createdWindow){
+Renderer* Renderer::makeRenderer(BACKEND backend, Window & window){
     // Create and return backend.
     if(backend == BACKEND::OpenGL)
         return new OpenGLRenderer();

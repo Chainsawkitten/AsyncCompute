@@ -16,7 +16,8 @@ class Renderer {
         /// Create a new renderer.
         /**
          * @param backend The backend to use for rendering.
+         * @param window The GLFW window that will be used for setting up a surface.
          * @return The created renderer.
          */
-        static Renderer* makeRenderer(BACKEND backend, Window & createdWindow);
+        static Renderer* makeRenderer(BACKEND backend, Window & window);
 };
