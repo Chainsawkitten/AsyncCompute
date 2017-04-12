@@ -6,13 +6,13 @@ Renderer::~Renderer() {
     
 }
 
-Renderer* Renderer::makeRenderer(BACKEND backend){
+Renderer* Renderer::makeRenderer(BACKEND backend, Window & window){
     // Create and return backend.
     if(backend == BACKEND::OpenGL)
-        return new VulkanRenderer();
+        return new OpenGLRenderer();
     
     else if(backend == BACKEND::Vulkan)
-        return new OpenGLRenderer();
+        return new VulkanRenderer();
     
     return nullptr;
 }

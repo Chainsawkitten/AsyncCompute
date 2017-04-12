@@ -1,9 +1,17 @@
 #include "Window.hpp"
 
-GLFWwindow* Window::createWindow(const std::string & windowTitle){
+Window::Window() {
+    glfwInit();
+}
+
+Window::~Window() {
+    glfwTerminate();
+}
+
+GLFWwindow* Window::createWindow(const std::string & windowTitle) {
     return window = glfwCreateWindow(width, height, windowTitle.c_str(), nullptr, nullptr);
 }
 
-void Window::setWindowHint(int field, int value){
+void Window::setWindowHint(int field, int value) {
     glfwWindowHint(field, value);
 }
