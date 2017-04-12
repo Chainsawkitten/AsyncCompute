@@ -49,28 +49,7 @@ function(create_directory_groups)
     endforeach()
 endfunction()
 
-# Copy assets
-set(ASSETS
-
-    )
-
-add_custom_target(AssetTarget ALL)
-
-function(CopyAsset inputfile outdir)
-    set(outputfile ${outdir}/${inputfile})
-    
-    add_custom_command(
-        TARGET AssetTarget
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${inputfile} ${outputfile}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMENT "Copying ${inputfile}"
-    )
-endfunction()
-
-foreach(item ${ASSETS})
-    CopyAsset(${item} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-endforeach()
-
+# Target
 set(SRCS
         src/main.cpp
         src/base/renderer.cpp
