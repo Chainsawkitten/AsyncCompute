@@ -2,12 +2,16 @@
 
 #include "../Base/Renderer.hpp"
 #include <vulkan/vulkan.h>
+#include "../Base/Window.hpp"
 
 /// Vulkan implementation of the renderer.
 class VulkanRenderer : public Renderer {
     public:
         /// Create new Vulkan renderer.
-        VulkanRenderer();
+        /**
+         * @param window The window to render in.
+         */
+        VulkanRenderer(Window& window);
         
         /// Destructor.
         ~VulkanRenderer() final;

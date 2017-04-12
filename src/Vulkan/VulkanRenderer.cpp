@@ -14,10 +14,14 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugReportFlagsEXT flags,
 }
 #endif
 
-VulkanRenderer::VulkanRenderer() {
+VulkanRenderer::VulkanRenderer(Window& window) {
     // Create Vulkan instance.
     createInstance();
     setupDebugCallback();
+    
+    // Create window.
+    window.setWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    window.createWindow("Vulkan");
     
     // Create logical device.
     createDevice();
