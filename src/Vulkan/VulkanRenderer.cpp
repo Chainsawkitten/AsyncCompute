@@ -15,11 +15,17 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugReportFlagsEXT flags,
 #endif
 
 VulkanRenderer::VulkanRenderer() {
+    // Create Vulkan instance.
     createInstance();
     setupDebugCallback();
+    
+    // Create logical device.
+    createDevice();
 }
 
 VulkanRenderer::~VulkanRenderer() {
+    vkDestroyDevice(device, nullptr);
+    
 #ifndef NDEBUG
     auto DestroyDebugReportCallback = (PFN_vkDestroyDebugReportCallbackEXT) vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
     if (DestroyDebugReportCallback != nullptr)
@@ -76,4 +82,37 @@ void VulkanRenderer::setupDebugCallback() {
     if (CreateDebugReportCallbackEXT(instance, &createInfo, nullptr, &callback) != VK_SUCCESS)
         std::cerr << "Failed to set up debug callback" << std::endl;
 #endif
+}
+
+void VulkanRenderer::createDevice() {
+    // Find physical device to use.
+    uint32_t deviceCount = 0;
+    vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+    
+    if (deviceCount == 0) {
+        std::cerr << "Failed to find GPU with Vulkan support." << std::endl;
+        exit(-1);
+    }
+    
+    std::vector<VkPhysicalDevice> devices(deviceCount);
+    vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+    
+    for (VkPhysicalDevice device : devices){
+        VkPhysicalDeviceProperties deviceProperties;
+        VkPhysicalDeviceFeatures deviceFeatures;
+        vkGetPhysicalDeviceProperties(device, &deviceProperties);
+        vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+        
+        // Checking for discrete (dedicated) GPU.
+        /// @todo Check for actually necessary GPU features.
+        // Maybe: Wrap this in a function that takes as argument the things we are looking for.
+        if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU){
+            std::cout << "Found suitable GPU." << std::endl;
+            physicalDevice = device;
+            break;
+        }
+    }
+    
+    if (physicalDevice == VK_NULL_HANDLE)
+        std::cerr << "Failed to find suitable GPU's." << std::endl;
 }
