@@ -19,7 +19,4 @@ class Renderer {
          * @return The created renderer.
          */
         static Renderer* makeRenderer(BACKEND backend, Window & createdWindow);
-
-        /// Static window variable.
-        static Window* window;
 };
