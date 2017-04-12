@@ -127,4 +127,15 @@ void VulkanRenderer::createDevice() {
     
     if (physicalDevice == VK_NULL_HANDLE)
         std::cerr << "Failed to find suitable GPU's." << std::endl;
+
+void VulkanRenderer::createSurface(GLFWwindow* window) {
+    VkWin32SurfaceCreateInfoKHR surfaceInfo = {};
+    surfaceInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+    surfaceInfo.hwnd = glfwGetWin32Window(window);
+    surfaceInfo.hinstance = GetModuleHandle(nullptr);
+    
+    if (vkCreateWin32SurfaceKHR(instance, &surfaceInfo, nullptr, &surface) != VK_SUCCESS) {
+        std::cerr << "Failed to create surface." << std::endl;
+        exit(-1);
+    }
 }
