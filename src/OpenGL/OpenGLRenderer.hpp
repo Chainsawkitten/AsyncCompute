@@ -1,5 +1,6 @@
 #pragma once
-#include "../Base/renderer.hpp"
+
+#include "../Base/Renderer.hpp"
 
 class OpenGLRenderer : public Renderer {
 

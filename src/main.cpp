@@ -1,4 +1,4 @@
-#include "Base/renderer.hpp"
+#include "Base/Renderer.hpp"
 
 int main() {
     Renderer* renderer = Renderer::makeRenderer(Renderer::BACKEND::OpenGL);
