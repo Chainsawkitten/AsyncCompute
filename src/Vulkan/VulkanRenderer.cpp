@@ -127,6 +127,38 @@ void VulkanRenderer::createDevice() {
     
     if (physicalDevice == VK_NULL_HANDLE)
         std::cerr << "Failed to find suitable GPU's." << std::endl;
+    
+    // Find queue families.
+    int graphicsFamily = -1;
+    int presentFamily = -1;
+    int computeFamily = -1;
+    uint32_t queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
+    
+    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies.data());
+    
+    // Check for available queue families.
+    int i = 0;
+    for (const VkQueueFamilyProperties& queueFamily : queueFamilies){
+        if (queueFamily.queueCount > 0) {
+            if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+                graphicsFamily = i;
+            
+            if (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)
+                computeFamily = i;
+            
+            VkBool32 presentSupport = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, surface, &presentSupport);
+            if (presentSupport)
+                presentFamily = i;
+        }
+        
+        if (graphicsFamily >= 0 && presentFamily >= 0 && computeFamily >= 0)
+            break;
+        ++i;
+    }
+}
 
 void VulkanRenderer::createSurface(GLFWwindow* window) {
     VkWin32SurfaceCreateInfoKHR surfaceInfo = {};
