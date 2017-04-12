@@ -1,5 +1,6 @@
+#include <GL/glew.h>
 #include "OpenGLRenderer.hpp"
-#include <gl/glew.h>
+
 
 OpenGLRenderer::OpenGLRenderer(Window window) {
     // Setup glfw window.
@@ -9,6 +10,12 @@ OpenGLRenderer::OpenGLRenderer(Window window) {
     window.setWindowHint(GLFW_RESIZABLE, GL_FALSE);
     std::string windowTitle = "OpenGL";
     window.createWindow(windowTitle);
+
+    // Setup GLEW
+    glewExperimental = true;
+    if(glewInit() != GLEW_OK){
+
+    }
 }
 
 OpenGLRenderer::~OpenGLRenderer() {
