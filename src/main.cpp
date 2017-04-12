@@ -3,7 +3,14 @@
 
 int main() {
     Window window;
+
     Renderer* renderer = Renderer::makeRenderer(Renderer::BACKEND::OpenGL, window);
+
+    while(!glfwWindowShouldClose(window.window)){
+        glfwPollEvents();
+        glfwSwapBuffers(window.window);
+    }
+
     delete renderer;
     
     return 0;
