@@ -86,7 +86,7 @@ set(HEADERS
 
 create_directory_groups(${SRCS} ${HEADERS})
 
-add_executable(Testbench ${SRCS} ${HEADERS})
-target_link_libraries(Testbench glew ${Vulkan_LIBRARY})
-set_property(TARGET Testbench PROPERTY CXX_STANDARD 11)
-set_property(TARGET Testbench PROPERTY CXX_STANDARD_REQUIRED ON)
+add_executable(ParticleSimulator ${SRCS} ${HEADERS})
+target_link_libraries(ParticleSimulator glew ${Vulkan_LIBRARY})
+set_property(TARGET ParticleSimulator PROPERTY CXX_STANDARD 11)
+set_property(TARGET ParticleSimulator PROPERTY CXX_STANDARD_REQUIRED ON)
