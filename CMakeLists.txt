@@ -76,12 +76,14 @@ set(SRCS
         src/base/renderer.cpp
         src/vulkan/vulkanrenderer.cpp
         src/opengl/openglrenderer.cpp
+        src/base/window.cpp
     )
 
 set(HEADERS
         src/base/renderer.hpp
         src/vulkan/vulkanrenderer.hpp
         src/opengl/openglrenderer.hpp
+        src/base/window.hpp
     )
 
 create_directory_groups(${SRCS} ${HEADERS})
