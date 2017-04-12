@@ -14,6 +14,10 @@ class VulkanRenderer : public Renderer {
         
     private:
         void createInstance();
+        void setupDebugCallback();
         
         VkInstance instance;
+#ifndef NDEBUG
+        VkDebugReportCallbackEXT callback;
+#endif
 };

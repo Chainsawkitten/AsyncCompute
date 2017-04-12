@@ -6,11 +6,26 @@
 #include <vector>
 #include <iostream>
 
+#ifndef NDEBUG
+static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType, uint64_t obj, size_t location, int32_t code, const char* layerPrefix, const char* msg, void* userData) {
+    std::cerr << "Validation layer: " << msg << std::endl;
+    
+    return VK_FALSE;
+}
+#endif
+
 VulkanRenderer::VulkanRenderer() {
     createInstance();
+    setupDebugCallback();
 }
 
 VulkanRenderer::~VulkanRenderer() {
+#ifndef NDEBUG
+    auto DestroyDebugReportCallback = (PFN_vkDestroyDebugReportCallbackEXT) vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
+    if (DestroyDebugReportCallback != nullptr)
+        DestroyDebugReportCallback(instance, callback, nullptr);
+#endif
+    
     vkDestroyInstance(instance, nullptr);
 }
 
@@ -45,4 +60,20 @@ void VulkanRenderer::createInstance() {
         std::cerr << "Failed to create instance." << std::endl;
         exit(-1);
     }
+}
+
+void VulkanRenderer::setupDebugCallback() {
+#ifndef NDEBUG
+    VkDebugReportCallbackCreateInfoEXT createInfo = {};
+    createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
+    createInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
+    createInfo.pfnCallback = debugCallback;
+    
+    auto CreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT");
+    if (CreateDebugReportCallbackEXT == nullptr)
+        std::cerr << "Failed to get CreateDebugReportCallbackEXT function" << std::endl;
+    
+    if (CreateDebugReportCallbackEXT(instance, &createInfo, nullptr, &callback) != VK_SUCCESS)
+        std::cerr << "Failed to set up debug callback" << std::endl;
+#endif
 }
