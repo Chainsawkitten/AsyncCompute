@@ -19,8 +19,6 @@ OpenGLRenderer::OpenGLRenderer(Window & window) {
 
     // Setup viewport
     int width, height;
-    width = window.width;
-    height = window.height;
 
     glfwGetFramebufferSize(window.window, &width, &height);
 
