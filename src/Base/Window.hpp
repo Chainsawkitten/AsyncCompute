@@ -33,13 +33,13 @@ class Window {
 
         /// Gets window width.
         /**
-         * @return
+         * @return Width of the window.
          */
         int getWidth() const;
 
         /// Gets window height.
         /**
-         * @return
+         * @return Height of the window.
          */
         int getHeight() const;
 
