@@ -4,4 +4,4 @@ class Shader {
     public:
         Shader();
     private:
-}
+};
