@@ -2,6 +2,7 @@
 
 #include "../Base/Renderer.hpp"
 #include <vulkan/vulkan.h>
+#include <vector>
 #include "../Base/Window.hpp"
 
 /// Vulkan implementation of the renderer.
@@ -17,10 +18,22 @@ class VulkanRenderer : public Renderer {
         ~VulkanRenderer() final;
         
     private:
+        struct SwapChainSupport {
+            VkSurfaceCapabilitiesKHR capabilities;
+            std::vector<VkSurfaceFormatKHR> formats;
+            std::vector<VkPresentModeKHR> presentModes;
+        };
+        
         void createInstance();
         void setupDebugCallback();
         void createDevice();
         void createSurface(GLFWwindow* window);
+        
+        VkFormat createSwapChain(unsigned int width, unsigned int height);
+        SwapChainSupport querySwapChainSupport();
+        VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+        VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+        VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, unsigned int width, unsigned int height);
         
         VkInstance instance;
 #ifndef NDEBUG
@@ -34,4 +47,7 @@ class VulkanRenderer : public Renderer {
         VkQueue presentQueue;
         
         VkSurfaceKHR surface;
+        VkSwapchainKHR swapChain;
+        VkExtent2D swapChainExtent;
+        std::vector<VkImage> swapChainImages;
 };
