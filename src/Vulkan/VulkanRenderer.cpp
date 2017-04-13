@@ -39,6 +39,8 @@ VulkanRenderer::VulkanRenderer(Window& window) {
 }
 
 VulkanRenderer::~VulkanRenderer() {
+    vkDestroySwapchainKHR(device, swapChain, nullptr);
+    
     vkDestroyDevice(device, nullptr);
     
     vkDestroySurfaceKHR(instance, surface, nullptr);
