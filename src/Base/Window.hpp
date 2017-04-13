@@ -29,19 +29,19 @@ class Window {
         /**
          * @return The window created with createWindow.
          */
-        GLFWwindow* getWindow();
+        GLFWwindow* getWindow() const;
 
         /// Gets window width.
         /**
          * @return
          */
-        int getWidth();
+        int getWidth() const;
 
         /// Gets window height.
         /**
          * @return
          */
-        int getHeight();
+        int getHeight() const;
 
     private:
         int width = 800;
