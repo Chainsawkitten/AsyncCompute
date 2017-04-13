@@ -6,9 +6,9 @@ int main() {
 
     Renderer* renderer = Renderer::makeRenderer(Renderer::BACKEND::OpenGL, window);
 
-    while(!glfwWindowShouldClose(window.window)){
+    while(!glfwWindowShouldClose(window.getWindow())){
         glfwPollEvents();
-        glfwSwapBuffers(window.window);
+        glfwSwapBuffers(window.getWindow());
     }
 
     delete renderer;
