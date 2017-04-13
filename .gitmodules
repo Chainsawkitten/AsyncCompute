@@ -10,3 +10,6 @@
 [submodule "externals/glew"]
 	path = externals/glew
 	url = https://github.com/perlmint/glew-cmake.git
+[submodule "externals/headerize"]
+	path = externals/headerize
+	url = https://github.com/Chainsawkitten/Headerize.git
