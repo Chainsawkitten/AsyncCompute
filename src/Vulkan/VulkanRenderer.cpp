@@ -40,6 +40,8 @@ VulkanRenderer::VulkanRenderer(Window& window) {
 }
 
 VulkanRenderer::~VulkanRenderer() {
+    for (VkImageView imageView : swapChainImageViews)
+        vkDestroyImageView(device, imageView, nullptr);
     vkDestroySwapchainKHR(device, swapChain, nullptr);
     
     vkDestroyDevice(device, nullptr);
