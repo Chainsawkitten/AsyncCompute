@@ -26,6 +26,23 @@ include_directories(externals/glm)
 # STB
 include_directories(externals/stb)
 
+# Headerize
+add_subdirectory(externals/Headerize)
+macro(ProcessWithHeaderize headervar sourcevar inputfile outdir)
+    get_filename_component(basefile ${inputfile} NAME)
+    set(outputfile ${outdir}/${basefile})
+    set_source_files_properties(${outputfile} PROPERTIES HEADER_ONLY TRUE)
+    add_custom_command(
+        OUTPUT ${outputfile}.hpp ${outputfile}.cpp
+        COMMAND Headerize ${inputfile} ${outputfile}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        DEPENDS ${inputfile}
+        COMMENT "Generating headers for ${inputfile}"
+    )
+    list(APPEND ${headervar} ${outputfile}.hpp)
+    list(APPEND ${sourcevar} ${outputfile}.cpp)
+endmacro()
+
 # Vulkan
 if(WIN32)
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -71,7 +88,19 @@ set(HEADERS
         src/vulkan/vulkanrenderer.hpp
         src/opengl/openglrenderer.hpp
         src/base/window.hpp
+        src/base/shader.hpp
     )
+
+# Embedded sources
+set(EMBEDDED_INPUT
+        assets/default.vert
+    )
+
+foreach(item ${EMBEDDED_INPUT})
+    ProcessWithHeaderize(EMBEDDED_HEADER EMBEDDED_SOURCE ${item} ${CMAKE_CURRENT_BINARY_DIR})
+endforeach()
+
+set_property(SOURCE ${SRCS} APPEND PROPERTY OBJECT_DEPENDS ${EMBEDDED_HEADER})
 
 create_directory_groups(${SRCS} ${HEADERS})
 
