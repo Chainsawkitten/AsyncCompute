@@ -63,6 +63,7 @@ set(SRCS
         src/vulkan/vulkanrenderer.cpp
         src/opengl/openglrenderer.cpp
         src/base/window.cpp
+        src/base/shader.cpp
     )
 
 set(HEADERS
