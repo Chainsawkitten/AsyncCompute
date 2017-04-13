@@ -25,8 +25,26 @@ class Window {
          */
         GLFWwindow* createWindow(const std::string& windowTitle);
 
+        /// Gets GLFW window.
+        /**
+         * @return The window created with createWindow.
+         */
+        GLFWwindow* getWindow() const;
+
+        /// Gets window width.
+        /**
+         * @return Width of the window.
+         */
+        int getWidth() const;
+
+        /// Gets window height.
+        /**
+         * @return Height of the window.
+         */
+        int getHeight() const;
+
     private:
-        GLFWwindow* window;
         int width = 800;
         int height = 600;
+        GLFWwindow* window;
 };
