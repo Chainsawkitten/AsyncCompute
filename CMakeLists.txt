@@ -104,7 +104,7 @@ set_property(SOURCE ${SRCS} APPEND PROPERTY OBJECT_DEPENDS ${EMBEDDED_HEADER})
 
 create_directory_groups(${SRCS} ${HEADERS})
 
-add_executable(ParticleSimulator ${SRCS} ${HEADERS})
+add_executable(ParticleSimulator ${SRCS} ${HEADERS} ${EMBEDDED_SOURCE})
 target_link_libraries(ParticleSimulator glew glfw ${Vulkan_LIBRARY})
 set_property(TARGET ParticleSimulator PROPERTY CXX_STANDARD 11)
 set_property(TARGET ParticleSimulator PROPERTY CXX_STANDARD_REQUIRED ON)
