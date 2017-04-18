@@ -46,6 +46,7 @@ VulkanRenderer::VulkanRenderer(Window& window) {
     
     // Create command buffers.
     createCommandPools();
+    createCommandBuffers();
 }
 
 VulkanRenderer::~VulkanRenderer() {
@@ -449,5 +450,27 @@ void VulkanRenderer::createCommandPools() {
             std::cerr << "Failed to create compute command pool" << std::endl;
             exit(-1);
         }
+    }
+}
+
+void VulkanRenderer::createCommandBuffers() {
+    // Graphics command buffer.
+    VkCommandBufferAllocateInfo allocInfo = {};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.commandPool = graphicsCommandPool;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandBufferCount = 1;
+    
+    if (vkAllocateCommandBuffers(device, &allocInfo, &graphicsCommandBuffer) != VK_SUCCESS) {
+        std::cerr << "Failed to allocate graphics command buffer!" << std::endl;
+        exit(-1);
+    }
+    
+    // Compute command buffer.
+    allocInfo.commandPool = computeCommandPool;
+    
+    if (vkAllocateCommandBuffers(device, &allocInfo, &computeCommandBuffer) != VK_SUCCESS) {
+        std::cerr << "Failed to allocate compute command buffer!" << std::endl;
+        exit(-1);
     }
 }
