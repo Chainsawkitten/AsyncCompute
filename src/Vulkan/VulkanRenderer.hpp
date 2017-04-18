@@ -37,6 +37,7 @@ class VulkanRenderer : public Renderer {
         void createImageViews(VkFormat format);
         
         void createRenderPass(VkFormat format);
+        void createFramebuffers();
         
         VkInstance instance;
 #ifndef NDEBUG
@@ -56,4 +57,5 @@ class VulkanRenderer : public Renderer {
         std::vector<VkImageView> swapChainImageViews;
         
         VkRenderPass renderPass;
+        std::vector<VkFramebuffer> swapChainFramebuffers;
 };
