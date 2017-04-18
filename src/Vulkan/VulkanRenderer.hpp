@@ -42,6 +42,8 @@ class VulkanRenderer : public Renderer {
         void createCommandBuffers();
         void createDescriptorPool();
         
+        void createSemaphores();
+        
         VkInstance instance;
 #ifndef NDEBUG
         VkDebugReportCallbackEXT callback;
@@ -68,4 +70,7 @@ class VulkanRenderer : public Renderer {
         VkCommandBuffer graphicsCommandBuffer;
         VkCommandBuffer computeCommandBuffer;
         VkDescriptorPool descriptorPool;
+        
+        VkSemaphore imageAvailableSemaphore;
+        VkSemaphore renderFinishedSemaphore;
 };

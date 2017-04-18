@@ -50,9 +50,15 @@ VulkanRenderer::VulkanRenderer(Window& window) {
     
     // Create descriptor pool.
     createDescriptorPool();
+    
+    // Create semaphores.
+    createSemaphores();
 }
 
 VulkanRenderer::~VulkanRenderer() {
+    vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
+    vkDestroySemaphore(device, renderFinishedSemaphore, nullptr);
+    
     vkDestroyDescriptorPool(device, descriptorPool, nullptr);
     
     vkDestroyCommandPool(device, graphicsCommandPool, nullptr);
@@ -499,4 +505,15 @@ void VulkanRenderer::createDescriptorPool() {
         std::cerr << "Failed to create descriptor pool." << std::endl;
         exit(-1);
     }
+}
+
+void VulkanRenderer::createSemaphores() {
+    VkSemaphoreCreateInfo semaphoreInfo = {};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+    
+    if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &imageAvailableSemaphore) != VK_SUCCESS)
+        std::cout << "Couldn't create semaphore" << std::endl;
+    
+    if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &renderFinishedSemaphore) != VK_SUCCESS)
+        std::cout << "Couldn't create semaphore" << std::endl;
 }
