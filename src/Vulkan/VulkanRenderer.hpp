@@ -16,6 +16,8 @@ class VulkanRenderer : public Renderer {
         /// Destructor.
         ~VulkanRenderer() final;
         
+        /// Render image to screen.
+        void render();
     private:
         void createInstance();
         void setupDebugCallback();

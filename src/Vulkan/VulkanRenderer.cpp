@@ -212,3 +212,7 @@ void VulkanRenderer::createSurface(GLFWwindow* window) {
         exit(-1);
     }
 }
+
+void VulkanRenderer::render(){
+
+}
