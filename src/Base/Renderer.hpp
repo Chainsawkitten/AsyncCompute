@@ -20,4 +20,7 @@ class Renderer {
          * @return The created renderer.
          */
         static Renderer* makeRenderer(BACKEND backend, Window & window);
+
+        /// Render image to screen.
+        virtual void render();
 };
