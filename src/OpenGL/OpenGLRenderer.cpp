@@ -1,8 +1,9 @@
 #include <GL/glew.h>
 #include "OpenGLRenderer.hpp"
-
+#include <iostream>
 
 OpenGLRenderer::OpenGLRenderer(Window & window) {
+
     // Setup glfw window.
     window.setWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     window.setWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -11,8 +12,9 @@ OpenGLRenderer::OpenGLRenderer(Window & window) {
     std::string windowTitle = "OpenGL";
     window.createWindow(windowTitle);
 
+    glfwMakeContextCurrent(window.getWindow());
+
     // Setup GLEW
-    glewExperimental = true;
     if(glewInit() != GLEW_OK){
 
     }
@@ -27,4 +29,9 @@ OpenGLRenderer::OpenGLRenderer(Window & window) {
 
 OpenGLRenderer::~OpenGLRenderer() {
     
+}
+
+void OpenGLRenderer::render(){
+    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 }

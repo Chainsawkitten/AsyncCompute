@@ -8,6 +8,9 @@ int main() {
 
     while(!glfwWindowShouldClose(window.getWindow())){
         glfwPollEvents();
+
+        renderer->render();
+
         glfwSwapBuffers(window.getWindow());
     }
 
