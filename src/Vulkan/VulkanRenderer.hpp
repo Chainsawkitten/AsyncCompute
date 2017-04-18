@@ -43,6 +43,7 @@ class VulkanRenderer : public Renderer {
         void createDescriptorPool();
         
         void createSemaphores();
+        void createFence();
         
         VkInstance instance;
 #ifndef NDEBUG
@@ -73,4 +74,5 @@ class VulkanRenderer : public Renderer {
         
         VkSemaphore imageAvailableSemaphore;
         VkSemaphore renderFinishedSemaphore;
+        VkFence fence;
 };

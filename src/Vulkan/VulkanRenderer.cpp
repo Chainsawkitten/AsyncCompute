@@ -53,9 +53,13 @@ VulkanRenderer::VulkanRenderer(Window& window) {
     
     // Create semaphores.
     createSemaphores();
+    
+    // Create fence.
+    createFence();
 }
 
 VulkanRenderer::~VulkanRenderer() {
+    vkDestroyFence(device, fence, nullptr);
     vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
     vkDestroySemaphore(device, renderFinishedSemaphore, nullptr);
     
@@ -516,4 +520,13 @@ void VulkanRenderer::createSemaphores() {
     
     if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &renderFinishedSemaphore) != VK_SUCCESS)
         std::cout << "Couldn't create semaphore" << std::endl;
+}
+
+void VulkanRenderer::createFence() {
+    VkFenceCreateInfo fenceInfo = {};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.pNext = nullptr;
+    fenceInfo.flags = 0;
+    
+    vkCreateFence(device, &fenceInfo, nullptr, &fence);
 }
