@@ -43,9 +43,16 @@ VulkanRenderer::VulkanRenderer(Window& window) {
     
     // Create frame buffers.
     createFramebuffers();
+    
+    // Create command buffers.
+    createCommandPools();
 }
 
 VulkanRenderer::~VulkanRenderer() {
+    vkDestroyCommandPool(device, graphicsCommandPool, nullptr);
+    if (graphicsCommandPool != computeCommandPool)
+        vkDestroyCommandPool(device, computeCommandPool, nullptr);
+    
     for (VkFramebuffer framebuffer : swapChainFramebuffers)
         vkDestroyFramebuffer(device, framebuffer, nullptr);
     
@@ -150,8 +157,8 @@ void VulkanRenderer::createDevice() {
         std::cerr << "Failed to find suitable GPU's." << std::endl;
     
     // Find queue families.
-    int graphicsFamily = -1;
-    int computeFamily = -1;
+    graphicsFamily = -1;
+    computeFamily = -1;
     int presentFamily = -1;
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
@@ -179,6 +186,9 @@ void VulkanRenderer::createDevice() {
             break;
         ++i;
     }
+    
+    std::cout << "Graphics family: " << graphicsFamily << std::endl;
+    std::cout << "Compute family: " << computeFamily << std::endl;
     
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     std::set<int> uniqueQueueFamilies = { graphicsFamily, presentFamily };
@@ -414,6 +424,29 @@ void VulkanRenderer::createFramebuffers() {
         
         if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS) {
             std::cerr << "Failed to create framebuffer" << std::endl;
+            exit(-1);
+        }
+    }
+}
+
+void VulkanRenderer::createCommandPools() {
+    VkCommandPoolCreateInfo poolInfo = {};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.queueFamilyIndex = graphicsFamily;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    
+    if (vkCreateCommandPool(device, &poolInfo, nullptr, &graphicsCommandPool) != VK_SUCCESS) {
+        std::cerr << "Failed to create graphics command pool" << std::endl;
+        exit(-1);
+    }
+    
+    if (graphicsFamily == computeFamily) {
+        computeCommandPool = graphicsCommandPool;
+    } else {
+        poolInfo.queueFamilyIndex = computeFamily;
+        
+        if (vkCreateCommandPool(device, &poolInfo, nullptr, &computeCommandPool) != VK_SUCCESS) {
+            std::cerr << "Failed to create compute command pool" << std::endl;
             exit(-1);
         }
     }

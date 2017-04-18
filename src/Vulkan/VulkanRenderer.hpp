@@ -38,6 +38,7 @@ class VulkanRenderer : public Renderer {
         
         void createRenderPass(VkFormat format);
         void createFramebuffers();
+        void createCommandPools();
         
         VkInstance instance;
 #ifndef NDEBUG
@@ -46,6 +47,8 @@ class VulkanRenderer : public Renderer {
         
         VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
         VkDevice device;
+        int graphicsFamily;
+        int computeFamily;
         VkQueue graphicsQueue;
         VkQueue computeQueue;
         VkQueue presentQueue;
@@ -58,4 +61,6 @@ class VulkanRenderer : public Renderer {
         
         VkRenderPass renderPass;
         std::vector<VkFramebuffer> swapChainFramebuffers;
+        VkCommandPool graphicsCommandPool;
+        VkCommandPool computeCommandPool;
 };
