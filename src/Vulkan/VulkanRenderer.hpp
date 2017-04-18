@@ -40,6 +40,7 @@ class VulkanRenderer : public Renderer {
         void createFramebuffers();
         void createCommandPools();
         void createCommandBuffers();
+        void createDescriptorPool();
         
         VkInstance instance;
 #ifndef NDEBUG
@@ -66,4 +67,5 @@ class VulkanRenderer : public Renderer {
         VkCommandPool computeCommandPool;
         VkCommandBuffer graphicsCommandBuffer;
         VkCommandBuffer computeCommandBuffer;
+        VkDescriptorPool descriptorPool;
 };

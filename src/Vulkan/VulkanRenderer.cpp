@@ -47,9 +47,14 @@ VulkanRenderer::VulkanRenderer(Window& window) {
     // Create command buffers.
     createCommandPools();
     createCommandBuffers();
+    
+    // Create descriptor pool.
+    createDescriptorPool();
 }
 
 VulkanRenderer::~VulkanRenderer() {
+    vkDestroyDescriptorPool(device, descriptorPool, nullptr);
+    
     vkDestroyCommandPool(device, graphicsCommandPool, nullptr);
     if (graphicsCommandPool != computeCommandPool)
         vkDestroyCommandPool(device, computeCommandPool, nullptr);
@@ -471,6 +476,27 @@ void VulkanRenderer::createCommandBuffers() {
     
     if (vkAllocateCommandBuffers(device, &allocInfo, &computeCommandBuffer) != VK_SUCCESS) {
         std::cerr << "Failed to allocate compute command buffer!" << std::endl;
+        exit(-1);
+    }
+}
+
+void VulkanRenderer::createDescriptorPool() {
+    VkDescriptorPoolSize poolSizes[4];
+    
+    // Uniform buffers.
+    poolSizes[0] = {};
+    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSizes[0].descriptorCount = 3;
+    
+    // Create descriptor pool.
+    VkDescriptorPoolCreateInfo poolInfo = {};
+    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolInfo.poolSizeCount = 1;
+    poolInfo.pPoolSizes = poolSizes;
+    poolInfo.maxSets = 1;
+    
+    if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
+        std::cerr << "Failed to create descriptor pool." << std::endl;
         exit(-1);
     }
 }
