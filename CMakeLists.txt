@@ -82,7 +82,7 @@ set(SRCS
         src/vulkan/vulkanrenderer.cpp
         src/opengl/openglrenderer.cpp
         src/base/window.cpp
-        src/base/shader.cpp
+        src/opengl/OpenGLShader.cpp
     )
 
 set(HEADERS
@@ -90,7 +90,7 @@ set(HEADERS
         src/vulkan/vulkanrenderer.hpp
         src/opengl/openglrenderer.hpp
         src/base/window.hpp
-        src/base/shader.hpp
+        src/opengl/OpenGLShader.hpp
     )
 
 # Embedded sources
