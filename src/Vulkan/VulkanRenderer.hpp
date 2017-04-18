@@ -36,6 +36,8 @@ class VulkanRenderer : public Renderer {
         VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, unsigned int width, unsigned int height);
         void createImageViews(VkFormat format);
         
+        void createRenderPass(VkFormat format);
+        
         VkInstance instance;
 #ifndef NDEBUG
         VkDebugReportCallbackEXT callback;
@@ -52,4 +54,6 @@ class VulkanRenderer : public Renderer {
         VkExtent2D swapChainExtent;
         std::vector<VkImage> swapChainImages;
         std::vector<VkImageView> swapChainImageViews;
+        
+        VkRenderPass renderPass;
 };
