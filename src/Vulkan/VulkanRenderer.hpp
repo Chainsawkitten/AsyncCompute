@@ -18,7 +18,7 @@ class VulkanRenderer : public Renderer {
         ~VulkanRenderer() final;
         
         /// Render image to screen.
-        void render();
+        void render() final;
     private:
         struct SwapChainSupport {
             VkSurfaceCapabilitiesKHR capabilities;
