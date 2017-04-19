@@ -1,7 +1,10 @@
 /*
     Default empty shader.
 */
+#version 450
+
+out vec4 out_color;
 
 void main() {
-    out_colour = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    out_color = vec4(1.0, 0.0, 0.0, 1.0);
 }
