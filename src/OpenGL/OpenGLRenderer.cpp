@@ -1,5 +1,7 @@
 #include <GL/glew.h>
 #include "OpenGLRenderer.hpp"
+#include "../Base/Window.hpp"
+#include <iostream>
 
 OpenGLRenderer::OpenGLRenderer(Window & window) {
 
