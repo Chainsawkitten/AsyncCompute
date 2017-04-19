@@ -14,6 +14,13 @@ class OpenGLRenderer : public Renderer {
 
         /// Destructor.
         ~OpenGLRenderer() final;
+        
+        /// Set the texture to use for the particles.
+        /**
+         * @param textureData The texture data.
+         * @param dataLength The length of the texture data.
+         */
+        void setTexture(const char* textureData, unsigned int dataLength) final;
 
         /// Render image to screen.
         void render() final;

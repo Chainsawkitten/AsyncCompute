@@ -1,6 +1,7 @@
 #include "Base/Renderer.hpp"
 #include "Base/Window.hpp"
 #include <cstring>
+#include "Particle.png.hpp"
 
 int main(int argc, char* argv[]) {
     Window window;
@@ -11,12 +12,13 @@ int main(int argc, char* argv[]) {
         backend = Renderer::BACKEND::Vulkan;
     
     Renderer* renderer = Renderer::makeRenderer(backend, window);
+    renderer->setTexture(PARTICLE_PNG, PARTICLE_PNG_LENGTH);
     
     while(!glfwWindowShouldClose(window.getWindow())){
         glfwPollEvents();
-
+        
         renderer->render();
-
+        
         glfwSwapBuffers(window.getWindow());
     }
     

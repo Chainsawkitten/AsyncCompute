@@ -92,6 +92,14 @@ VulkanRenderer::~VulkanRenderer() {
     vkDestroyInstance(instance, nullptr);
 }
 
+void VulkanRenderer::setTexture(const char* textureData, unsigned int dataLength) {
+    
+}
+
+void VulkanRenderer::render() {
+    
+}
+
 void VulkanRenderer::createInstance() {
     VkApplicationInfo appInfo = {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -259,12 +267,6 @@ void VulkanRenderer::createSurface(GLFWwindow* window) {
         exit(-1);
     }
 }
-
-
-void VulkanRenderer::render(){
-
-}
-
 
 VkFormat VulkanRenderer::createSwapChain(unsigned int width, unsigned int height) {
     // Determine swap chain support.
