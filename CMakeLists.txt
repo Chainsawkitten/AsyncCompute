@@ -83,6 +83,7 @@ set(SRCS
         src/Opengl/OpenGLRenderer.cpp
         src/Opengl/OpenGLShader.cpp
         src/Vulkan/VulkanRenderer.cpp
+        src/Vulkan/VulkanTexture.cpp
     )
 
 set(HEADERS
@@ -91,6 +92,7 @@ set(HEADERS
         src/OpenGL/OpenGLRenderer.hpp
         src/OpenGL/OpenGLShader.hpp
         src/Vulkan/VulkanRenderer.hpp
+        src/Vulkan/VulkanTexture.hpp
     )
 
 # Embedded sources

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <limits>
 #include <algorithm>
+#include "VulkanTexture.hpp"
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
@@ -60,6 +61,8 @@ VulkanRenderer::VulkanRenderer(Window& window) {
 }
 
 VulkanRenderer::~VulkanRenderer() {
+    delete particleTexture;
+    
     vkDestroyFence(device, fence, nullptr);
     vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
     vkDestroySemaphore(device, renderFinishedSemaphore, nullptr);
@@ -93,7 +96,7 @@ VulkanRenderer::~VulkanRenderer() {
 }
 
 void VulkanRenderer::setTexture(const char* textureData, unsigned int dataLength) {
-    
+    particleTexture = new VulkanTexture(textureData, dataLength);
 }
 
 void VulkanRenderer::render() {

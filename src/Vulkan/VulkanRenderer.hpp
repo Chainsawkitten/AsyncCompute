@@ -5,6 +5,8 @@
 #include <vector>
 #include "../Base/Window.hpp"
 
+class VulkanTexture;
+
 /// Vulkan implementation of the renderer.
 class VulkanRenderer : public Renderer {
     public:
@@ -84,4 +86,6 @@ class VulkanRenderer : public Renderer {
         VkSemaphore imageAvailableSemaphore;
         VkSemaphore renderFinishedSemaphore;
         VkFence fence;
+        
+        VulkanTexture* particleTexture;
 };
