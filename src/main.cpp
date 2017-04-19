@@ -14,6 +14,9 @@ int main(int argc, char* argv[]) {
     
     while(!glfwWindowShouldClose(window.getWindow())){
         glfwPollEvents();
+
+        renderer->render();
+
         glfwSwapBuffers(window.getWindow());
     }
     

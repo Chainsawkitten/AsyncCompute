@@ -7,6 +7,7 @@
 #include <set>
 #include <iostream>
 #include <limits>
+#include <algorithm>
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
@@ -259,6 +260,12 @@ void VulkanRenderer::createSurface(GLFWwindow* window) {
     }
 }
 
+
+void VulkanRenderer::render(){
+
+}
+
+
 VkFormat VulkanRenderer::createSwapChain(unsigned int width, unsigned int height) {
     // Determine swap chain support.
     SwapChainSupport swapChainSupport = querySwapChainSupport();
@@ -342,7 +349,6 @@ VkExtent2D VulkanRenderer::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capa
         return capabilities.currentExtent;
     } else {
         VkExtent2D actualExtent = {width, height};
-        
         actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
         actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
         

@@ -4,6 +4,8 @@ project(ParticleSimulator)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 if(UNIX OR MINGW)
     set(CMAKE_CXX_FLAGS "-g -gdwarf-2 -O3 -static-libstdc++ -Wall")
 endif()
@@ -25,6 +27,23 @@ include_directories(externals/glm)
 
 # STB
 include_directories(externals/stb)
+
+# Headerize
+add_subdirectory(externals/Headerize)
+macro(ProcessWithHeaderize headervar sourcevar inputfile outdir)
+    get_filename_component(basefile ${inputfile} NAME)
+    set(outputfile ${outdir}/${basefile})
+    set_source_files_properties(${outputfile} PROPERTIES HEADER_ONLY TRUE)
+    add_custom_command(
+        OUTPUT ${outputfile}.hpp ${outputfile}.cpp
+        COMMAND Headerize ${inputfile} ${outputfile}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        DEPENDS ${inputfile}
+        COMMENT "Generating headers for ${inputfile}"
+    )
+    list(APPEND ${headervar} ${outputfile}.hpp)
+    list(APPEND ${sourcevar} ${outputfile}.cpp)
+endmacro()
 
 # Vulkan
 if(WIN32)
@@ -63,6 +82,7 @@ set(SRCS
         src/vulkan/vulkanrenderer.cpp
         src/opengl/openglrenderer.cpp
         src/base/window.cpp
+        src/opengl/OpenGLShader.cpp
     )
 
 set(HEADERS
@@ -70,11 +90,23 @@ set(HEADERS
         src/vulkan/vulkanrenderer.hpp
         src/opengl/openglrenderer.hpp
         src/base/window.hpp
+        src/opengl/OpenGLShader.hpp
     )
+
+# Embedded sources
+set(EMBEDDED_INPUT
+        assets/default.vert
+    )
+
+foreach(item ${EMBEDDED_INPUT})
+    ProcessWithHeaderize(EMBEDDED_HEADER EMBEDDED_SOURCE ${item} ${CMAKE_CURRENT_BINARY_DIR})
+endforeach()
+
+set_property(SOURCE ${SRCS} APPEND PROPERTY OBJECT_DEPENDS ${EMBEDDED_HEADER})
 
 create_directory_groups(${SRCS} ${HEADERS})
 
-add_executable(ParticleSimulator ${SRCS} ${HEADERS})
+add_executable(ParticleSimulator ${SRCS} ${HEADERS} ${EMBEDDED_SOURCE})
 target_link_libraries(ParticleSimulator glew glfw ${Vulkan_LIBRARY})
 set_property(TARGET ParticleSimulator PROPERTY CXX_STANDARD 11)
 set_property(TARGET ParticleSimulator PROPERTY CXX_STANDARD_REQUIRED ON)
