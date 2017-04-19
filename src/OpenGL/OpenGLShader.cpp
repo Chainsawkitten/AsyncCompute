@@ -1,7 +1,6 @@
 #include "OpenGLShader.hpp"
 #include "default.vert.hpp"
 
-/// Load, create and compile a shader for OpenGL.
 OpenGLShader::OpenGLShader(){
     GLchar infoLog[512];
     GLint success;
