@@ -19,6 +19,30 @@ VulkanTexture::VulkanTexture(const char* data, unsigned int length, VkDevice dev
     // Create staging image.
     createImage(width, height, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_LINEAR, VK_IMAGE_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingImage, &stagingImageMemory);
     
+    // Transfer image data.
+    void* transferData;
+    VkDeviceSize imageSize = width * height * 4;
+    vkMapMemory(device, stagingImageMemory, 0, imageSize, 0, &transferData);
+    
+    VkImageSubresource subresource = {};
+    subresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    subresource.mipLevel = 0;
+    subresource.arrayLayer = 0;
+    
+    VkSubresourceLayout stagingImageLayout;
+    vkGetImageSubresourceLayout(device, stagingImage, &subresource, &stagingImageLayout);
+    
+    if (stagingImageLayout.rowPitch == width * 4u) {
+        memcpy(transferData, pixels, imageSize);
+    } else {
+        uint8_t* dataBytes = reinterpret_cast<uint8_t*>(transferData);
+        
+        for (int y = 0; y < height; ++y)
+            memcpy(&dataBytes[y * stagingImageLayout.rowPitch], &pixels[y * width * 4], width * 4);
+    }
+    
+    vkUnmapMemory(device, stagingImageMemory);
+    
     // Clean up.
     stbi_image_free(pixels);
 }
