@@ -16,7 +16,3 @@ Renderer* Renderer::makeRenderer(BACKEND backend, Window & window){
     
     return nullptr;
 }
-
-void Renderer::render() {
-
-}
