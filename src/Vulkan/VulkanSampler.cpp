@@ -32,3 +32,7 @@ VulkanSampler::VulkanSampler(VkDevice device) {
 VulkanSampler::~VulkanSampler() {
     vkDestroySampler(device, textureSampler, nullptr);
 }
+
+VkSampler VulkanSampler::getTextureSampler() const {
+    return textureSampler;
+}

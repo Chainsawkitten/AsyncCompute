@@ -14,6 +14,12 @@ class VulkanSampler {
         /// Destructor.
         ~VulkanSampler();
         
+        /// Get the sampler handle.
+        /**
+         * @return The sampler handle.
+         */
+        VkSampler getTextureSampler() const;
+        
     private:
         VkDevice device;
         

@@ -96,7 +96,7 @@ VulkanRenderer::~VulkanRenderer() {
 }
 
 void VulkanRenderer::setTexture(const char* textureData, unsigned int dataLength) {
-    particleTexture = new VulkanTexture(textureData, dataLength, device, physicalDevice, graphicsCommandPool, graphicsQueue);
+    particleTexture = new VulkanTexture(textureData, dataLength, device, physicalDevice, graphicsCommandPool, graphicsQueue, descriptorPool);
 }
 
 void VulkanRenderer::render() {
@@ -502,17 +502,22 @@ void VulkanRenderer::createCommandBuffers() {
 }
 
 void VulkanRenderer::createDescriptorPool() {
-    VkDescriptorPoolSize poolSizes[4];
+    VkDescriptorPoolSize poolSizes[2];
     
     // Uniform buffers.
     poolSizes[0] = {};
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     poolSizes[0].descriptorCount = 3;
     
+    // Samplers.
+    poolSizes[1] = {};
+    poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    poolSizes[1].descriptorCount = 1;
+    
     // Create descriptor pool.
     VkDescriptorPoolCreateInfo poolInfo = {};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.poolSizeCount = 1;
+    poolInfo.poolSizeCount = 2;
     poolInfo.pPoolSizes = poolSizes;
     poolInfo.maxSets = 1;
     
