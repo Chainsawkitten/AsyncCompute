@@ -4,7 +4,7 @@
 #include <stb_image.h>
 #include <iostream>
 
-VulkanTexture::VulkanTexture(const char* data, unsigned int length, VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue) {
+VulkanTexture::VulkanTexture(const char* data, unsigned int length, VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue) : sampler(device) {
     this->device = device;
     this->physicalDevice = physicalDevice;
     this->commandPool = commandPool;

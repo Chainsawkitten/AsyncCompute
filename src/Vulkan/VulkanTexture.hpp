@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
+#include "VulkanSampler.hpp"
 
 /// A texture used for particles.
 class VulkanTexture {
@@ -40,4 +41,6 @@ class VulkanTexture {
         VkDeviceMemory textureImageMemory;
         
         VkImageView textureImageView;
+        
+        VulkanSampler sampler;
 };
