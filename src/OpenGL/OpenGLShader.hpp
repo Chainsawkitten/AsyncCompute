@@ -6,6 +6,10 @@ class OpenGLShader {
     public:
         /// Constructor
         OpenGLShader();
+
+        /// Shader program
+        GLuint shaderProgram;
     private:
         GLuint vertexShaderHandle;
+        GLuint fragmentShaderHandle;
 };
