@@ -26,4 +26,7 @@ class VulkanTexture {
         
         VkImage stagingImage;
         VkDeviceMemory stagingImageMemory;
+        
+        VkImage textureImage;
+        VkDeviceMemory textureImageMemory;
 };
