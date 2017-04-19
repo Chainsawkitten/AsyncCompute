@@ -96,7 +96,7 @@ VulkanRenderer::~VulkanRenderer() {
 }
 
 void VulkanRenderer::setTexture(const char* textureData, unsigned int dataLength) {
-    particleTexture = new VulkanTexture(textureData, dataLength);
+    particleTexture = new VulkanTexture(textureData, dataLength, device, physicalDevice);
 }
 
 void VulkanRenderer::render() {
