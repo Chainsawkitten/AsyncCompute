@@ -96,6 +96,7 @@ set(HEADERS
 # Embedded sources
 set(EMBEDDED_INPUT
         assets/default.vert
+        assets/Particle.png
     )
 
 foreach(item ${EMBEDDED_INPUT})
