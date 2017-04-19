@@ -1,7 +1,6 @@
 #pragma once
-
+#include "OpenGLShader.hpp"
 #include "../Base/Renderer.hpp"
-#include "../Base/Window.hpp"
 
 /// OpenGL implementation of the renderer.
 class OpenGLRenderer : public Renderer {
@@ -24,4 +23,6 @@ class OpenGLRenderer : public Renderer {
 
         /// Render image to screen.
         void render() final;
+
+        OpenGLShader* shader;
 };
