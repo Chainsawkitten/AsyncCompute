@@ -78,19 +78,19 @@ endfunction()
 # Target
 set(SRCS
         src/main.cpp
-        src/base/renderer.cpp
-        src/vulkan/vulkanrenderer.cpp
-        src/opengl/openglrenderer.cpp
-        src/base/window.cpp
-        src/opengl/OpenGLShader.cpp
+        src/Base/Renderer.cpp
+        src/Base/Window.cpp
+        src/Opengl/OpenGLRenderer.cpp
+        src/Opengl/OpenGLShader.cpp
+        src/Vulkan/VulkanRenderer.cpp
     )
 
 set(HEADERS
-        src/base/renderer.hpp
-        src/vulkan/vulkanrenderer.hpp
-        src/opengl/openglrenderer.hpp
-        src/base/window.hpp
-        src/opengl/OpenGLShader.hpp
+        src/Base/Renderer.hpp
+        src/Base/Window.hpp
+        src/OpenGL/OpenGLRenderer.hpp
+        src/OpenGL/OpenGLShader.hpp
+        src/Vulkan/VulkanRenderer.hpp
     )
 
 # Embedded sources
