@@ -5,6 +5,8 @@
 #include <vector>
 #include "../Base/Window.hpp"
 
+class VulkanTexture;
+
 /// Vulkan implementation of the renderer.
 class VulkanRenderer : public Renderer {
     public:
@@ -16,6 +18,13 @@ class VulkanRenderer : public Renderer {
         
         /// Destructor.
         ~VulkanRenderer() final;
+        
+        /// Set the texture to use for the particles.
+        /**
+         * @param textureData The texture data.
+         * @param dataLength The length of the texture data.
+         */
+        void setTexture(const char* textureData, unsigned int dataLength) final;
         
         /// Render image to screen.
         void render() final;
@@ -77,4 +86,6 @@ class VulkanRenderer : public Renderer {
         VkSemaphore imageAvailableSemaphore;
         VkSemaphore renderFinishedSemaphore;
         VkFence fence;
+        
+        VulkanTexture* particleTexture;
 };

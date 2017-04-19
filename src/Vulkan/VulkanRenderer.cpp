@@ -8,6 +8,7 @@
 #include <iostream>
 #include <limits>
 #include <algorithm>
+#include "VulkanTexture.hpp"
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
@@ -60,6 +61,8 @@ VulkanRenderer::VulkanRenderer(Window& window) {
 }
 
 VulkanRenderer::~VulkanRenderer() {
+    delete particleTexture;
+    
     vkDestroyFence(device, fence, nullptr);
     vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
     vkDestroySemaphore(device, renderFinishedSemaphore, nullptr);
@@ -90,6 +93,14 @@ VulkanRenderer::~VulkanRenderer() {
 #endif
     
     vkDestroyInstance(instance, nullptr);
+}
+
+void VulkanRenderer::setTexture(const char* textureData, unsigned int dataLength) {
+    particleTexture = new VulkanTexture(textureData, dataLength, device, physicalDevice, graphicsCommandPool, graphicsQueue);
+}
+
+void VulkanRenderer::render() {
+    
 }
 
 void VulkanRenderer::createInstance() {
@@ -259,12 +270,6 @@ void VulkanRenderer::createSurface(GLFWwindow* window) {
         exit(-1);
     }
 }
-
-
-void VulkanRenderer::render(){
-
-}
-
 
 VkFormat VulkanRenderer::createSwapChain(unsigned int width, unsigned int height) {
     // Determine swap chain support.

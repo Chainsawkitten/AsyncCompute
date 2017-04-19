@@ -20,7 +20,14 @@ class Renderer {
          * @return The created renderer.
          */
         static Renderer* makeRenderer(BACKEND backend, Window & window);
-
+        
+        /// Set the texture to use for the particles.
+        /**
+         * @param textureData The texture data.
+         * @param dataLength The length of the texture data.
+         */
+        virtual void setTexture(const char* textureData, unsigned int dataLength) = 0;
+        
         /// Render image to screen.
         virtual void render() = 0;
 };

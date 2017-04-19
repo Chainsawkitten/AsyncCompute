@@ -30,6 +30,10 @@ OpenGLRenderer::~OpenGLRenderer() {
     
 }
 
+void OpenGLRenderer::setTexture(const char* textureData, unsigned int dataLength) {
+    
+}
+
 void OpenGLRenderer::render(){
     glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
