@@ -36,6 +36,15 @@ class VulkanRenderer : public Renderer {
         VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, unsigned int width, unsigned int height);
         void createImageViews(VkFormat format);
         
+        void createRenderPass(VkFormat format);
+        void createFramebuffers();
+        void createCommandPools();
+        void createCommandBuffers();
+        void createDescriptorPool();
+        
+        void createSemaphores();
+        void createFence();
+        
         VkInstance instance;
 #ifndef NDEBUG
         VkDebugReportCallbackEXT callback;
@@ -43,6 +52,8 @@ class VulkanRenderer : public Renderer {
         
         VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
         VkDevice device;
+        int graphicsFamily;
+        int computeFamily;
         VkQueue graphicsQueue;
         VkQueue computeQueue;
         VkQueue presentQueue;
@@ -52,4 +63,16 @@ class VulkanRenderer : public Renderer {
         VkExtent2D swapChainExtent;
         std::vector<VkImage> swapChainImages;
         std::vector<VkImageView> swapChainImageViews;
+        
+        VkRenderPass renderPass;
+        std::vector<VkFramebuffer> swapChainFramebuffers;
+        VkCommandPool graphicsCommandPool;
+        VkCommandPool computeCommandPool;
+        VkCommandBuffer graphicsCommandBuffer;
+        VkCommandBuffer computeCommandBuffer;
+        VkDescriptorPool descriptorPool;
+        
+        VkSemaphore imageAvailableSemaphore;
+        VkSemaphore renderFinishedSemaphore;
+        VkFence fence;
 };

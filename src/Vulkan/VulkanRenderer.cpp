@@ -37,9 +37,43 @@ VulkanRenderer::VulkanRenderer(Window& window) {
     // Create swap chain.
     VkFormat format = createSwapChain(window.getWidth(), window.getHeight());
     createImageViews(format);
+    
+    // Create render pass.
+    createRenderPass(format);
+    
+    // Create frame buffers.
+    createFramebuffers();
+    
+    // Create command buffers.
+    createCommandPools();
+    createCommandBuffers();
+    
+    // Create descriptor pool.
+    createDescriptorPool();
+    
+    // Create semaphores.
+    createSemaphores();
+    
+    // Create fence.
+    createFence();
 }
 
 VulkanRenderer::~VulkanRenderer() {
+    vkDestroyFence(device, fence, nullptr);
+    vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
+    vkDestroySemaphore(device, renderFinishedSemaphore, nullptr);
+    
+    vkDestroyDescriptorPool(device, descriptorPool, nullptr);
+    
+    vkDestroyCommandPool(device, graphicsCommandPool, nullptr);
+    if (graphicsCommandPool != computeCommandPool)
+        vkDestroyCommandPool(device, computeCommandPool, nullptr);
+    
+    for (VkFramebuffer framebuffer : swapChainFramebuffers)
+        vkDestroyFramebuffer(device, framebuffer, nullptr);
+    
+    vkDestroyRenderPass(device, renderPass, nullptr);
+    
     for (VkImageView imageView : swapChainImageViews)
         vkDestroyImageView(device, imageView, nullptr);
     vkDestroySwapchainKHR(device, swapChain, nullptr);
@@ -139,8 +173,8 @@ void VulkanRenderer::createDevice() {
         std::cerr << "Failed to find suitable GPU's." << std::endl;
     
     // Find queue families.
-    int graphicsFamily = -1;
-    int computeFamily = -1;
+    graphicsFamily = -1;
+    computeFamily = -1;
     int presentFamily = -1;
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
@@ -168,6 +202,9 @@ void VulkanRenderer::createDevice() {
             break;
         ++i;
     }
+    
+    std::cout << "Graphics family: " << graphicsFamily << std::endl;
+    std::cout << "Compute family: " << computeFamily << std::endl;
     
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     std::set<int> uniqueQueueFamilies = { graphicsFamily, presentFamily };
@@ -337,4 +374,159 @@ void VulkanRenderer::createImageViews(VkFormat format) {
             exit(-1);
         }
     }
+}
+
+void VulkanRenderer::createRenderPass(VkFormat format) {
+    VkSubpassDependency dependency = {};
+    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.srcAccessMask  = 0;
+    dependency.dstSubpass = 0;
+    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    
+    // We use a single color buffer.
+    VkAttachmentDescription colorAttachment = {};
+    colorAttachment.format = format;
+    colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+    colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    
+    // Subpasses.
+    VkAttachmentReference colorAttachmentRef = {};
+    colorAttachmentRef.attachment = 0;
+    colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    
+    VkSubpassDescription subpass = {};
+    subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+    subpass.colorAttachmentCount = 1;
+    subpass.pColorAttachments = &colorAttachmentRef;
+    subpass.pDepthStencilAttachment = nullptr;
+    
+    // Create render pass.
+    VkRenderPassCreateInfo renderPassInfo = {};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+    renderPassInfo.attachmentCount = 1;
+    renderPassInfo.pAttachments = &colorAttachment;
+    renderPassInfo.subpassCount = 1;
+    renderPassInfo.pSubpasses = &subpass;
+    renderPassInfo.dependencyCount = 1;
+    renderPassInfo.pDependencies = &dependency;
+    
+    if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
+        std::cerr << "Failed to create render pass" << std::endl;
+        exit(-1);
+    }
+}
+
+void VulkanRenderer::createFramebuffers() {
+    swapChainFramebuffers.resize(swapChainImageViews.size());
+    
+    for (std::size_t i = 0; i < swapChainImageViews.size(); ++i) {
+        VkImageView attachments[] = {swapChainImageViews[i]};
+        
+        VkFramebufferCreateInfo framebufferInfo = {};
+        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.renderPass = renderPass;
+        framebufferInfo.attachmentCount = 1;
+        framebufferInfo.pAttachments = attachments;
+        framebufferInfo.width = swapChainExtent.width;
+        framebufferInfo.height = swapChainExtent.height;
+        framebufferInfo.layers = 1;
+        
+        if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS) {
+            std::cerr << "Failed to create framebuffer" << std::endl;
+            exit(-1);
+        }
+    }
+}
+
+void VulkanRenderer::createCommandPools() {
+    VkCommandPoolCreateInfo poolInfo = {};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.queueFamilyIndex = graphicsFamily;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    
+    if (vkCreateCommandPool(device, &poolInfo, nullptr, &graphicsCommandPool) != VK_SUCCESS) {
+        std::cerr << "Failed to create graphics command pool" << std::endl;
+        exit(-1);
+    }
+    
+    if (graphicsFamily == computeFamily) {
+        computeCommandPool = graphicsCommandPool;
+    } else {
+        poolInfo.queueFamilyIndex = computeFamily;
+        
+        if (vkCreateCommandPool(device, &poolInfo, nullptr, &computeCommandPool) != VK_SUCCESS) {
+            std::cerr << "Failed to create compute command pool" << std::endl;
+            exit(-1);
+        }
+    }
+}
+
+void VulkanRenderer::createCommandBuffers() {
+    // Graphics command buffer.
+    VkCommandBufferAllocateInfo allocInfo = {};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.commandPool = graphicsCommandPool;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandBufferCount = 1;
+    
+    if (vkAllocateCommandBuffers(device, &allocInfo, &graphicsCommandBuffer) != VK_SUCCESS) {
+        std::cerr << "Failed to allocate graphics command buffer!" << std::endl;
+        exit(-1);
+    }
+    
+    // Compute command buffer.
+    allocInfo.commandPool = computeCommandPool;
+    
+    if (vkAllocateCommandBuffers(device, &allocInfo, &computeCommandBuffer) != VK_SUCCESS) {
+        std::cerr << "Failed to allocate compute command buffer!" << std::endl;
+        exit(-1);
+    }
+}
+
+void VulkanRenderer::createDescriptorPool() {
+    VkDescriptorPoolSize poolSizes[4];
+    
+    // Uniform buffers.
+    poolSizes[0] = {};
+    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSizes[0].descriptorCount = 3;
+    
+    // Create descriptor pool.
+    VkDescriptorPoolCreateInfo poolInfo = {};
+    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolInfo.poolSizeCount = 1;
+    poolInfo.pPoolSizes = poolSizes;
+    poolInfo.maxSets = 1;
+    
+    if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
+        std::cerr << "Failed to create descriptor pool." << std::endl;
+        exit(-1);
+    }
+}
+
+void VulkanRenderer::createSemaphores() {
+    VkSemaphoreCreateInfo semaphoreInfo = {};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+    
+    if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &imageAvailableSemaphore) != VK_SUCCESS)
+        std::cout << "Couldn't create semaphore" << std::endl;
+    
+    if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &renderFinishedSemaphore) != VK_SUCCESS)
+        std::cout << "Couldn't create semaphore" << std::endl;
+}
+
+void VulkanRenderer::createFence() {
+    VkFenceCreateInfo fenceInfo = {};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.pNext = nullptr;
+    fenceInfo.flags = 0;
+    
+    vkCreateFence(device, &fenceInfo, nullptr, &fence);
 }
