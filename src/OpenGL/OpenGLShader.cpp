@@ -1,18 +1,25 @@
 #include "OpenGLShader.hpp"
 #include "default.vert.hpp"
+#include "default.frag.hpp"
+#include <iostream>
 
 OpenGLShader::OpenGLShader(){
     GLchar infoLog[512];
     GLint success;
+    GLint length;
+    const GLchar* source;
+
+    // Vertex shader.
+    // Create vertex shader on the GPU.
     vertexShaderHandle = glCreateShader(GL_VERTEX_SHADER);
 
-    GLint length = DEFAULT_VERT_LENGTH;
-    const GLchar* source = DEFAULT_VERT;
+    // Set vertex shader source.
+    source = DEFAULT_VERT;
+    length = DEFAULT_VERT_LENGTH;
 
-    // Set shader source.
     glShaderSource(vertexShaderHandle, 1, &source, &length);
 
-    // Compile shader.
+    // Compile vertex shader.
     glCompileShader(vertexShaderHandle);
 
     glGetShaderiv(vertexShaderHandle, GL_COMPILE_STATUS, &success);
