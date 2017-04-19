@@ -15,17 +15,20 @@ OpenGLRenderer::OpenGLRenderer(Window & window) {
 
     glfwMakeContextCurrent(window.getWindow());
 
-    // Setup GLEW
+    // Setup GLEW.
     if(glewInit() != GLEW_OK){
-
+        std::cout << "Glew initialized" << std::endl;
     }
 
-    // Setup viewport
+    // Setup viewport.
     int width, height;
 
     glfwGetFramebufferSize(window.getWindow(), &width, &height);
 
     glViewport(0, 0, width, height);
+
+    // Setup shaders.
+    shader = new OpenGLShader();
 }
 
 OpenGLRenderer::~OpenGLRenderer() {
