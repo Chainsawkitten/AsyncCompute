@@ -1,5 +1,6 @@
 #pragma once
-#include "Window.hpp"
+
+class Window;
 
 /// Controls rendering functionality.
 class Renderer {
