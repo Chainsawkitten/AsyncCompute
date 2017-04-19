@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
+#include "VulkanSampler.hpp"
 
 /// A texture used for particles.
 class VulkanTexture {
@@ -13,8 +14,9 @@ class VulkanTexture {
          * @param physicalDevice Physical Vulkan device.
          * @param commandPool Pool to allocate commands from.
          * @param graphicsQueue Graphics queue.
+         * @param descriptorPool Pool to allocate descriptor sets from.
          */
-        VulkanTexture(const char* data, unsigned int length, VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue);
+        VulkanTexture(const char* data, unsigned int length, VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkDescriptorPool descriptorPool);
         
         /// Destructor.
         ~VulkanTexture();
@@ -27,11 +29,13 @@ class VulkanTexture {
         VkCommandBuffer beginSingleTimeCommands();
         void endSingleTimeCommands(VkCommandBuffer commandBuffer);
         void createImageView(VkImage image, VkFormat format, VkImageView* imageView);
+        void createDescriptorSet();
         
         VkDevice device;
         VkPhysicalDevice physicalDevice;
         VkCommandPool commandPool;
         VkQueue graphicsQueue;
+        VkDescriptorPool descriptorPool;
         
         VkImage stagingImage;
         VkDeviceMemory stagingImageMemory;
@@ -40,4 +44,9 @@ class VulkanTexture {
         VkDeviceMemory textureImageMemory;
         
         VkImageView textureImageView;
+        
+        VulkanSampler sampler;
+        
+        VkDescriptorSetLayout descriptorSetLayout;
+        VkDescriptorSet descriptorSet;
 };

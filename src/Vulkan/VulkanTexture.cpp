@@ -4,11 +4,12 @@
 #include <stb_image.h>
 #include <iostream>
 
-VulkanTexture::VulkanTexture(const char* data, unsigned int length, VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue) {
+VulkanTexture::VulkanTexture(const char* data, unsigned int length, VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkDescriptorPool descriptorPool) : sampler(device) {
     this->device = device;
     this->physicalDevice = physicalDevice;
     this->commandPool = commandPool;
     this->graphicsQueue = graphicsQueue;
+    this->descriptorPool = descriptorPool;
     
     // Load texture from memory.
     int width, height, channels;
@@ -59,9 +60,14 @@ VulkanTexture::VulkanTexture(const char* data, unsigned int length, VkDevice dev
     
     // Create image view.
     createImageView(textureImage, VK_FORMAT_R8G8B8A8_UNORM, &textureImageView);
+    
+    // Create descriptor set.
+    createDescriptorSet();
 }
 
 VulkanTexture::~VulkanTexture() {
+    vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
+    
     vkDestroyImageView(device, textureImageView, nullptr);
     
     vkFreeMemory(device, textureImageMemory, nullptr);
@@ -232,4 +238,53 @@ void VulkanTexture::createImageView(VkImage image, VkFormat format, VkImageView*
         std::cerr << "Failed to create texture image view." << std::endl;
         exit(-1);
     }
+}
+
+void VulkanTexture::createDescriptorSet() {
+    // Create descriptor set layout.
+    VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+    samplerLayoutBinding.binding = 0;
+    samplerLayoutBinding.descriptorCount = 1;
+    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerLayoutBinding.pImmutableSamplers = nullptr;
+    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+    
+    VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.bindingCount = 1;
+    layoutInfo.pBindings = &samplerLayoutBinding;
+    
+    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout))
+        std::cerr << "Could not create descriptor set layout!" << std::endl;
+    
+    // Allocate descriptor set.
+    VkDescriptorSetAllocateInfo allocateInfo = {};
+    allocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocateInfo.descriptorPool = descriptorPool;
+    allocateInfo.descriptorSetCount = 1;
+    allocateInfo.pSetLayouts = &descriptorSetLayout;
+    
+    if (vkAllocateDescriptorSets(device, &allocateInfo, &descriptorSet) != VK_SUCCESS) {
+        std::cerr << "Failed to allocate descriptor set" << std::endl;
+        exit(-1);
+    }
+    
+    // Update descriptor set.
+    VkDescriptorImageInfo imageInfo = {};
+    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    imageInfo.imageView = textureImageView;
+    imageInfo.sampler = sampler.getTextureSampler();
+    
+    VkWriteDescriptorSet descriptorWrite = {};
+    descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrite.dstSet = descriptorSet;
+    descriptorWrite.dstBinding = 0;
+    descriptorWrite.dstArrayElement = 0;
+    descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    descriptorWrite.descriptorCount = 1;
+    descriptorWrite.pBufferInfo = nullptr;
+    descriptorWrite.pImageInfo = &imageInfo;
+    descriptorWrite.pTexelBufferView = nullptr;
+    
+    vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
 }
