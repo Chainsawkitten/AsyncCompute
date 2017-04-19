@@ -96,6 +96,7 @@ set(HEADERS
 # Embedded sources
 set(EMBEDDED_INPUT
         assets/default.vert
+        assets/default.frag
         assets/Particle.png
     )
 
