@@ -22,5 +22,5 @@ class Renderer {
         static Renderer* makeRenderer(BACKEND backend, Window & window);
 
         /// Render image to screen.
-        virtual void render();
+        virtual void render() = 0;
 };
