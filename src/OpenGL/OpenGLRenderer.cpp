@@ -31,18 +31,58 @@ OpenGLRenderer::OpenGLRenderer(Window & window) {
 
     // Setup shaders.
     shader = new OpenGLShader();
+
+    // Setup SSBO
+    glGenBuffers(1, &SSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, 32, vertices, GL_STATIC_DRAW);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+    // Create and bind texture.
+    setTexture(PARTICLE_PNG, PARTICLE_PNG_LENGTH);
 }
 
 OpenGLRenderer::~OpenGLRenderer() {
-    
+
 }
 
 void OpenGLRenderer::setTexture(const char* textureData, unsigned int dataLength) {
-    
+    int width, height, channels;
+
+    // Generate texture on the GPU.
+    glGenTextures(1, &texture);
+
+    // Bind texture.
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    // Use STB to load image.
+    stbi_uc* pixels = stbi_load_from_memory(reinterpret_cast<const unsigned char*>(textureData), dataLength, &width, &height, &channels, 0);
+
+    // Transfer image to GPU.
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+    // Generate mipmap.
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    // Unbind texture.
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // Clean up.
+    stbi_image_free(pixels);
 }
 
 void OpenGLRenderer::render(){
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glUseProgram(shader->shaderProgram);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    // Use shader program.
+    glUseProgram(shader->shaderProgram);
+
+    // Setup texture for rendering.
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glUniform1i(glGetUniformLocation(shader->shaderProgram,"texture"), 0);
+
+
 }
