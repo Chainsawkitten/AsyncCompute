@@ -1,6 +1,8 @@
 #include <GL/glew.h>
 #include "OpenGLRenderer.hpp"
 #include "../Base/Window.hpp"
+#include "Particle.png.hpp"
+#include <stb_image.h>
 #include <iostream>
 
 OpenGLRenderer::OpenGLRenderer(Window & window) {
