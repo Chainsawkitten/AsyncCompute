@@ -9,8 +9,9 @@ class VulkanGraphicsPipeline {
         /**
          * @param device Logical Vulkan device.
          * @param swapChainExtent Size of the swap chain buffers.
+         * @param renderPass Render pass.
          */
-        VulkanGraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent);
+        VulkanGraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent, VkRenderPass renderPass);
         
         /// Destructor.
         ~VulkanGraphicsPipeline();
@@ -22,4 +23,5 @@ class VulkanGraphicsPipeline {
         
         VkDevice device;
         VkPipelineLayout pipelineLayout;
+        VkPipeline pipeline;
 };

@@ -3,7 +3,7 @@
 #include <iostream>
 #include "default.vert.spv.hpp"
 
-VulkanGraphicsPipeline::VulkanGraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent) : vertexShader(DEFAULT_VERT_SPV, DEFAULT_VERT_SPV_LENGTH, device) {
+VulkanGraphicsPipeline::VulkanGraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent, VkRenderPass renderPass) : vertexShader(DEFAULT_VERT_SPV, DEFAULT_VERT_SPV_LENGTH, device) {
     this->device = device;
     
     // Create shader stages.
@@ -95,9 +95,33 @@ VulkanGraphicsPipeline::VulkanGraphicsPipeline(VkDevice device, VkExtent2D swapC
         std::cerr << "Failed to create graphics pipeline layout." << std::endl;
         exit(-1);
     }
+    
+    // Create pipeline.
+    VkGraphicsPipelineCreateInfo pipelineInfo = {};
+    pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pipelineInfo.stageCount = 1;
+    pipelineInfo.pStages = shaderStages;
+    pipelineInfo.pVertexInputState = &vertexInputInfo;
+    pipelineInfo.pInputAssemblyState = &inputAssembly;
+    pipelineInfo.pViewportState = &viewportState;
+    pipelineInfo.pRasterizationState = &rasterizer;
+    pipelineInfo.pMultisampleState = &multisampling;
+    pipelineInfo.pDepthStencilState = &depthStencil;
+    pipelineInfo.pColorBlendState = &colorBlending;
+    pipelineInfo.pDynamicState = nullptr;
+    pipelineInfo.layout = pipelineLayout;
+    pipelineInfo.renderPass = renderPass;
+    pipelineInfo.subpass = 0;
+    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+    
+    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline) != VK_SUCCESS) {
+        std::cerr << "Failed to create graphics pipeline." << std::endl;
+        exit(-1);
+    }
 }
 
 VulkanGraphicsPipeline::~VulkanGraphicsPipeline() {
+    vkDestroyPipeline(device, pipeline, nullptr);
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 }
 
