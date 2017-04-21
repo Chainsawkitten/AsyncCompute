@@ -19,4 +19,7 @@ class VulkanGraphicsPipeline {
         VkPipelineShaderStageCreateInfo createShaderStage(VkShaderStageFlagBits flags, VkShaderModule module);
         
         VulkanShader vertexShader;
+        
+        VkDevice device;
+        VkPipelineLayout pipelineLayout;
 };

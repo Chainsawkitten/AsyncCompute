@@ -1,8 +1,11 @@
 #include "VulkanGraphicsPipeline.hpp"
 
+#include <iostream>
 #include "default.vert.spv.hpp"
 
 VulkanGraphicsPipeline::VulkanGraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent) : vertexShader(DEFAULT_VERT_SPV, DEFAULT_VERT_SPV_LENGTH, device) {
+    this->device = device;
+    
     // Create shader stages.
     VkPipelineShaderStageCreateInfo vertexShaderStageCreateInfo = createShaderStage(VK_SHADER_STAGE_VERTEX_BIT, vertexShader.getModule());
     
@@ -81,10 +84,21 @@ VulkanGraphicsPipeline::VulkanGraphicsPipeline(VkDevice device, VkExtent2D swapC
     colorBlending.logicOpEnable = VK_FALSE;
     colorBlending.attachmentCount = 1;
     colorBlending.pAttachments = &colorBlendAttachment;
+    
+    // Pipeline layout.
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipelineLayoutInfo.setLayoutCount = 0;
+    pipelineLayoutInfo.pSetLayouts = nullptr;
+    
+    if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+        std::cerr << "Failed to create graphics pipeline layout." << std::endl;
+        exit(-1);
+    }
 }
 
 VulkanGraphicsPipeline::~VulkanGraphicsPipeline() {
-    
+    vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 }
 
 VkPipelineShaderStageCreateInfo VulkanGraphicsPipeline::createShaderStage(VkShaderStageFlagBits flags, VkShaderModule module) {
