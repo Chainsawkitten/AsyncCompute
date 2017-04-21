@@ -30,6 +30,11 @@ VulkanGraphicsPipeline::VulkanGraphicsPipeline(VkDevice device, VkExtent2D swapC
     viewport.height = swapChainExtent.height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
+    
+    // Scissor.
+    VkRect2D scissor = {};
+    scissor.offset = {0, 0};
+    scissor.extent = swapChainExtent;
 }
 
 VulkanGraphicsPipeline::~VulkanGraphicsPipeline() {
