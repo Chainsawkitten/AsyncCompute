@@ -62,6 +62,21 @@ endif()
 find_path(VULKAN_INCLUDE_DIR NAMES vulkan/vulkan.h HINTS "$ENV{VULKAN_SDK}/include")
 include_directories(${VULKAN_INCLUDE_DIR})
 
+# Shader compilation
+macro(ProcessWithValidator outvar inputfile outdir)
+    get_filename_component(basefile ${inputfile} NAME)
+    set(outputfile ${outdir}/${basefile})
+    set_source_files_properties(${outputfile} PROPERTIES HEADER_ONLY TRUE)
+    add_custom_command(
+        OUTPUT ${outputfile}.spv
+        COMMAND ${Vulkan_VALIDATOR} -V ${inputfile}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        DEPENDS ${inputfile}
+        COMMENT "Compiling shader: ${inputfile}"
+    )
+    list(APPEND ${outvar} ${outputfile}.spv)
+endmacro()
+
 # This function should be passed a list of all files in a target. It will automatically generate
 # file groups following the directory hierarchy, so that the layout of the files in IDEs matches the
 # one in the filesystem.
@@ -99,6 +114,17 @@ set(HEADERS
         src/Vulkan/VulkanSampler.hpp
         src/Vulkan/VulkanTexture.hpp
     )
+
+# Vulkan shaders.
+set(VULKAN_SHADERS
+        assets/default.vert
+    )
+
+foreach(item ${VULKAN_SHADERS})
+    ProcessWithValidator(VULKAN_SPV ${item} ${CMAKE_CURRENT_BINARY_DIR})
+endforeach()
+
+set_property(SOURCE ${SRCS} APPEND PROPERTY OBJECT_DEPENDS ${VULKAN_SPV})
 
 # Embedded sources
 set(EMBEDDED_INPUT
