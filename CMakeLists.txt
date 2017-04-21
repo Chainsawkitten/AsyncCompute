@@ -66,10 +66,9 @@ include_directories(${VULKAN_INCLUDE_DIR})
 macro(ProcessWithValidator outvar inputfile outdir)
     get_filename_component(basefile ${inputfile} NAME)
     set(outputfile ${outdir}/${basefile})
-    set_source_files_properties(${outputfile} PROPERTIES HEADER_ONLY TRUE)
     add_custom_command(
         OUTPUT ${outputfile}.spv
-        COMMAND ${Vulkan_VALIDATOR} -V ${inputfile}
+        COMMAND ${Vulkan_VALIDATOR} -V ${inputfile} -o ${outputfile}.spv
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DEPENDS ${inputfile}
         COMMENT "Compiling shader: ${inputfile}"
@@ -130,6 +129,7 @@ set_property(SOURCE ${SRCS} APPEND PROPERTY OBJECT_DEPENDS ${VULKAN_SPV})
 set(EMBEDDED_INPUT
         assets/default.vert
         assets/Particle.png
+        ${VULKAN_SPV}
     )
 
 foreach(item ${EMBEDDED_INPUT})
