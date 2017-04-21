@@ -103,6 +103,7 @@ set(SRCS
         src/Vulkan/VulkanRenderer.cpp
         src/Vulkan/VulkanSampler.cpp
         src/Vulkan/VulkanShader.cpp
+        src/Vulkan/VulkanStorageBuffer.cpp
         src/Vulkan/VulkanTexture.cpp
     )
 
@@ -115,6 +116,7 @@ set(HEADERS
         src/Vulkan/VulkanRenderer.hpp
         src/Vulkan/VulkanSampler.hpp
         src/Vulkan/VulkanShader.hpp
+        src/Vulkan/VulkanStorageBuffer.hpp
         src/Vulkan/VulkanTexture.hpp
     )
 

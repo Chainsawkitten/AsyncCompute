@@ -7,6 +7,7 @@
 
 class VulkanTexture;
 class VulkanGraphicsPipeline;
+class VulkanStorageBuffer;
 
 /// Vulkan implementation of the renderer.
 class VulkanRenderer : public Renderer {
@@ -91,4 +92,5 @@ class VulkanRenderer : public Renderer {
         
         VulkanTexture* particleTexture;
         VulkanGraphicsPipeline* graphicsPipeline;
+        VulkanStorageBuffer* particleBuffer;
 };
