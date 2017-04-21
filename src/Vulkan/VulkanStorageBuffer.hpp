@@ -19,10 +19,12 @@ class VulkanStorageBuffer {
         
     private:
         void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory);
+        void createDescriptorSetLayout();
         
         VkDevice device;
         VkPhysicalDevice physicalDevice;
         
         VkBuffer buffer;
         VkDeviceMemory bufferMemory;
+        VkDescriptorSetLayout descriptorSetLayout;
 };

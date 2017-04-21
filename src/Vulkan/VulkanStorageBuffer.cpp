@@ -14,9 +14,13 @@ VulkanStorageBuffer::VulkanStorageBuffer(const void* data, unsigned int size, Vk
     vkMapMemory(device, bufferMemory, 0, size, 0, &mappedMemory);
     memcpy(mappedMemory, data, size);
     vkUnmapMemory(device, bufferMemory);
+    
+    // Create descriptor set layout.
+    createDescriptorSetLayout();
 }
 
 VulkanStorageBuffer::~VulkanStorageBuffer() {
+    vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
     vkDestroyBuffer(device, buffer, nullptr);
     vkFreeMemory(device, bufferMemory, nullptr);
 }
@@ -60,4 +64,23 @@ void VulkanStorageBuffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usa
     }
     
     vkBindBufferMemory(device, *buffer, *bufferMemory, 0);
+}
+
+void VulkanStorageBuffer::createDescriptorSetLayout() {
+    VkDescriptorSetLayoutBinding vertexLayoutBinding = {};
+    vertexLayoutBinding.binding = 0;
+    vertexLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
+    vertexLayoutBinding.descriptorCount = 1;
+    vertexLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    vertexLayoutBinding.pImmutableSamplers = nullptr;
+    
+    VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.bindingCount = 1;
+    layoutInfo.pBindings = &vertexLayoutBinding;
+    
+    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout)) {
+        std::cerr << "Could not create descriptor set layout!" << std::endl;
+        exit(-1);
+    }
 }
