@@ -66,7 +66,7 @@ VulkanRenderer::VulkanRenderer(Window& window) {
     
     // Create buffers.
     float nonsenseData;
-    particleBuffer = new VulkanStorageBuffer(&nonsenseData, sizeof(float), device, physicalDevice);
+    particleBuffer = new VulkanStorageBuffer(&nonsenseData, sizeof(float), device, physicalDevice, descriptorPool);
 }
 
 VulkanRenderer::~VulkanRenderer() {
@@ -580,10 +580,10 @@ void VulkanRenderer::createCommandBuffers() {
 void VulkanRenderer::createDescriptorPool() {
     VkDescriptorPoolSize poolSizes[2];
     
-    // Uniform buffers.
+    // Storage buffers.
     poolSizes[0] = {};
-    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSizes[0].descriptorCount = 3;
+    poolSizes[0].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    poolSizes[0].descriptorCount = 1;
     
     // Samplers.
     poolSizes[1] = {};
@@ -595,7 +595,7 @@ void VulkanRenderer::createDescriptorPool() {
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = 2;
     poolInfo.pPoolSizes = poolSizes;
-    poolInfo.maxSets = 1;
+    poolInfo.maxSets = 2;
     
     if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
         std::cerr << "Failed to create descriptor pool." << std::endl;
