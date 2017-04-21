@@ -6,7 +6,7 @@
 #include "../Base/Window.hpp"
 
 class VulkanTexture;
-class VulkanShader;
+class VulkanGraphicsPipeline;
 
 /// Vulkan implementation of the renderer.
 class VulkanRenderer : public Renderer {
@@ -89,5 +89,5 @@ class VulkanRenderer : public Renderer {
         VkFence fence;
         
         VulkanTexture* particleTexture;
-        VulkanShader* vertexShader;
+        VulkanGraphicsPipeline* graphicsPipeline;
 };

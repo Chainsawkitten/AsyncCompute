@@ -99,6 +99,7 @@ set(SRCS
         src/Base/Window.cpp
         src/Opengl/OpenGLRenderer.cpp
         src/Opengl/OpenGLShader.cpp
+        src/Vulkan/VulkanGraphicsPipeline.cpp
         src/Vulkan/VulkanRenderer.cpp
         src/Vulkan/VulkanSampler.cpp
         src/Vulkan/VulkanShader.cpp
@@ -110,6 +111,7 @@ set(HEADERS
         src/Base/Window.hpp
         src/OpenGL/OpenGLRenderer.hpp
         src/OpenGL/OpenGLShader.hpp
+        src/Vulkan/VulkanGraphicsPipeline.hpp
         src/Vulkan/VulkanRenderer.hpp
         src/Vulkan/VulkanSampler.hpp
         src/Vulkan/VulkanShader.hpp

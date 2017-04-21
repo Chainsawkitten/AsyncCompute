@@ -9,9 +9,7 @@
 #include <limits>
 #include <algorithm>
 #include "VulkanTexture.hpp"
-#include "VulkanShader.hpp"
-
-#include "default.vert.spv.hpp"
+#include "VulkanGraphicsPipeline.hpp"
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
@@ -62,12 +60,12 @@ VulkanRenderer::VulkanRenderer(Window& window) {
     // Create fence.
     createFence();
     
-    // Shaders.
-    vertexShader = new VulkanShader(DEFAULT_VERT_SPV, DEFAULT_VERT_SPV_LENGTH, device);
+    // Create pipelines.
+    graphicsPipeline = new VulkanGraphicsPipeline(device);
 }
 
 VulkanRenderer::~VulkanRenderer() {
-    delete vertexShader;
+    delete graphicsPipeline;
     delete particleTexture;
     
     vkDestroyFence(device, fence, nullptr);
