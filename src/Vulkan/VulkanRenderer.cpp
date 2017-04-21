@@ -10,6 +10,7 @@
 #include <algorithm>
 #include "VulkanTexture.hpp"
 #include "VulkanGraphicsPipeline.hpp"
+#include "VulkanStorageBuffer.hpp"
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
@@ -62,9 +63,14 @@ VulkanRenderer::VulkanRenderer(Window& window) {
     
     // Create pipelines.
     graphicsPipeline = new VulkanGraphicsPipeline(device, swapChainExtent, renderPass);
+    
+    // Create buffers.
+    float nonsenseData;
+    particleBuffer = new VulkanStorageBuffer(&nonsenseData, sizeof(float), device, physicalDevice);
 }
 
 VulkanRenderer::~VulkanRenderer() {
+    delete particleBuffer;
     delete graphicsPipeline;
     delete particleTexture;
     
