@@ -7,6 +7,14 @@ VulkanGraphicsPipeline::VulkanGraphicsPipeline(VkDevice device) : vertexShader(D
     VkPipelineShaderStageCreateInfo vertexShaderStageCreateInfo = createShaderStage(VK_SHADER_STAGE_VERTEX_BIT, vertexShader.getModule());
     
     VkPipelineShaderStageCreateInfo shaderStages[] = {vertexShaderStageCreateInfo};
+    
+    // Vertex input.
+    VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
+    vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vertexInputInfo.vertexBindingDescriptionCount = 0;
+    vertexInputInfo.pVertexBindingDescriptions = nullptr;
+    vertexInputInfo.vertexAttributeDescriptionCount = 0;
+    vertexInputInfo.pVertexAttributeDescriptions = nullptr;
 }
 
 VulkanGraphicsPipeline::~VulkanGraphicsPipeline() {
