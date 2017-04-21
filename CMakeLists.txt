@@ -101,6 +101,7 @@ set(SRCS
         src/Opengl/OpenGLShader.cpp
         src/Vulkan/VulkanRenderer.cpp
         src/Vulkan/VulkanSampler.cpp
+        src/Vulkan/VulkanShader.cpp
         src/Vulkan/VulkanTexture.cpp
     )
 
@@ -111,6 +112,7 @@ set(HEADERS
         src/OpenGL/OpenGLShader.hpp
         src/Vulkan/VulkanRenderer.hpp
         src/Vulkan/VulkanSampler.hpp
+        src/Vulkan/VulkanShader.hpp
         src/Vulkan/VulkanTexture.hpp
     )
 
