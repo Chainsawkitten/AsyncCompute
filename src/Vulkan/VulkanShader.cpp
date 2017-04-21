@@ -19,3 +19,7 @@ VulkanShader::VulkanShader(const char* data, unsigned int dataLength, VkDevice d
 VulkanShader::~VulkanShader() {
     vkDestroyShaderModule(device, shaderModule, nullptr);
 }
+
+VkShaderModule VulkanShader::getModule() const {
+    return shaderModule;
+}

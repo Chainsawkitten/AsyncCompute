@@ -16,6 +16,12 @@ class VulkanShader {
         /// Destructor.
         ~VulkanShader();
         
+        /// Get the shader module.
+        /**
+         * @return The shader module.
+         */
+        VkShaderModule getModule() const;
+        
     private:
         VkDevice device;
         VkShaderModule shaderModule;

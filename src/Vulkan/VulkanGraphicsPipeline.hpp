@@ -15,5 +15,7 @@ class VulkanGraphicsPipeline {
         ~VulkanGraphicsPipeline();
         
     private:
+        VkPipelineShaderStageCreateInfo createShaderStage(VkShaderStageFlagBits flags, VkShaderModule module);
+        
         VulkanShader vertexShader;
 };
