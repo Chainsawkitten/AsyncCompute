@@ -1,12 +1,19 @@
 #include "VulkanStorageBuffer.hpp"
 
 #include <iostream>
+#include <cstring>
 
 VulkanStorageBuffer::VulkanStorageBuffer(const void* data, unsigned int size, VkDevice device, VkPhysicalDevice physicalDevice) {
     this->device = device;
     this->physicalDevice = physicalDevice;
     
     createBuffer(size, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &buffer, &bufferMemory);
+    
+    // Copy data to mapped memory.
+    void* mappedMemory;
+    vkMapMemory(device, bufferMemory, 0, size, 0, &mappedMemory);
+    memcpy(mappedMemory, data, size);
+    vkUnmapMemory(device, bufferMemory);
 }
 
 VulkanStorageBuffer::~VulkanStorageBuffer() {
