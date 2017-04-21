@@ -6,7 +6,7 @@ VulkanStorageBuffer::VulkanStorageBuffer(const void* data, unsigned int size, Vk
     this->device = device;
     this->physicalDevice = physicalDevice;
     
-    createBuffer(size, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, &buffer, &bufferMemory);
+    createBuffer(size, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &buffer, &bufferMemory);
 }
 
 VulkanStorageBuffer::~VulkanStorageBuffer() {
