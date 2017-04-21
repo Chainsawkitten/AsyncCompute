@@ -2,18 +2,25 @@
     Default empty shader.
 */
 #version 450
-layout(std430, binding = 1) buffer vertexBuffer{
-	vec3 position;
-	vec3 color;
+#extension GL_KHR_vulkan_glsl : enable
+
+struct vertex {
+	vec4 position;
 	vec2 texCoord;
 };
 
-out vec3 outColor;
+layout(std430, binding = 0) buffer vertexBuffer{
+    vertex vertices[];
+};
+
 out vec2 outTexCoord;
 
 void main() {
-	gl_Position = vec4(position, 1.0f);
-	outColor = color;
-	outTexCoord = texCoord;
-
+    vertex vertices2[3];
+    vertices2[0].position = vec4(0.0, 0.0, 0.0, 1.0);
+    vertices2[1].position = vec4(-0.5, -0.5, 0.0, 1.0);
+    vertices2[2].position = vec4(0.5, -0.5, 0.0, 1.0);
+    
+	gl_Position = vertices2[gl_VertexIndex].position;
+	outTexCoord = vertices2[gl_VertexIndex].texCoord;
 }

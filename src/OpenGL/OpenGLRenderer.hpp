@@ -1,6 +1,7 @@
 #pragma once
 #include "OpenGLShader.hpp"
 #include "../Base/Renderer.hpp"
+#include <GLFW/glfw3.h>
 
 /// OpenGL implementation of the renderer.
 class OpenGLRenderer : public Renderer {
@@ -28,24 +29,31 @@ class OpenGLRenderer : public Renderer {
         OpenGLShader* shader;
 
         /// Vertices used to render texture. TEMPORARY.
-        GLfloat vertices[32] = {
-            // Positions          // Colors           // Texture Coords
-             0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // Top Right
-             0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // Bottom Right
-            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // Bottom Left
-            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // Top Left
-        };
-
-        /// Triangle indices. TEMPORARY.
-        GLuint indices[6] = {  // Note that we start from 0!
-            0, 1, 3, // First Triangle
-            1, 2, 3  // Second Triangle
+        GLfloat vertices[36] = {
+            // Positions                // Texture Coords
+             0.5f,  0.5f, 0.0f, 1.0f,   1.0f, 1.0f,   // Top Right
+             0.5f, -0.5f, 0.0f, 1.0f,   1.0f, 0.0f,   // Bottom Right
+            -0.5f,  0.5f, 0.0f, 1.0f,   0.0f, 1.0f,   // Top Left
+             0.5f, -0.5f, 0.0f, 1.0f,   1.0f, 0.0f,
+            -0.5f, -0.5f, 0.0f, 1.0f,   0.0f, 0.0f,   // Bottom Left
+            -0.5f,  0.5f, 0.0f, 1.0f,   0.0f, 1.0f
         };
 
         /// SSBO.
         GLuint SSBO;
 
-        /// Texture
+        /// Texture.
         GLuint texture;
 
+        /// VBO.
+        GLuint dummyVBO;
+
 };
+
+void APIENTRY glDebugOutput(GLenum source,
+                            GLenum type,
+                            GLuint id,
+                            GLenum severity,
+                            GLsizei length,
+                            const GLchar* message,
+                            const void* userParam);

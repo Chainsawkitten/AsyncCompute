@@ -1,4 +1,5 @@
 #include "Window.hpp"
+#include <iostream>
 
 Window::Window() {
     glfwInit();
