@@ -86,6 +86,7 @@ class VulkanRenderer : public Renderer {
         
         VkSemaphore imageAvailableSemaphore;
         VkSemaphore renderFinishedSemaphore;
+        uint32_t imageIndex = 0;
         VkFence fence;
         
         VulkanTexture* particleTexture;
