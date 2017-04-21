@@ -1,11 +1,28 @@
 #pragma once
 
+#include <vulkan/vulkan.h>
+
 /// Used for storing particle data.
 class VulkanStorageBuffer {
     public:
         /// Create new storage buffer.
-        VulkanStorageBuffer();
+        /**
+         * @param data Buffer data.
+         * @param size Buffer size.
+         * @param device Logical Vulkan device.
+         * @param physicalDevice Physical Vulkan device.
+         */
+        VulkanStorageBuffer(const void* data, unsigned int size, VkDevice device, VkPhysicalDevice physicalDevice);
         
         /// Destructor.
         ~VulkanStorageBuffer();
+        
+    private:
+        void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory);
+        
+        VkDevice device;
+        VkPhysicalDevice physicalDevice;
+        
+        VkBuffer buffer;
+        VkDeviceMemory bufferMemory;
 };
