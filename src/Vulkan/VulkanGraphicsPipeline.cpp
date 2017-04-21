@@ -2,7 +2,7 @@
 
 #include "default.vert.spv.hpp"
 
-VulkanGraphicsPipeline::VulkanGraphicsPipeline(VkDevice device) : vertexShader(DEFAULT_VERT_SPV, DEFAULT_VERT_SPV_LENGTH, device) {
+VulkanGraphicsPipeline::VulkanGraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent) : vertexShader(DEFAULT_VERT_SPV, DEFAULT_VERT_SPV_LENGTH, device) {
     // Create shader stages.
     VkPipelineShaderStageCreateInfo vertexShaderStageCreateInfo = createShaderStage(VK_SHADER_STAGE_VERTEX_BIT, vertexShader.getModule());
     
@@ -21,6 +21,15 @@ VulkanGraphicsPipeline::VulkanGraphicsPipeline(VkDevice device) : vertexShader(D
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     inputAssembly.primitiveRestartEnable = VK_FALSE;
+    
+    // Viewport.
+    VkViewport viewport = {};
+    viewport.x = 0.0f;
+    viewport.y = 0.0f;
+    viewport.width = swapChainExtent.width;
+    viewport.height = swapChainExtent.height;
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
 }
 
 VulkanGraphicsPipeline::~VulkanGraphicsPipeline() {

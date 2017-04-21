@@ -61,7 +61,7 @@ VulkanRenderer::VulkanRenderer(Window& window) {
     createFence();
     
     // Create pipelines.
-    graphicsPipeline = new VulkanGraphicsPipeline(device);
+    graphicsPipeline = new VulkanGraphicsPipeline(device, swapChainExtent);
 }
 
 VulkanRenderer::~VulkanRenderer() {
