@@ -62,7 +62,8 @@ VulkanRenderer::VulkanRenderer(Window& window) {
     // Create fence.
     createFence();
     
-    vertexShader = new VulkanShader(DEFAULT_VERT_SPV, DEFAULT_VERT_SPV_LENGTH);
+    // Shaders.
+    vertexShader = new VulkanShader(DEFAULT_VERT_SPV, DEFAULT_VERT_SPV_LENGTH, device);
 }
 
 VulkanRenderer::~VulkanRenderer() {
