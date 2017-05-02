@@ -95,6 +95,9 @@ void OpenGLRenderer::render(){
     glBindTexture(GL_TEXTURE_2D, texture);
     glUniform1i(glGetUniformLocation(shader->shaderProgram, "texture"), 0);
 
+    // glBindBufferRange(GL_SHADER_STORAGE_BUFFER, location, _handle, offset, size);
+    glBindBufferRange(GL_SHADER_STORAGE_BUFFER, SSBO, 0, 0, 18);
+
     // Draw.
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
