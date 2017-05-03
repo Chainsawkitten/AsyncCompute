@@ -45,8 +45,8 @@ class OpenGLRenderer : public Renderer {
         /// Texture.
         GLuint texture;
 
-        /// VBO.
-        GLuint dummyVBO;
+        /// Empty vertex array object.
+        GLuint dummyVAO;
 
 };
 

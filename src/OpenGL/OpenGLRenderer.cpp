@@ -26,30 +26,31 @@ OpenGLRenderer::OpenGLRenderer(Window & window) {
     glViewport(0, 0, width, height);
 
     glewExperimental = GL_TRUE;
-
+    
     // Setup GLEW.
     if(glewInit() != GLEW_OK){
         std::cout << "Glew initialized" << std::endl;
     }
-
+    
     // Setup shaders.
     shader = new OpenGLShader();
-
+    
     glDebugMessageCallback(glDebugOutput, nullptr);
     GLuint unusedIds = 0;
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, &unusedIds, true);
-
-    glGenBuffers(1, &dummyVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, dummyVBO);
-
+    
+    glGenVertexArrays(1, &dummyVAO);
+    glBindVertexArray(dummyVAO);
+    
     // Setup SSBO
     glGenBuffers(1, &SSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO);
     glBufferData(GL_SHADER_STORAGE_BUFFER, 36, vertices, GL_STATIC_DRAW);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SSBO);
+    
     // Unbind SSBO
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
+    
     // Create and bind texture.
     setTexture(PARTICLE_PNG, PARTICLE_PNG_LENGTH);
 }
