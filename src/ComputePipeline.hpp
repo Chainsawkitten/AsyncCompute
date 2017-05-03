@@ -16,4 +16,7 @@ class ComputePipeline {
         
     private:
         Shader shader;
+        
+        VkDevice device;
+        VkPipelineLayout pipelineLayout;
 };
