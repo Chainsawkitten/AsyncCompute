@@ -153,6 +153,7 @@ void Renderer::render() {
     vkCmdBindPipeline(graphicsCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipeline());
     
     std::vector<VkDescriptorSet> descriptorSets;
+    descriptorSets.push_back(particleBuffer->getDescriptorSet());
     descriptorSets.push_back(cameraBuffer->getDescriptorSet());
     descriptorSets.push_back(particleTexture->getDescriptorSet());
     vkCmdBindDescriptorSets(graphicsCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
