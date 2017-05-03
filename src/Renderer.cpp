@@ -12,6 +12,7 @@
 #include "GraphicsPipeline.hpp"
 #include "StorageBuffer.hpp"
 #include "UniformBuffer.hpp"
+#include <glm/glm.hpp>
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
@@ -69,8 +70,8 @@ Renderer::Renderer(Window& window) {
     float nonsenseData;
     particleBuffer = new StorageBuffer(&nonsenseData, sizeof(float), device, physicalDevice, descriptorPool);
     
-    glm::mat4 nonsenseCamera;
-    cameraBuffer = new UniformBuffer(&nonsenseCamera[0][0], sizeof(nonsenseCamera), device, physicalDevice, descriptorPool);
+    glm::mat4 cameraMatrix(camera.getViewProjectionMatrix(glm::vec2(window.getWidth(), window.getHeight())));
+    cameraBuffer = new UniformBuffer(&cameraMatrix[0][0], sizeof(glm::mat4), device, physicalDevice, descriptorPool);
 }
 
 Renderer::~Renderer() {

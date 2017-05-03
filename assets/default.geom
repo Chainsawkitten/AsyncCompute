@@ -20,16 +20,16 @@ void main() {
     // Particle up vector = particle right x look
     vec4 up = vec4(0.0, 1.0, 0.0, 0.0) * size.y * 0.5;
     
-    gl_Position = gl_in[0].gl_Position - right + up;
+    gl_Position = viewProjectionMatrix * (gl_in[0].gl_Position - right + up);
     EmitVertex();
     
-    gl_Position = gl_in[0].gl_Position - right - up;
+    gl_Position = viewProjectionMatrix * (gl_in[0].gl_Position - right - up);
     EmitVertex();
     
-    gl_Position = gl_in[0].gl_Position + right + up;
+    gl_Position = viewProjectionMatrix * (gl_in[0].gl_Position + right + up);
     EmitVertex();
     
-    gl_Position = gl_in[0].gl_Position + right - up;
+    gl_Position = viewProjectionMatrix * (gl_in[0].gl_Position + right - up);
     EmitVertex();
     
     EndPrimitive();
