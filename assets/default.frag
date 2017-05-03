@@ -1,7 +1,7 @@
 /*
     Default empty shader.
 */
-#version 450
+#version 430
 
 in vec2 outTexCoord;
 
