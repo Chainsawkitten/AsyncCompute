@@ -39,6 +39,10 @@ StorageBuffer::~StorageBuffer() {
     vkFreeMemory(device, bufferMemory, nullptr);
 }
 
+VkDescriptorSet StorageBuffer::getDescriptorSet() const {
+    return descriptorSet;
+}
+
 void StorageBuffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory) {
     // Create buffer.
     VkBufferCreateInfo bufferInfo = {};

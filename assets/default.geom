@@ -7,7 +7,7 @@
 layout(points) in;
 layout(triangle_strip, max_vertices=4) out;
 
-layout(set = 0, binding = 0) uniform CameraUniform {
+layout(set = 1, binding = 0) uniform CameraUniform {
     mat4 viewProjectionMatrix;
     vec4 cameraPosition;
     vec4 cameraUp;
