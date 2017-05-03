@@ -95,25 +95,23 @@ endfunction()
 # Target
 set(SRCS
         src/main.cpp
-        src/Base/Renderer.cpp
-        src/Base/Window.cpp
-        src/Vulkan/VulkanGraphicsPipeline.cpp
-        src/Vulkan/VulkanRenderer.cpp
-        src/Vulkan/VulkanSampler.cpp
-        src/Vulkan/VulkanShader.cpp
-        src/Vulkan/VulkanStorageBuffer.cpp
-        src/Vulkan/VulkanTexture.cpp
+        src/GraphicsPipeline.cpp
+        src/Renderer.cpp
+        src/Sampler.cpp
+        src/Shader.cpp
+        src/StorageBuffer.cpp
+        src/Texture.cpp
+        src/Window.cpp
     )
 
 set(HEADERS
-        src/Base/Renderer.hpp
-        src/Base/Window.hpp
-        src/Vulkan/VulkanGraphicsPipeline.hpp
-        src/Vulkan/VulkanRenderer.hpp
-        src/Vulkan/VulkanSampler.hpp
-        src/Vulkan/VulkanShader.hpp
-        src/Vulkan/VulkanStorageBuffer.hpp
-        src/Vulkan/VulkanTexture.hpp
+        src/GraphicsPipeline.hpp
+        src/Renderer.hpp
+        src/Sampler.hpp
+        src/Shader.hpp
+        src/StorageBuffer.hpp
+        src/Texture.hpp
+        src/Window.hpp
     )
 
 # Vulkan shaders.

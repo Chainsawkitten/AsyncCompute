@@ -1,8 +1,8 @@
-#include "VulkanSampler.hpp"
+#include "Sampler.hpp"
 
 #include <iostream>
 
-VulkanSampler::VulkanSampler(VkDevice device) {
+Sampler::Sampler(VkDevice device) {
     this->device = device;
     
     // Hardcode some default values.
@@ -29,10 +29,10 @@ VulkanSampler::VulkanSampler(VkDevice device) {
     }
 }
 
-VulkanSampler::~VulkanSampler() {
+Sampler::~Sampler() {
     vkDestroySampler(device, textureSampler, nullptr);
 }
 
-VkSampler VulkanSampler::getTextureSampler() const {
+VkSampler Sampler::getTextureSampler() const {
     return textureSampler;
 }

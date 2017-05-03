@@ -3,7 +3,7 @@
 #include <vulkan/vulkan.h>
 
 /// Used for storing particle data.
-class VulkanStorageBuffer {
+class StorageBuffer {
     public:
         /// Create new storage buffer.
         /**
@@ -13,10 +13,10 @@ class VulkanStorageBuffer {
          * @param physicalDevice Physical Vulkan device.
          * @param descriptorPool Pool to allocate descriptor sets from.
          */
-        VulkanStorageBuffer(const void* data, unsigned int size, VkDevice device, VkPhysicalDevice physicalDevice, VkDescriptorPool descriptorPool);
+        StorageBuffer(const void* data, unsigned int size, VkDevice device, VkPhysicalDevice physicalDevice, VkDescriptorPool descriptorPool);
         
         /// Destructor.
-        ~VulkanStorageBuffer();
+        ~StorageBuffer();
         
     private:
         void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory);

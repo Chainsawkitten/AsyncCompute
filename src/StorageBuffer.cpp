@@ -1,9 +1,9 @@
-#include "VulkanStorageBuffer.hpp"
+#include "StorageBuffer.hpp"
 
 #include <iostream>
 #include <cstring>
 
-VulkanStorageBuffer::VulkanStorageBuffer(const void* data, unsigned int size, VkDevice device, VkPhysicalDevice physicalDevice, VkDescriptorPool descriptorPool) {
+StorageBuffer::StorageBuffer(const void* data, unsigned int size, VkDevice device, VkPhysicalDevice physicalDevice, VkDescriptorPool descriptorPool) {
     this->device = device;
     this->physicalDevice = physicalDevice;
     this->descriptorPool = descriptorPool;
@@ -21,13 +21,13 @@ VulkanStorageBuffer::VulkanStorageBuffer(const void* data, unsigned int size, Vk
     createDescriptorSet(size);
 }
 
-VulkanStorageBuffer::~VulkanStorageBuffer() {
+StorageBuffer::~StorageBuffer() {
     vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
     vkDestroyBuffer(device, buffer, nullptr);
     vkFreeMemory(device, bufferMemory, nullptr);
 }
 
-void VulkanStorageBuffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory) {
+void StorageBuffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory) {
     // Create buffer.
     VkBufferCreateInfo bufferInfo = {};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -68,7 +68,7 @@ void VulkanStorageBuffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usa
     vkBindBufferMemory(device, *buffer, *bufferMemory, 0);
 }
 
-void VulkanStorageBuffer::createDescriptorSetLayout() {
+void StorageBuffer::createDescriptorSetLayout() {
     VkDescriptorSetLayoutBinding vertexLayoutBinding = {};
     vertexLayoutBinding.binding = 0;
     vertexLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
@@ -87,7 +87,7 @@ void VulkanStorageBuffer::createDescriptorSetLayout() {
     }
 }
 
-void VulkanStorageBuffer::createDescriptorSet(VkDeviceSize size) {
+void StorageBuffer::createDescriptorSet(VkDeviceSize size) {
     // Allocate descriptor set.
     VkDescriptorSetAllocateInfo allocateInfo = {};
     allocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;

@@ -1,35 +1,35 @@
 #pragma once
 
-#include "../Base/Renderer.hpp"
+#include "Renderer.hpp"
 #include <vulkan/vulkan.h>
 #include <vector>
-#include "../Base/Window.hpp"
+#include "Window.hpp"
 
-class VulkanTexture;
-class VulkanGraphicsPipeline;
-class VulkanStorageBuffer;
+class Texture;
+class GraphicsPipeline;
+class StorageBuffer;
 
-/// Vulkan implementation of the renderer.
-class VulkanRenderer : public Renderer {
+/// Used to render the particles.
+class Renderer {
     public:
-        /// Create new Vulkan renderer.
+        /// Create new renderer.
         /**
          * @param window The window to render in.
          */
-        VulkanRenderer(Window& window);
+        Renderer(Window& window);
         
         /// Destructor.
-        ~VulkanRenderer() final;
+        ~Renderer();
         
         /// Set the texture to use for the particles.
         /**
          * @param textureData The texture data.
          * @param dataLength The length of the texture data.
          */
-        void setTexture(const char* textureData, unsigned int dataLength) final;
+        void setTexture(const char* textureData, unsigned int dataLength);
         
         /// Render image to screen.
-        void render() final;
+        void render();
     private:
         struct SwapChainSupport {
             VkSurfaceCapabilitiesKHR capabilities;
@@ -90,7 +90,7 @@ class VulkanRenderer : public Renderer {
         uint32_t imageIndex = 0;
         VkFence fence;
         
-        VulkanTexture* particleTexture;
-        VulkanGraphicsPipeline* graphicsPipeline;
-        VulkanStorageBuffer* particleBuffer;
+        Texture* particleTexture;
+        GraphicsPipeline* graphicsPipeline;
+        StorageBuffer* particleBuffer;
 };

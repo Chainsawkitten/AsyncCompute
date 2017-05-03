@@ -3,16 +3,16 @@
 #include <vulkan/vulkan.h>
 
 /// Used to sample a texture.
-class VulkanSampler {
+class Sampler {
     public:
         /// Create new sampler.
         /**
          * @param device Logical Vulkan device.
          */
-        VulkanSampler(VkDevice device);
+        Sampler(VkDevice device);
         
         /// Destructor.
-        ~VulkanSampler();
+        ~Sampler();
         
         /// Get the sampler handle.
         /**

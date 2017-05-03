@@ -1,9 +1,9 @@
 #pragma once
 
-#include "VulkanShader.hpp"
+#include "Shader.hpp"
 
 /// Pipeline used to render particles.
-class VulkanGraphicsPipeline {
+class GraphicsPipeline {
     public:
         /// Create new graphics pipeline.
         /**
@@ -11,15 +11,15 @@ class VulkanGraphicsPipeline {
          * @param swapChainExtent Size of the swap chain buffers.
          * @param renderPass Render pass.
          */
-        VulkanGraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent, VkRenderPass renderPass);
+        GraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent, VkRenderPass renderPass);
         
         /// Destructor.
-        ~VulkanGraphicsPipeline();
+        ~GraphicsPipeline();
         
     private:
         VkPipelineShaderStageCreateInfo createShaderStage(VkShaderStageFlagBits flags, VkShaderModule module);
         
-        VulkanShader vertexShader;
+        Shader vertexShader;
         
         VkDevice device;
         VkPipelineLayout pipelineLayout;

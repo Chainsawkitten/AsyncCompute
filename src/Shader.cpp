@@ -1,8 +1,8 @@
-#include "VulkanShader.hpp"
+#include "Shader.hpp"
 
 #include <iostream>
 
-VulkanShader::VulkanShader(const char* data, unsigned int dataLength, VkDevice device) {
+Shader::Shader(const char* data, unsigned int dataLength, VkDevice device) {
     this->device = device;
     
     VkShaderModuleCreateInfo createInfo = {};
@@ -16,10 +16,10 @@ VulkanShader::VulkanShader(const char* data, unsigned int dataLength, VkDevice d
     }
 }
 
-VulkanShader::~VulkanShader() {
+Shader::~Shader() {
     vkDestroyShaderModule(device, shaderModule, nullptr);
 }
 
-VkShaderModule VulkanShader::getModule() const {
+VkShaderModule Shader::getModule() const {
     return shaderModule;
 }

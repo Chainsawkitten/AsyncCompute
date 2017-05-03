@@ -2,15 +2,15 @@
 #define VK_USE_PLATFORM_WIN32_KHR
 #define NOMINMAX
 
-#include "VulkanRenderer.hpp"
+#include "Renderer.hpp"
 
 #include <set>
 #include <iostream>
 #include <limits>
 #include <algorithm>
-#include "VulkanTexture.hpp"
-#include "VulkanGraphicsPipeline.hpp"
-#include "VulkanStorageBuffer.hpp"
+#include "Texture.hpp"
+#include "GraphicsPipeline.hpp"
+#include "StorageBuffer.hpp"
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
@@ -23,7 +23,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugReportFlagsEXT flags,
 }
 #endif
 
-VulkanRenderer::VulkanRenderer(Window& window) {
+Renderer::Renderer(Window& window) {
     // Create Vulkan instance.
     createInstance();
     setupDebugCallback();
@@ -62,14 +62,14 @@ VulkanRenderer::VulkanRenderer(Window& window) {
     createFence();
     
     // Create pipelines.
-    graphicsPipeline = new VulkanGraphicsPipeline(device, swapChainExtent, renderPass);
+    graphicsPipeline = new GraphicsPipeline(device, swapChainExtent, renderPass);
     
     // Create buffers.
     float nonsenseData;
-    particleBuffer = new VulkanStorageBuffer(&nonsenseData, sizeof(float), device, physicalDevice, descriptorPool);
+    particleBuffer = new StorageBuffer(&nonsenseData, sizeof(float), device, physicalDevice, descriptorPool);
 }
 
-VulkanRenderer::~VulkanRenderer() {
+Renderer::~Renderer() {
     delete particleBuffer;
     delete graphicsPipeline;
     delete particleTexture;
@@ -106,11 +106,11 @@ VulkanRenderer::~VulkanRenderer() {
     vkDestroyInstance(instance, nullptr);
 }
 
-void VulkanRenderer::setTexture(const char* textureData, unsigned int dataLength) {
-    particleTexture = new VulkanTexture(textureData, dataLength, device, physicalDevice, graphicsCommandPool, graphicsQueue, descriptorPool);
+void Renderer::setTexture(const char* textureData, unsigned int dataLength) {
+    particleTexture = new Texture(textureData, dataLength, device, physicalDevice, graphicsCommandPool, graphicsQueue, descriptorPool);
 }
 
-void VulkanRenderer::render() {
+void Renderer::render() {
     // Get image from swapchain.
     vkAcquireNextImageKHR(device, swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
     
@@ -179,7 +179,7 @@ void VulkanRenderer::render() {
     vkResetFences(device, 1, &fence);
 }
 
-void VulkanRenderer::createInstance() {
+void Renderer::createInstance() {
     VkApplicationInfo appInfo = {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = "Particle Simulator";
@@ -212,7 +212,7 @@ void VulkanRenderer::createInstance() {
     }
 }
 
-void VulkanRenderer::setupDebugCallback() {
+void Renderer::setupDebugCallback() {
 #ifndef NDEBUG
     VkDebugReportCallbackCreateInfoEXT createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
@@ -228,7 +228,7 @@ void VulkanRenderer::setupDebugCallback() {
 #endif
 }
 
-void VulkanRenderer::createDevice() {
+void Renderer::createDevice() {
     // Find physical device to use.
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -335,7 +335,7 @@ void VulkanRenderer::createDevice() {
     vkGetDeviceQueue(device, presentFamily, 0, &presentQueue);
 }
 
-void VulkanRenderer::createSurface(GLFWwindow* window) {
+void Renderer::createSurface(GLFWwindow* window) {
     VkWin32SurfaceCreateInfoKHR surfaceInfo = {};
     surfaceInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
     surfaceInfo.hwnd = glfwGetWin32Window(window);
@@ -347,7 +347,7 @@ void VulkanRenderer::createSurface(GLFWwindow* window) {
     }
 }
 
-VkFormat VulkanRenderer::createSwapChain(unsigned int width, unsigned int height) {
+VkFormat Renderer::createSwapChain(unsigned int width, unsigned int height) {
     // Determine swap chain support.
     SwapChainSupport swapChainSupport = querySwapChainSupport();
     
@@ -391,7 +391,7 @@ VkFormat VulkanRenderer::createSwapChain(unsigned int width, unsigned int height
     return surfaceFormat.format;
 }
 
-VulkanRenderer::SwapChainSupport VulkanRenderer::querySwapChainSupport() {
+Renderer::SwapChainSupport Renderer::querySwapChainSupport() {
     SwapChainSupport swapChainSupport;
     
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &swapChainSupport.capabilities);
@@ -409,7 +409,7 @@ VulkanRenderer::SwapChainSupport VulkanRenderer::querySwapChainSupport() {
     return swapChainSupport;
 }
 
-VkSurfaceFormatKHR VulkanRenderer::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+VkSurfaceFormatKHR Renderer::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
     if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED)
         return {VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR};
     
@@ -421,11 +421,11 @@ VkSurfaceFormatKHR VulkanRenderer::chooseSwapSurfaceFormat(const std::vector<VkS
     return availableFormats[0];
 }
 
-VkPresentModeKHR VulkanRenderer::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
+VkPresentModeKHR Renderer::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D VulkanRenderer::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, unsigned int width, unsigned int height) {
+VkExtent2D Renderer::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, unsigned int width, unsigned int height) {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
         return capabilities.currentExtent;
     } else {
@@ -437,7 +437,7 @@ VkExtent2D VulkanRenderer::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capa
     }
 }
 
-void VulkanRenderer::createImageViews(VkFormat format) {
+void Renderer::createImageViews(VkFormat format) {
     swapChainImageViews.resize(swapChainImages.size());
     
     for (uint32_t i = 0; i < swapChainImages.size(); ++i) {
@@ -463,7 +463,7 @@ void VulkanRenderer::createImageViews(VkFormat format) {
     }
 }
 
-void VulkanRenderer::createRenderPass(VkFormat format) {
+void Renderer::createRenderPass(VkFormat format) {
     VkSubpassDependency dependency = {};
     dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
     dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -510,7 +510,7 @@ void VulkanRenderer::createRenderPass(VkFormat format) {
     }
 }
 
-void VulkanRenderer::createFramebuffers() {
+void Renderer::createFramebuffers() {
     swapChainFramebuffers.resize(swapChainImageViews.size());
     
     for (std::size_t i = 0; i < swapChainImageViews.size(); ++i) {
@@ -532,7 +532,7 @@ void VulkanRenderer::createFramebuffers() {
     }
 }
 
-void VulkanRenderer::createCommandPools() {
+void Renderer::createCommandPools() {
     VkCommandPoolCreateInfo poolInfo = {};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     poolInfo.queueFamilyIndex = graphicsFamily;
@@ -555,7 +555,7 @@ void VulkanRenderer::createCommandPools() {
     }
 }
 
-void VulkanRenderer::createCommandBuffers() {
+void Renderer::createCommandBuffers() {
     // Graphics command buffer.
     VkCommandBufferAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -577,7 +577,7 @@ void VulkanRenderer::createCommandBuffers() {
     }
 }
 
-void VulkanRenderer::createDescriptorPool() {
+void Renderer::createDescriptorPool() {
     VkDescriptorPoolSize poolSizes[2];
     
     // Storage buffers.
@@ -603,7 +603,7 @@ void VulkanRenderer::createDescriptorPool() {
     }
 }
 
-void VulkanRenderer::createSemaphores() {
+void Renderer::createSemaphores() {
     VkSemaphoreCreateInfo semaphoreInfo = {};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
     
@@ -614,7 +614,7 @@ void VulkanRenderer::createSemaphores() {
         std::cout << "Couldn't create semaphore" << std::endl;
 }
 
-void VulkanRenderer::createFence() {
+void Renderer::createFence() {
     VkFenceCreateInfo fenceInfo = {};
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.pNext = nullptr;

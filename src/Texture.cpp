@@ -1,10 +1,10 @@
-#include "VulkanTexture.hpp"
+#include "Texture.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include <iostream>
 
-VulkanTexture::VulkanTexture(const char* data, unsigned int length, VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkDescriptorPool descriptorPool) : sampler(device) {
+Texture::Texture(const char* data, unsigned int length, VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkDescriptorPool descriptorPool) : sampler(device) {
     this->device = device;
     this->physicalDevice = physicalDevice;
     this->commandPool = commandPool;
@@ -65,7 +65,7 @@ VulkanTexture::VulkanTexture(const char* data, unsigned int length, VkDevice dev
     createDescriptorSet();
 }
 
-VulkanTexture::~VulkanTexture() {
+Texture::~Texture() {
     vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
     
     vkDestroyImageView(device, textureImageView, nullptr);
@@ -77,7 +77,7 @@ VulkanTexture::~VulkanTexture() {
     vkDestroyImage(device, stagingImage, nullptr);
 }
 
-void VulkanTexture::createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage* image, VkDeviceMemory* imageMemory) {
+void Texture::createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage* image, VkDeviceMemory* imageMemory) {
     // Create image.
     VkImageCreateInfo imageInfo = {};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -118,7 +118,7 @@ void VulkanTexture::createImage(uint32_t width, uint32_t height, VkFormat format
     vkBindImageMemory(device, *image, *imageMemory, 0);
 }
 
-uint32_t VulkanTexture::findMemoryType(uint32_t memoryTypeBits, VkMemoryPropertyFlags properties) {
+uint32_t Texture::findMemoryType(uint32_t memoryTypeBits, VkMemoryPropertyFlags properties) {
     VkPhysicalDeviceMemoryProperties memoryProperties;
     vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memoryProperties);
     
@@ -131,7 +131,7 @@ uint32_t VulkanTexture::findMemoryType(uint32_t memoryTypeBits, VkMemoryProperty
     return memoryType;
 }
 
-void VulkanTexture::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
+void Texture::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
     
     VkImageMemoryBarrier barrier = {};
@@ -166,7 +166,7 @@ void VulkanTexture::transitionImageLayout(VkImage image, VkFormat format, VkImag
     endSingleTimeCommands(commandBuffer);
 }
 
-void VulkanTexture::copyImage(VkImage srcImage, VkImage dstImage, uint32_t width, uint32_t height) {
+void Texture::copyImage(VkImage srcImage, VkImage dstImage, uint32_t width, uint32_t height) {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
     
     VkImageSubresourceLayers subResource = {};
@@ -189,7 +189,7 @@ void VulkanTexture::copyImage(VkImage srcImage, VkImage dstImage, uint32_t width
     endSingleTimeCommands(commandBuffer);
 }
 
-VkCommandBuffer VulkanTexture::beginSingleTimeCommands() {
+VkCommandBuffer Texture::beginSingleTimeCommands() {
     VkCommandBufferAllocateInfo allocateInfo = {};
     allocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -208,7 +208,7 @@ VkCommandBuffer VulkanTexture::beginSingleTimeCommands() {
     return commandBuffer;
 }
 
-void VulkanTexture::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
+void Texture::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
     vkEndCommandBuffer(commandBuffer);
     
     VkSubmitInfo submitInfo = {};
@@ -222,7 +222,7 @@ void VulkanTexture::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
     vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 }
 
-void VulkanTexture::createImageView(VkImage image, VkFormat format, VkImageView* imageView) {
+void Texture::createImageView(VkImage image, VkFormat format, VkImageView* imageView) {
     VkImageViewCreateInfo viewInfo = {};
     viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     viewInfo.image = image;
@@ -240,7 +240,7 @@ void VulkanTexture::createImageView(VkImage image, VkFormat format, VkImageView*
     }
 }
 
-void VulkanTexture::createDescriptorSet() {
+void Texture::createDescriptorSet() {
     // Create descriptor set layout.
     VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
     samplerLayoutBinding.binding = 0;
