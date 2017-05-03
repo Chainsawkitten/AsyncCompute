@@ -77,6 +77,10 @@ Texture::~Texture() {
     vkDestroyImage(device, stagingImage, nullptr);
 }
 
+VkDescriptorSet Texture::getDescriptorSet() const {
+    return descriptorSet;
+}
+
 void Texture::createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage* image, VkDeviceMemory* imageMemory) {
     // Create image.
     VkImageCreateInfo imageInfo = {};
