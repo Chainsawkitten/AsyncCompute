@@ -110,7 +110,7 @@ void StorageBuffer::copyBuffer(VkBuffer source, VkBuffer destination, VkDeviceSi
 
     vkEndCommandBuffer(commandBuffer);
 
-    VkSubmitInfo submitInfo;
+    VkSubmitInfo submitInfo = {};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffer;
