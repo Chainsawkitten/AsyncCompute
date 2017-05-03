@@ -24,6 +24,7 @@ class GraphicsPipeline {
         
     private:
         VkPipelineShaderStageCreateInfo createShaderStage(VkShaderStageFlagBits flags, VkShaderModule module);
+        void createDescriptorSetLayout();
         
         Shader vertexShader;
         Shader geometryShader;
@@ -32,4 +33,6 @@ class GraphicsPipeline {
         VkDevice device;
         VkPipelineLayout pipelineLayout;
         VkPipeline pipeline;
+        
+        VkDescriptorSetLayout descriptorSetLayout;
 };

@@ -7,6 +7,10 @@
 layout(points) in;
 layout(triangle_strip, max_vertices=4) out;
 
+layout(set = 0, binding = 0) uniform CameraUniform {
+    mat4 viewProjectionMatrix;
+};
+
 void main() {
     vec2 size = vec2(0.1, 0.1);
     
