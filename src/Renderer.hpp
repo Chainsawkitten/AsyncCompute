@@ -4,6 +4,7 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include "Window.hpp"
+#include "Camera.hpp"
 
 class Texture;
 class GraphicsPipeline;
@@ -93,4 +94,6 @@ class Renderer {
         Texture* particleTexture;
         GraphicsPipeline* graphicsPipeline;
         StorageBuffer* particleBuffer;
+        
+        Camera camera;
 };
