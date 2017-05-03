@@ -10,6 +10,7 @@
 #include <algorithm>
 #include "Texture.hpp"
 #include "GraphicsPipeline.hpp"
+#include "ComputePipeline.hpp"
 #include "StorageBuffer.hpp"
 #include "UniformBuffer.hpp"
 #include <glm/glm.hpp>
@@ -65,6 +66,7 @@ Renderer::Renderer(Window& window) {
     
     // Create pipelines.
     graphicsPipeline = new GraphicsPipeline(device, swapChainExtent, renderPass);
+    computePipeline = new ComputePipeline(device);
     
     // Create buffers.
     glm::vec4 positions[3];
@@ -85,6 +87,7 @@ Renderer::~Renderer() {
     delete cameraBuffer;
     delete particleBuffer;
     delete graphicsPipeline;
+    delete computePipeline;
     delete particleTexture;
     
     vkDestroyFence(device, fence, nullptr);
