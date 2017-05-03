@@ -3,10 +3,14 @@
 */
 #version 430
 
-layout(location = 0) out vec4 fragmentColor;
+in VertexData {
+    vec2 texCoords;
+} vertexIn;
 
 layout(set=1, binding=0) uniform sampler2D particleTexture;
 
+layout(location = 0) out vec4 fragmentColor;
+
 void main() {
-    fragmentColor = texture(particleTexture, vec2(0.5, 0.5));
+    fragmentColor = texture(particleTexture, vertexIn.texCoords);
 }

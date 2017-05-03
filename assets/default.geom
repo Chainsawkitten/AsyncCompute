@@ -13,6 +13,10 @@ layout(set = 0, binding = 0) uniform CameraUniform {
     vec4 cameraUp;
 };
 
+out VertexData {
+    vec2 texCoords;
+} vertexOut;
+
 void main() {
     vec2 size = vec2(0.1, 0.1);
     
@@ -26,15 +30,19 @@ void main() {
     vec4 up = normalize(vec4(cross(look.xyz, right.xyz), 0.0)) * size.y * 0.5;
     
     gl_Position = viewProjectionMatrix * (gl_in[0].gl_Position - right + up);
+    vertexOut.texCoords = vec2(0.0, 0.0);
     EmitVertex();
     
     gl_Position = viewProjectionMatrix * (gl_in[0].gl_Position - right - up);
+    vertexOut.texCoords = vec2(1.0, 0.0);
     EmitVertex();
     
     gl_Position = viewProjectionMatrix * (gl_in[0].gl_Position + right + up);
+    vertexOut.texCoords = vec2(0.0, 1.0);
     EmitVertex();
     
     gl_Position = viewProjectionMatrix * (gl_in[0].gl_Position + right - up);
+    vertexOut.texCoords = vec2(1.0, 1.0);
     EmitVertex();
     
     EndPrimitive();
