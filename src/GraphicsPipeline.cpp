@@ -138,6 +138,10 @@ VkPipeline GraphicsPipeline::getPipeline() const {
     return pipeline;
 }
 
+VkPipelineLayout GraphicsPipeline::getPipelineLayout() const {
+    return pipelineLayout;
+}
+
 VkPipelineShaderStageCreateInfo GraphicsPipeline::createShaderStage(VkShaderStageFlagBits flags, VkShaderModule module) {
     VkPipelineShaderStageCreateInfo createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

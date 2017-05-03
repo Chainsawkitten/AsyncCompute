@@ -27,6 +27,10 @@ UniformBuffer::~UniformBuffer() {
     vkFreeMemory(device, bufferMemory, nullptr);
 }
 
+VkDescriptorSet UniformBuffer::getDescriptorSet() const {
+    return descriptorSet;
+}
+
 void UniformBuffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory) {
     // Create buffer.
     VkBufferCreateInfo bufferInfo = {};

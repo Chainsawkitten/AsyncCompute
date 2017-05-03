@@ -22,6 +22,12 @@ class GraphicsPipeline {
          */
         VkPipeline getPipeline() const;
         
+        /// Get pipeline layout.
+        /**
+         * @return The pipeline layout.
+         */
+        VkPipelineLayout getPipelineLayout() const;
+        
     private:
         VkPipelineShaderStageCreateInfo createShaderStage(VkShaderStageFlagBits flags, VkShaderModule module);
         void createDescriptorSetLayout();

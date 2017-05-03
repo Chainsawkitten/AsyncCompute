@@ -143,6 +143,8 @@ void Renderer::render() {
     
     // Render particles.
     vkCmdBindPipeline(graphicsCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipeline());
+    VkDescriptorSet descriptorSet = cameraBuffer->getDescriptorSet();
+    vkCmdBindDescriptorSets(graphicsCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
     vkCmdDraw(graphicsCommandBuffer, 3, 1, 0, 0);
     
     // End render pass.
