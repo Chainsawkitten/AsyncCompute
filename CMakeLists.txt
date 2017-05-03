@@ -123,6 +123,7 @@ set(SHADERS
         assets/default.vert
         assets/default.geom
         assets/default.frag
+        assets/update.comp
     )
 
 foreach(item ${SHADERS})
