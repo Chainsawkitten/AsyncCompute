@@ -13,7 +13,7 @@ class StorageBuffer {
          * @param physicalDevice Physical Vulkan device.
          * @param descriptorPool Pool to allocate descriptor sets from.
          */
-        StorageBuffer(const void* data, unsigned int size, VkDevice device, VkPhysicalDevice physicalDevice, VkDescriptorPool descriptorPool);
+        StorageBuffer(const void* data, unsigned int size, VkDevice device, VkPhysicalDevice physicalDevice, VkDescriptorPool descriptorPool, VkQueue graphicsQueue, VkCommandPool commandPool);
         
         /// Destructor.
         ~StorageBuffer();
@@ -25,6 +25,8 @@ class StorageBuffer {
         void createDescriptorSet(VkDeviceSize size);
         
         VkDevice device;
+        VkQueue graphicsQueue;
+        VkCommandPool commandPool;
         VkPhysicalDevice physicalDevice;
         VkDescriptorPool descriptorPool;
         

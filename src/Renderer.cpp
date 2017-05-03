@@ -68,7 +68,7 @@ Renderer::Renderer(Window& window) {
     
     // Create buffers.
     float nonsenseData;
-    particleBuffer = new StorageBuffer(&nonsenseData, sizeof(float), device, physicalDevice, descriptorPool);
+    particleBuffer = new StorageBuffer(&nonsenseData, sizeof(float), device, physicalDevice, descriptorPool, graphicsQueue, graphicsCommandPool);
     
     CameraUniform cameraUniform;
     cameraUniform.viewProjectionMatrix = camera.getViewProjectionMatrix(glm::vec2(window.getWidth(), window.getHeight()));

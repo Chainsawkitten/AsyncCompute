@@ -3,11 +3,13 @@
 #include <iostream>
 #include <cstring>
 
-StorageBuffer::StorageBuffer(const void* data, unsigned int size, VkDevice device, VkPhysicalDevice physicalDevice, VkDescriptorPool descriptorPool) {
+StorageBuffer::StorageBuffer(const void* data, unsigned int size, VkDevice device, VkPhysicalDevice physicalDevice, VkDescriptorPool descriptorPool, VkQueue graphicsQueue, VkCommandPool commandPool) {
     this->device = device;
     this->physicalDevice = physicalDevice;
     this->descriptorPool = descriptorPool;
-    
+    this->graphicsQueue = graphicsQueue;
+    this->commandPool = commandPool;
+
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
 
@@ -83,7 +85,6 @@ void StorageBuffer::copyBuffer(VkBuffer source, VkBuffer destination, VkDeviceSi
     VkCommandBufferAllocateInfo allocationInfo = {};
     allocationInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocationInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    VkCommandPool commandPool;
     allocationInfo.commandPool = commandPool;
     allocationInfo.commandBufferCount = 1;
 
@@ -110,8 +111,8 @@ void StorageBuffer::copyBuffer(VkBuffer source, VkBuffer destination, VkDeviceSi
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffer;
 
-    //vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-    //vkQueueWaitIdle(graphicsQueue);
+    vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(graphicsQueue);
 
     vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 }
