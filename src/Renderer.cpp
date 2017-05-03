@@ -320,6 +320,7 @@ void Renderer::createDevice() {
     
     // Device features.
     VkPhysicalDeviceFeatures deviceFeatures = {};
+    deviceFeatures.geometryShader = VK_TRUE;
     
     VkDeviceCreateInfo deviceCreateInfo = {};
     deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

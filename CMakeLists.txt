@@ -117,6 +117,7 @@ set(HEADERS
 # GLSL shaders to compile to SPIR-V.
 set(SHADERS
         assets/default.vert
+        assets/default.geom
         assets/default.frag
     )
 

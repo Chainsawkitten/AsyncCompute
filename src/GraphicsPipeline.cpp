@@ -2,16 +2,18 @@
 
 #include <iostream>
 #include "default.vert.spv.hpp"
+#include "default.geom.spv.hpp"
 #include "default.frag.spv.hpp"
 
-GraphicsPipeline::GraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent, VkRenderPass renderPass) : vertexShader(DEFAULT_VERT_SPV, DEFAULT_VERT_SPV_LENGTH, device), fragmentShader(DEFAULT_FRAG_SPV, DEFAULT_FRAG_SPV_LENGTH, device) {
+GraphicsPipeline::GraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent, VkRenderPass renderPass) : vertexShader(DEFAULT_VERT_SPV, DEFAULT_VERT_SPV_LENGTH, device), geometryShader(DEFAULT_GEOM_SPV, DEFAULT_GEOM_SPV_LENGTH, device), fragmentShader(DEFAULT_FRAG_SPV, DEFAULT_FRAG_SPV_LENGTH, device) {
     this->device = device;
     
     // Create shader stages.
     VkPipelineShaderStageCreateInfo vertexShaderStageCreateInfo = createShaderStage(VK_SHADER_STAGE_VERTEX_BIT, vertexShader.getModule());
+    VkPipelineShaderStageCreateInfo geometryShaderStageCreateInfo = createShaderStage(VK_SHADER_STAGE_GEOMETRY_BIT, geometryShader.getModule());
     VkPipelineShaderStageCreateInfo fragmentShaderStageCreateInfo = createShaderStage(VK_SHADER_STAGE_FRAGMENT_BIT, fragmentShader.getModule());
     
-    VkPipelineShaderStageCreateInfo shaderStages[] = {vertexShaderStageCreateInfo, fragmentShaderStageCreateInfo};
+    VkPipelineShaderStageCreateInfo shaderStages[] = {vertexShaderStageCreateInfo, geometryShaderStageCreateInfo, fragmentShaderStageCreateInfo};
     
     // Vertex input.
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
@@ -24,7 +26,7 @@ GraphicsPipeline::GraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent, 
     // Input assembly.
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
     inputAssembly.primitiveRestartEnable = VK_FALSE;
     
     // Viewport.
@@ -101,7 +103,7 @@ GraphicsPipeline::GraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent, 
     // Create pipeline.
     VkGraphicsPipelineCreateInfo pipelineInfo = {};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipelineInfo.stageCount = 2;
+    pipelineInfo.stageCount = 3;
     pipelineInfo.pStages = shaderStages;
     pipelineInfo.pVertexInputState = &vertexInputInfo;
     pipelineInfo.pInputAssemblyState = &inputAssembly;
