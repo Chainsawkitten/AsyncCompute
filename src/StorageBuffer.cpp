@@ -8,14 +8,24 @@ StorageBuffer::StorageBuffer(const void* data, unsigned int size, VkDevice devic
     this->physicalDevice = physicalDevice;
     this->descriptorPool = descriptorPool;
     
-    createBuffer(size, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &buffer, &bufferMemory);
-    
+    VkBuffer stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+
+    // Staging buffer.
+    createBuffer(size, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffer, &stagingBufferMemory);
+
     // Copy data to mapped memory.
     void* mappedMemory;
-    vkMapMemory(device, bufferMemory, 0, size, 0, &mappedMemory);
+    vkMapMemory(device, stagingBufferMemory, 0, size, 0, &mappedMemory);
     memcpy(mappedMemory, data, size);
-    vkUnmapMemory(device, bufferMemory);
+    vkUnmapMemory(device, stagingBufferMemory);
+
+    // Actual buffer.
+    createBuffer(size, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &buffer, &bufferMemory);
     
+    // Copy from staging buffer to actual buffer.
+    copyBuffer(stagingBuffer, buffer, size);
+
     // Create descriptor set.
     createDescriptorSetLayout();
     createDescriptorSet(size);
@@ -34,7 +44,7 @@ void StorageBuffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, Vk
     bufferInfo.size = size;
     bufferInfo.usage = usage;
     bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    
+
     if (vkCreateBuffer(device, &bufferInfo, nullptr, buffer) != VK_SUCCESS) {
         std::cerr << "Failed to create buffer." << std::endl;
         exit(-1);
@@ -66,6 +76,44 @@ void StorageBuffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, Vk
     }
     
     vkBindBufferMemory(device, *buffer, *bufferMemory, 0);
+}
+
+void StorageBuffer::copyBuffer(VkBuffer source, VkBuffer destination, VkDeviceSize size){
+    // Create command buffer allocation info.
+    VkCommandBufferAllocateInfo allocationInfo = {};
+    allocationInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocationInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    VkCommandPool commandPool;
+    allocationInfo.commandPool = commandPool;
+    allocationInfo.commandBufferCount = 1;
+
+    // Create command buffer.
+    VkCommandBuffer commandBuffer;
+    vkAllocateCommandBuffers(device, &allocationInfo, &commandBuffer);
+
+    // Command buffer begin info.
+    VkCommandBufferBeginInfo beginInfo = {};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    // Start recording commands.
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+    VkBufferCopy copyRegion = {};
+    copyRegion.size = size;
+    vkCmdCopyBuffer(commandBuffer, source, destination, 1, &copyRegion);
+
+    vkEndCommandBuffer(commandBuffer);
+
+    VkSubmitInfo submitInfo;
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    //vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    //vkQueueWaitIdle(graphicsQueue);
+
+    vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 }
 
 void StorageBuffer::createDescriptorSetLayout() {
