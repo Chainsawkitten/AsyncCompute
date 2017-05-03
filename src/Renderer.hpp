@@ -9,6 +9,7 @@
 class Texture;
 class GraphicsPipeline;
 class StorageBuffer;
+class UniformBuffer;
 
 /// Used to render the particles.
 class Renderer {
@@ -94,6 +95,7 @@ class Renderer {
         Texture* particleTexture;
         GraphicsPipeline* graphicsPipeline;
         StorageBuffer* particleBuffer;
+        UniformBuffer* cameraBuffer;
         
         Camera camera;
 };

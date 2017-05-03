@@ -11,6 +11,7 @@
 #include "Texture.hpp"
 #include "GraphicsPipeline.hpp"
 #include "StorageBuffer.hpp"
+#include "UniformBuffer.hpp"
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
@@ -67,9 +68,13 @@ Renderer::Renderer(Window& window) {
     // Create buffers.
     float nonsenseData;
     particleBuffer = new StorageBuffer(&nonsenseData, sizeof(float), device, physicalDevice, descriptorPool);
+    
+    glm::mat4 nonsenseCamera;
+    cameraBuffer = new UniformBuffer(&nonsenseCamera[0][0], sizeof(nonsenseCamera), device, physicalDevice, descriptorPool);
 }
 
 Renderer::~Renderer() {
+    delete cameraBuffer;
     delete particleBuffer;
     delete graphicsPipeline;
     delete particleTexture;
@@ -583,24 +588,29 @@ void Renderer::createCommandBuffers() {
 }
 
 void Renderer::createDescriptorPool() {
-    VkDescriptorPoolSize poolSizes[2];
+    VkDescriptorPoolSize poolSizes[3];
     
     // Storage buffers.
     poolSizes[0] = {};
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
     poolSizes[0].descriptorCount = 1;
     
-    // Samplers.
+    // Uniform buffers.
     poolSizes[1] = {};
-    poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     poolSizes[1].descriptorCount = 1;
+    
+    // Samplers.
+    poolSizes[2] = {};
+    poolSizes[2].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    poolSizes[2].descriptorCount = 1;
     
     // Create descriptor pool.
     VkDescriptorPoolCreateInfo poolInfo = {};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.poolSizeCount = 2;
+    poolInfo.poolSizeCount = 3;
     poolInfo.pPoolSizes = poolSizes;
-    poolInfo.maxSets = 2;
+    poolInfo.maxSets = 3;
     
     if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
         std::cerr << "Failed to create descriptor pool." << std::endl;
