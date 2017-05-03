@@ -15,6 +15,8 @@ class ComputePipeline {
         ~ComputePipeline();
         
     private:
+        VkPipelineShaderStageCreateInfo createShaderStage(VkShaderStageFlagBits flags, VkShaderModule module);
+        
         Shader shader;
         
         VkDevice device;
