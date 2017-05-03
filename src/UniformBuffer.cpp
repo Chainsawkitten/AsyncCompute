@@ -73,7 +73,7 @@ void UniformBuffer::createDescriptorSetLayout() {
     vertexLayoutBinding.binding = 0;
     vertexLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     vertexLayoutBinding.descriptorCount = 1;
-    vertexLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    vertexLayoutBinding.stageFlags = VK_SHADER_STAGE_GEOMETRY_BIT;
     vertexLayoutBinding.pImmutableSamplers = nullptr;
     
     VkDescriptorSetLayoutCreateInfo layoutInfo = {};
