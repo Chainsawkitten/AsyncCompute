@@ -24,11 +24,11 @@ class OpenGLRenderer : public Renderer {
 
         /// Render image to screen.
         void render() final;
-
-        /// Shader
+        
+    private:
         OpenGLShader* shader;
-
-        /// Vertices used to render texture. TEMPORARY.
+        
+        // Vertices used to render texture. TEMPORARY.
         GLfloat vertices[36] = {
             // Positions                // Texture Coords
              0.5f,  0.5f, 0.0f, 1.0f,   1.0f, 1.0f,   // Top Right
@@ -38,16 +38,12 @@ class OpenGLRenderer : public Renderer {
             -0.5f, -0.5f, 0.0f, 1.0f,   0.0f, 0.0f,   // Bottom Left
             -0.5f,  0.5f, 0.0f, 1.0f,   0.0f, 1.0f
         };
-
-        /// SSBO.
+        
         GLuint SSBO;
-
-        /// Texture.
         GLuint texture;
-
-        /// Empty vertex array object.
+        
+        // Empty vertex array object.
         GLuint dummyVAO;
-
 };
 
 void APIENTRY glDebugOutput(GLenum source,
