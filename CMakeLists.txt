@@ -114,12 +114,12 @@ set(HEADERS
         src/Window.hpp
     )
 
-# Vulkan shaders.
-set(VULKAN_SHADERS
+# GLSL shaders to compile to SPIR-V.
+set(SHADERS
         assets/default.vert
     )
 
-foreach(item ${VULKAN_SHADERS})
+foreach(item ${SHADERS})
     ProcessWithValidator(VULKAN_SPV ${item} ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
 
@@ -127,7 +127,6 @@ set_property(SOURCE ${SRCS} APPEND PROPERTY OBJECT_DEPENDS ${VULKAN_SPV})
 
 # Embedded sources
 set(EMBEDDED_INPUT
-        assets/default.vert
         assets/Particle.png
         ${VULKAN_SPV}
     )
