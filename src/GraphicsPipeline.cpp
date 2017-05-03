@@ -1,9 +1,9 @@
-#include "VulkanGraphicsPipeline.hpp"
+#include "GraphicsPipeline.hpp"
 
 #include <iostream>
 #include "default.vert.spv.hpp"
 
-VulkanGraphicsPipeline::VulkanGraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent, VkRenderPass renderPass) : vertexShader(DEFAULT_VERT_SPV, DEFAULT_VERT_SPV_LENGTH, device) {
+GraphicsPipeline::GraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent, VkRenderPass renderPass) : vertexShader(DEFAULT_VERT_SPV, DEFAULT_VERT_SPV_LENGTH, device) {
     this->device = device;
     
     // Create shader stages.
@@ -120,12 +120,12 @@ VulkanGraphicsPipeline::VulkanGraphicsPipeline(VkDevice device, VkExtent2D swapC
     }
 }
 
-VulkanGraphicsPipeline::~VulkanGraphicsPipeline() {
+GraphicsPipeline::~GraphicsPipeline() {
     vkDestroyPipeline(device, pipeline, nullptr);
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 }
 
-VkPipelineShaderStageCreateInfo VulkanGraphicsPipeline::createShaderStage(VkShaderStageFlagBits flags, VkShaderModule module) {
+VkPipelineShaderStageCreateInfo GraphicsPipeline::createShaderStage(VkShaderStageFlagBits flags, VkShaderModule module) {
     VkPipelineShaderStageCreateInfo createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     createInfo.stage = flags;

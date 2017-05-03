@@ -1,6 +1,6 @@
-# ParticlesGLVulkan
+# Async Compute
 
-OpenGL and Vulkan implementations of a particle rendering system using async compute (on Vulkan).
+Vulkan implementations of a particle rendering system using async compute.
 
 ## Building
 1. Install the Vulkan SDK.

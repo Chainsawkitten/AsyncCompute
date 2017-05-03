@@ -95,37 +95,31 @@ endfunction()
 # Target
 set(SRCS
         src/main.cpp
-        src/Base/Renderer.cpp
-        src/Base/Window.cpp
-        src/Opengl/OpenGLRenderer.cpp
-        src/Opengl/OpenGLShader.cpp
-        src/Vulkan/VulkanGraphicsPipeline.cpp
-        src/Vulkan/VulkanRenderer.cpp
-        src/Vulkan/VulkanSampler.cpp
-        src/Vulkan/VulkanShader.cpp
-        src/Vulkan/VulkanStorageBuffer.cpp
-        src/Vulkan/VulkanTexture.cpp
+        src/GraphicsPipeline.cpp
+        src/Renderer.cpp
+        src/Sampler.cpp
+        src/Shader.cpp
+        src/StorageBuffer.cpp
+        src/Texture.cpp
+        src/Window.cpp
     )
 
 set(HEADERS
-        src/Base/Renderer.hpp
-        src/Base/Window.hpp
-        src/OpenGL/OpenGLRenderer.hpp
-        src/OpenGL/OpenGLShader.hpp
-        src/Vulkan/VulkanGraphicsPipeline.hpp
-        src/Vulkan/VulkanRenderer.hpp
-        src/Vulkan/VulkanSampler.hpp
-        src/Vulkan/VulkanShader.hpp
-        src/Vulkan/VulkanStorageBuffer.hpp
-        src/Vulkan/VulkanTexture.hpp
+        src/GraphicsPipeline.hpp
+        src/Renderer.hpp
+        src/Sampler.hpp
+        src/Shader.hpp
+        src/StorageBuffer.hpp
+        src/Texture.hpp
+        src/Window.hpp
     )
 
-# Vulkan shaders.
-set(VULKAN_SHADERS
+# GLSL shaders to compile to SPIR-V.
+set(SHADERS
         assets/default.vert
     )
 
-foreach(item ${VULKAN_SHADERS})
+foreach(item ${SHADERS})
     ProcessWithValidator(VULKAN_SPV ${item} ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
 
@@ -133,7 +127,6 @@ set_property(SOURCE ${SRCS} APPEND PROPERTY OBJECT_DEPENDS ${VULKAN_SPV})
 
 # Embedded sources
 set(EMBEDDED_INPUT
-        assets/default.vert
         assets/Particle.png
         ${VULKAN_SPV}
     )

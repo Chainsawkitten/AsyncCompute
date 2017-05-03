@@ -2,19 +2,19 @@
 
 #include <vulkan/vulkan.h>
 
-/// Used to compile Vulkan shaders.
-class VulkanShader {
+/// Used to compile SPIR-V shaders.
+class Shader {
     public:
-        /// Create new Vulkan shader.
+        /// Create new shader.
         /**
          * @param data SPIR-V data.
          * @param dataLength Length of the data.
          * @param device Logical Vulkan device.
          */
-        VulkanShader(const char* data, unsigned int dataLength, VkDevice device);
+        Shader(const char* data, unsigned int dataLength, VkDevice device);
         
         /// Destructor.
-        ~VulkanShader();
+        ~Shader();
         
         /// Get the shader module.
         /**
