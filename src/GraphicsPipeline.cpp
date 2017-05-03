@@ -9,8 +9,9 @@ GraphicsPipeline::GraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent, 
     
     // Create shader stages.
     VkPipelineShaderStageCreateInfo vertexShaderStageCreateInfo = createShaderStage(VK_SHADER_STAGE_VERTEX_BIT, vertexShader.getModule());
+    VkPipelineShaderStageCreateInfo fragmentShaderStageCreateInfo = createShaderStage(VK_SHADER_STAGE_FRAGMENT_BIT, fragmentShader.getModule());
     
-    VkPipelineShaderStageCreateInfo shaderStages[] = {vertexShaderStageCreateInfo};
+    VkPipelineShaderStageCreateInfo shaderStages[] = {vertexShaderStageCreateInfo, fragmentShaderStageCreateInfo};
     
     // Vertex input.
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
@@ -100,7 +101,7 @@ GraphicsPipeline::GraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent, 
     // Create pipeline.
     VkGraphicsPipelineCreateInfo pipelineInfo = {};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipelineInfo.stageCount = 1;
+    pipelineInfo.stageCount = 2;
     pipelineInfo.pStages = shaderStages;
     pipelineInfo.pVertexInputState = &vertexInputInfo;
     pipelineInfo.pInputAssemblyState = &inputAssembly;
