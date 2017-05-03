@@ -18,6 +18,12 @@ class StorageBuffer {
         /// Destructor.
         ~StorageBuffer();
         
+        /// Get descriptor set.
+        /**
+         * @return The descriptor set.
+         */
+        VkDescriptorSet getDescriptorSet() const;
+        
     private:
         void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory);
         void createDescriptorSetLayout();

@@ -67,8 +67,12 @@ Renderer::Renderer(Window& window) {
     graphicsPipeline = new GraphicsPipeline(device, swapChainExtent, renderPass);
     
     // Create buffers.
-    float nonsenseData;
-    particleBuffer = new StorageBuffer(&nonsenseData, sizeof(float), device, physicalDevice, descriptorPool);
+    glm::vec4 positions[3];
+    positions[0] = glm::vec4(0.0, 0.0, 0.0, 1.0);
+    positions[1] = glm::vec4(0.5, 0.5, 0.0, 1.0);
+    positions[2] = glm::vec4(-0.5, 0.5, 0.0, 1.0);
+    
+    particleBuffer = new StorageBuffer(positions, sizeof(positions), device, physicalDevice, descriptorPool);
     
     CameraUniform cameraUniform;
     cameraUniform.viewProjectionMatrix = camera.getViewProjectionMatrix(glm::vec2(window.getWidth(), window.getHeight()));
@@ -149,6 +153,7 @@ void Renderer::render() {
     vkCmdBindPipeline(graphicsCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipeline());
     
     std::vector<VkDescriptorSet> descriptorSets;
+    descriptorSets.push_back(particleBuffer->getDescriptorSet());
     descriptorSets.push_back(cameraBuffer->getDescriptorSet());
     descriptorSets.push_back(particleTexture->getDescriptorSet());
     vkCmdBindDescriptorSets(graphicsCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
