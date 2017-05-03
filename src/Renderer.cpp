@@ -70,8 +70,11 @@ Renderer::Renderer(Window& window) {
     float nonsenseData;
     particleBuffer = new StorageBuffer(&nonsenseData, sizeof(float), device, physicalDevice, descriptorPool);
     
-    glm::mat4 cameraMatrix(camera.getViewProjectionMatrix(glm::vec2(window.getWidth(), window.getHeight())));
-    cameraBuffer = new UniformBuffer(&cameraMatrix[0][0], sizeof(glm::mat4), device, physicalDevice, descriptorPool);
+    CameraUniform cameraUniform;
+    cameraUniform.viewProjectionMatrix = camera.getViewProjectionMatrix(glm::vec2(window.getWidth(), window.getHeight()));
+    cameraUniform.cameraPosition = glm::vec4(camera.getPosition(), 1.0f);
+    cameraUniform.cameraUp = glm::vec4(camera.getUp(), 1.0f);
+    cameraBuffer = new UniformBuffer(&cameraUniform, sizeof(cameraUniform), device, physicalDevice, descriptorPool);
 }
 
 Renderer::~Renderer() {

@@ -18,6 +18,18 @@ class Camera {
          */
         glm::mat4 getViewProjectionMatrix(const glm::vec2& screenSize) const;
         
+        /// Get the position.
+        /**
+         * @return The camera's position.
+         */
+        const glm::vec3& getPosition() const;
+        
+        /// Get the camera's up vector.
+        /**
+         * @return The camera's up vector.
+         */
+        glm::vec3 getUp() const;
+        
     private:
         glm::mat4 getCameraOrientation() const;
         glm::mat4 getProjection(const glm::vec2& screenSize) const;

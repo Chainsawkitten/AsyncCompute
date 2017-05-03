@@ -1,6 +1,7 @@
 #include "Camera.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 
 Camera::Camera() {
     
@@ -13,6 +14,14 @@ Camera::~Camera() {
 glm::mat4 Camera::getViewProjectionMatrix(const glm::vec2& screenSize) const {
     glm::mat4 viewMat(getCameraOrientation() * glm::translate(glm::mat4(), -position));
     return getProjection(screenSize) * viewMat;
+}
+
+const glm::vec3& Camera::getPosition() const {
+    return position;
+}
+
+glm::vec3 Camera::getUp() const {
+    return glm::vec3(glm::inverse(getCameraOrientation()) * glm::vec4(0.f, 1.f, 0.f, 1.f));
 }
 
 glm::mat4 Camera::getCameraOrientation() const {

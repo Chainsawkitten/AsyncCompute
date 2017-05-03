@@ -38,6 +38,11 @@ class Renderer {
             std::vector<VkSurfaceFormatKHR> formats;
             std::vector<VkPresentModeKHR> presentModes;
         };
+        struct CameraUniform {
+            glm::mat4 viewProjectionMatrix;
+            glm::vec4 cameraPosition;
+            glm::vec4 cameraUp;
+        };
         
         void createInstance();
         void setupDebugCallback();
