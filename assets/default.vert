@@ -1,7 +1,7 @@
 /*
     Default empty shader.
 */
-#version 450
+#version 430
 #extension GL_KHR_vulkan_glsl : enable
 
 struct vertex {

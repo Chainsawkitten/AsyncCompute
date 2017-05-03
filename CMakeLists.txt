@@ -49,15 +49,32 @@ endmacro()
 if(WIN32)
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         find_library(Vulkan_LIBRARY vulkan-1 PATHS "$ENV{VULKAN_SDK}/Bin")
+        find_program(Vulkan_VALIDATOR glslangValidator PATHS "$ENV{VULKAN_SDK}/Bin")
     elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
         find_library(Vulkan_LIBRARY vulkan-1 PATHS "$ENV{VULKAN_SDK}/Bin32")
+        find_program(Vulkan_VALIDATOR glslangValidator PATHS "$ENV{VULKAN_SDK}/Bin32")
     endif()
 else()
     find_library(Vulkan_LIBRARY vulkan-1 PATHS "$ENV{VULKAN_SDK}/lib")
+    find_program(Vulkan_VALIDATOR glslangValidator PATHS "$ENV{VULKAN_SDK}/bin")
 endif()
 
 find_path(VULKAN_INCLUDE_DIR NAMES vulkan/vulkan.h HINTS "$ENV{VULKAN_SDK}/include")
 include_directories(${VULKAN_INCLUDE_DIR})
+
+# Shader compilation
+macro(ProcessWithValidator outvar inputfile outdir)
+    get_filename_component(basefile ${inputfile} NAME)
+    set(outputfile ${outdir}/${basefile})
+    add_custom_command(
+        OUTPUT ${outputfile}.spv
+        COMMAND ${Vulkan_VALIDATOR} -V ${inputfile} -o ${outputfile}.spv
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        DEPENDS ${inputfile}
+        COMMENT "Compiling shader: ${inputfile}"
+    )
+    list(APPEND ${outvar} ${outputfile}.spv)
+endmacro()
 
 # This function should be passed a list of all files in a target. It will automatically generate
 # file groups following the directory hierarchy, so that the layout of the files in IDEs matches the
@@ -82,8 +99,11 @@ set(SRCS
         src/Base/Window.cpp
         src/Opengl/OpenGLRenderer.cpp
         src/Opengl/OpenGLShader.cpp
+        src/Vulkan/VulkanGraphicsPipeline.cpp
         src/Vulkan/VulkanRenderer.cpp
         src/Vulkan/VulkanSampler.cpp
+        src/Vulkan/VulkanShader.cpp
+        src/Vulkan/VulkanStorageBuffer.cpp
         src/Vulkan/VulkanTexture.cpp
     )
 
@@ -92,16 +112,31 @@ set(HEADERS
         src/Base/Window.hpp
         src/OpenGL/OpenGLRenderer.hpp
         src/OpenGL/OpenGLShader.hpp
+        src/Vulkan/VulkanGraphicsPipeline.hpp
         src/Vulkan/VulkanRenderer.hpp
         src/Vulkan/VulkanSampler.hpp
+        src/Vulkan/VulkanShader.hpp
+        src/Vulkan/VulkanStorageBuffer.hpp
         src/Vulkan/VulkanTexture.hpp
     )
+
+# Vulkan shaders.
+set(VULKAN_SHADERS
+        assets/default.vert
+    )
+
+foreach(item ${VULKAN_SHADERS})
+    ProcessWithValidator(VULKAN_SPV ${item} ${CMAKE_CURRENT_BINARY_DIR})
+endforeach()
+
+set_property(SOURCE ${SRCS} APPEND PROPERTY OBJECT_DEPENDS ${VULKAN_SPV})
 
 # Embedded sources
 set(EMBEDDED_INPUT
         assets/default.vert
         assets/default.frag
         assets/Particle.png
+        ${VULKAN_SPV}
     )
 
 foreach(item ${EMBEDDED_INPUT})

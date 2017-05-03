@@ -9,6 +9,8 @@
 #include <limits>
 #include <algorithm>
 #include "VulkanTexture.hpp"
+#include "VulkanGraphicsPipeline.hpp"
+#include "VulkanStorageBuffer.hpp"
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
@@ -58,9 +60,18 @@ VulkanRenderer::VulkanRenderer(Window& window) {
     
     // Create fence.
     createFence();
+    
+    // Create pipelines.
+    graphicsPipeline = new VulkanGraphicsPipeline(device, swapChainExtent, renderPass);
+    
+    // Create buffers.
+    float nonsenseData;
+    particleBuffer = new VulkanStorageBuffer(&nonsenseData, sizeof(float), device, physicalDevice, descriptorPool);
 }
 
 VulkanRenderer::~VulkanRenderer() {
+    delete particleBuffer;
+    delete graphicsPipeline;
     delete particleTexture;
     
     vkDestroyFence(device, fence, nullptr);
@@ -100,7 +111,72 @@ void VulkanRenderer::setTexture(const char* textureData, unsigned int dataLength
 }
 
 void VulkanRenderer::render() {
+    // Get image from swapchain.
+    vkAcquireNextImageKHR(device, swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
     
+    // Start command buffer recording.
+    VkCommandBufferBeginInfo beginInfo = {};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+    beginInfo.pInheritanceInfo = nullptr;
+    
+    vkBeginCommandBuffer(graphicsCommandBuffer, &beginInfo);
+    
+    // Start render pass.
+    VkRenderPassBeginInfo renderPassInfo = {};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassInfo.renderPass = renderPass;
+    renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
+    renderPassInfo.renderArea.offset = {0, 0};
+    renderPassInfo.renderArea.extent = swapChainExtent;
+    VkClearValue clearValues = {};
+    clearValues.color = {0.0f, 0.0f, 0.0f, 0.0f};
+    renderPassInfo.clearValueCount = 1;
+    renderPassInfo.pClearValues = &clearValues;
+    
+    vkCmdBeginRenderPass(graphicsCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    
+    // End render pass.
+    vkCmdEndRenderPass(graphicsCommandBuffer);
+    
+    if (vkEndCommandBuffer(graphicsCommandBuffer) != VK_SUCCESS) {
+        std::cerr << "Failed to record command buffer" << std::endl;
+        exit(-1);
+    }
+    
+    // Create submit info.
+    VkSubmitInfo submitInfo = {};
+    VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
+    VkSemaphore signalSemaphores[] = {renderFinishedSemaphore};
+    VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &graphicsCommandBuffer;
+    
+    if(vkQueueSubmit(graphicsQueue, 1, &submitInfo, fence) != VK_SUCCESS)
+        std::cout << "Could not submit command buffer to graphics queue." << std::endl;
+    
+    // Setup presentation
+    VkPresentInfoKHR presentInfo = {};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = signalSemaphores;
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = &swapChain;
+    presentInfo.pImageIndices = &imageIndex;
+    presentInfo.pResults = nullptr;
+    
+    // Submit presentation request.
+    vkQueuePresentKHR(presentQueue, &presentInfo);
+    
+    // Wait for finished rendering.
+    while (vkWaitForFences(device, 1, &fence, VK_TRUE, 1000) != VK_SUCCESS);
+    vkResetFences(device, 1, &fence);
 }
 
 void VulkanRenderer::createInstance() {
@@ -504,10 +580,10 @@ void VulkanRenderer::createCommandBuffers() {
 void VulkanRenderer::createDescriptorPool() {
     VkDescriptorPoolSize poolSizes[2];
     
-    // Uniform buffers.
+    // Storage buffers.
     poolSizes[0] = {};
-    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSizes[0].descriptorCount = 3;
+    poolSizes[0].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    poolSizes[0].descriptorCount = 1;
     
     // Samplers.
     poolSizes[1] = {};
@@ -519,7 +595,7 @@ void VulkanRenderer::createDescriptorPool() {
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = 2;
     poolInfo.pPoolSizes = poolSizes;
-    poolInfo.maxSets = 1;
+    poolInfo.maxSets = 2;
     
     if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
         std::cerr << "Failed to create descriptor pool." << std::endl;

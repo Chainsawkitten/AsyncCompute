@@ -6,6 +6,8 @@
 #include "../Base/Window.hpp"
 
 class VulkanTexture;
+class VulkanGraphicsPipeline;
+class VulkanStorageBuffer;
 
 /// Vulkan implementation of the renderer.
 class VulkanRenderer : public Renderer {
@@ -85,7 +87,10 @@ class VulkanRenderer : public Renderer {
         
         VkSemaphore imageAvailableSemaphore;
         VkSemaphore renderFinishedSemaphore;
+        uint32_t imageIndex = 0;
         VkFence fence;
         
         VulkanTexture* particleTexture;
+        VulkanGraphicsPipeline* graphicsPipeline;
+        VulkanStorageBuffer* particleBuffer;
 };
