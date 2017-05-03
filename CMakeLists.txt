@@ -96,6 +96,7 @@ endfunction()
 set(SRCS
         src/main.cpp
         src/Camera.cpp
+        src/ComputePipeline.cpp
         src/GraphicsPipeline.cpp
         src/Renderer.cpp
         src/Sampler.cpp
@@ -108,6 +109,7 @@ set(SRCS
 
 set(HEADERS
         src/Camera.hpp
+        src/ComputePipeline.hpp
         src/GraphicsPipeline.hpp
         src/Renderer.hpp
         src/Sampler.hpp
