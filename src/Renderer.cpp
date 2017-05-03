@@ -136,6 +136,10 @@ void Renderer::render() {
     
     vkCmdBeginRenderPass(graphicsCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     
+    // Render particles.
+    vkCmdBindPipeline(graphicsCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipeline());
+    vkCmdDraw(graphicsCommandBuffer, 3, 1, 0, 0);
+    
     // End render pass.
     vkCmdEndRenderPass(graphicsCommandBuffer);
     
