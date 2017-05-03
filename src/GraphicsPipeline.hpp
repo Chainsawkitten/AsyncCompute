@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Shader.hpp"
+#include <vector>
 
 /// Pipeline used to render particles.
 class GraphicsPipeline {
@@ -30,7 +31,7 @@ class GraphicsPipeline {
         
     private:
         VkPipelineShaderStageCreateInfo createShaderStage(VkShaderStageFlagBits flags, VkShaderModule module);
-        void createDescriptorSetLayout();
+        void createDescriptorSetLayouts();
         
         Shader vertexShader;
         Shader geometryShader;
@@ -40,5 +41,5 @@ class GraphicsPipeline {
         VkPipelineLayout pipelineLayout;
         VkPipeline pipeline;
         
-        VkDescriptorSetLayout descriptorSetLayout;
+        std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
 };

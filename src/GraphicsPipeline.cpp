@@ -90,13 +90,13 @@ GraphicsPipeline::GraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent, 
     colorBlending.pAttachments = &colorBlendAttachment;
     
     // Descriptor set layout.
-    createDescriptorSetLayout();
+    createDescriptorSetLayouts();
     
     // Pipeline layout.
     VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
+    pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size();
+    pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
     
     if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
         std::cerr << "Failed to create graphics pipeline layout." << std::endl;
@@ -131,7 +131,8 @@ GraphicsPipeline::~GraphicsPipeline() {
     vkDestroyPipeline(device, pipeline, nullptr);
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
     
-    vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
+    for (VkDescriptorSetLayout layout : descriptorSetLayouts)
+        vkDestroyDescriptorSetLayout(device, layout, nullptr);
 }
 
 VkPipeline GraphicsPipeline::getPipeline() const {
@@ -152,7 +153,9 @@ VkPipelineShaderStageCreateInfo GraphicsPipeline::createShaderStage(VkShaderStag
     return createInfo;
 }
 
-void GraphicsPipeline::createDescriptorSetLayout() {
+void GraphicsPipeline::createDescriptorSetLayouts() {
+    VkDescriptorSetLayout layout;
+    
     // Camera uniform buffer.
     VkDescriptorSetLayoutBinding layoutBinding = {};
     layoutBinding.binding = 0;
@@ -165,8 +168,10 @@ void GraphicsPipeline::createDescriptorSetLayout() {
     layoutInfo.bindingCount = 1;
     layoutInfo.pBindings = &layoutBinding;
     
-    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
+    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &layout) != VK_SUCCESS) {
         std::cerr << "Failed to create descriptor set layout." << std::endl;
         exit(-1);
     }
+    
+    descriptorSetLayouts.push_back(layout);
 }
