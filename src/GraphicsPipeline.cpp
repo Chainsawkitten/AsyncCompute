@@ -2,9 +2,10 @@
 
 #include <iostream>
 #include "default.vert.spv.hpp"
+#include "default.geom.spv.hpp"
 #include "default.frag.spv.hpp"
 
-GraphicsPipeline::GraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent, VkRenderPass renderPass) : vertexShader(DEFAULT_VERT_SPV, DEFAULT_VERT_SPV_LENGTH, device), fragmentShader(DEFAULT_FRAG_SPV, DEFAULT_FRAG_SPV_LENGTH, device) {
+GraphicsPipeline::GraphicsPipeline(VkDevice device, VkExtent2D swapChainExtent, VkRenderPass renderPass) : vertexShader(DEFAULT_VERT_SPV, DEFAULT_VERT_SPV_LENGTH, device), geometryShader(DEFAULT_GEOM_SPV, DEFAULT_GEOM_SPV_LENGTH, device), fragmentShader(DEFAULT_FRAG_SPV, DEFAULT_FRAG_SPV_LENGTH, device) {
     this->device = device;
     
     // Create shader stages.
