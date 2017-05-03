@@ -22,8 +22,15 @@ class GraphicsPipeline {
          */
         VkPipeline getPipeline() const;
         
+        /// Get pipeline layout.
+        /**
+         * @return The pipeline layout.
+         */
+        VkPipelineLayout getPipelineLayout() const;
+        
     private:
         VkPipelineShaderStageCreateInfo createShaderStage(VkShaderStageFlagBits flags, VkShaderModule module);
+        void createDescriptorSetLayout();
         
         Shader vertexShader;
         Shader geometryShader;
@@ -32,4 +39,6 @@ class GraphicsPipeline {
         VkDevice device;
         VkPipelineLayout pipelineLayout;
         VkPipeline pipeline;
+        
+        VkDescriptorSetLayout descriptorSetLayout;
 };

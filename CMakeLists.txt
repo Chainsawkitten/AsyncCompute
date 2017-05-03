@@ -95,22 +95,26 @@ endfunction()
 # Target
 set(SRCS
         src/main.cpp
+        src/Camera.cpp
         src/GraphicsPipeline.cpp
         src/Renderer.cpp
         src/Sampler.cpp
         src/Shader.cpp
         src/StorageBuffer.cpp
         src/Texture.cpp
+        src/UniformBuffer.cpp
         src/Window.cpp
     )
 
 set(HEADERS
+        src/Camera.hpp
         src/GraphicsPipeline.hpp
         src/Renderer.hpp
         src/Sampler.hpp
         src/Shader.hpp
         src/StorageBuffer.hpp
         src/Texture.hpp
+        src/UniformBuffer.hpp
         src/Window.hpp
     )
 

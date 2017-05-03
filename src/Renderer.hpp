@@ -4,10 +4,12 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include "Window.hpp"
+#include "Camera.hpp"
 
 class Texture;
 class GraphicsPipeline;
 class StorageBuffer;
+class UniformBuffer;
 
 /// Used to render the particles.
 class Renderer {
@@ -35,6 +37,11 @@ class Renderer {
             VkSurfaceCapabilitiesKHR capabilities;
             std::vector<VkSurfaceFormatKHR> formats;
             std::vector<VkPresentModeKHR> presentModes;
+        };
+        struct CameraUniform {
+            glm::mat4 viewProjectionMatrix;
+            glm::vec4 cameraPosition;
+            glm::vec4 cameraUp;
         };
         
         void createInstance();
@@ -93,4 +100,7 @@ class Renderer {
         Texture* particleTexture;
         GraphicsPipeline* graphicsPipeline;
         StorageBuffer* particleBuffer;
+        UniformBuffer* cameraBuffer;
+        
+        Camera camera;
 };
