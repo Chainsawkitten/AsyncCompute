@@ -21,6 +21,12 @@ class Texture {
         /// Destructor.
         ~Texture();
         
+        /// Get descriptor set.
+        /**
+         * @return The descriptor set.
+         */
+        VkDescriptorSet getDescriptorSet() const;
+        
     private:
         void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage* image, VkDeviceMemory* imageMemory);
         uint32_t findMemoryType(uint32_t memoryTypeBits, VkMemoryPropertyFlags properties);
