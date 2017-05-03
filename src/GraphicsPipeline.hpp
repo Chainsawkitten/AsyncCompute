@@ -20,6 +20,7 @@ class GraphicsPipeline {
         VkPipelineShaderStageCreateInfo createShaderStage(VkShaderStageFlagBits flags, VkShaderModule module);
         
         Shader vertexShader;
+        Shader fragmentShader;
         
         VkDevice device;
         VkPipelineLayout pipelineLayout;
