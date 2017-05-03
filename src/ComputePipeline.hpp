@@ -21,4 +21,5 @@ class ComputePipeline {
         
         VkDevice device;
         VkPipelineLayout pipelineLayout;
+        VkPipeline pipeline;
 };
