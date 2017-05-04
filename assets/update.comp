@@ -16,6 +16,7 @@ layout(set = 0, binding = 0) buffer ParticleBuffer {
 
 layout(set = 1, binding = 0) uniform UpdateBuffer {
     float deltaTime;
+    uint particleCount;
 };
 
 void main() {
@@ -23,11 +24,11 @@ void main() {
     
     // Rule 1.
     vec3 centerOfMass = vec3(0.0, 0.0, 0.0);
-    for (uint i=0; i < 1000; ++i) {
+    for (uint i=0; i < particleCount; ++i) {
         if (i != myID)
             centerOfMass += particles[i].position.xyz;
     }
-    centerOfMass /= 999.0;
+    centerOfMass /= particleCount - 1;
     vec3 rule1 = 0.1 * (centerOfMass - particles[myID].position.xyz);
     
     // Update boid.

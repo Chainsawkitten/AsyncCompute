@@ -87,8 +87,10 @@ Renderer::Renderer(Window& window) {
     cameraUniform.cameraUp = glm::vec4(camera.getUp(), 1.0f);
     cameraBuffer = new UniformBuffer(&cameraUniform, sizeof(cameraUniform), device, physicalDevice, descriptorPool, VK_SHADER_STAGE_GEOMETRY_BIT);
     
-    float deltaTime = 0.0f;
-    updateBuffer = new UniformBuffer(&deltaTime, sizeof(deltaTime), device, physicalDevice, descriptorPool, VK_SHADER_STAGE_COMPUTE_BIT);
+    UpdateUniform updateUniform;
+    updateUniform.deltaTime = 0.0f;
+    updateUniform.particleCount = particleCount;
+    updateBuffer = new UniformBuffer(&updateUniform, sizeof(updateUniform), device, physicalDevice, descriptorPool, VK_SHADER_STAGE_COMPUTE_BIT);
 }
 
 Renderer::~Renderer() {
@@ -138,7 +140,10 @@ void Renderer::setTexture(const char* textureData, unsigned int dataLength) {
 
 void Renderer::update(float deltaTime) {
     // Update buffer.
-    updateBuffer->setData(&deltaTime, sizeof(deltaTime));
+    UpdateUniform updateUniform;
+    updateUniform.deltaTime = deltaTime;
+    updateUniform.particleCount = particleCount;
+    updateBuffer->setData(&updateUniform, sizeof(updateUniform));
     
     // Start command buffer recording.
     VkCommandBufferBeginInfo beginInfo = {};

@@ -46,14 +46,18 @@ class Renderer {
             std::vector<VkSurfaceFormatKHR> formats;
             std::vector<VkPresentModeKHR> presentModes;
         };
+        struct Particle {
+            glm::vec4 position;
+            glm::vec4 velocity;
+        };
         struct CameraUniform {
             glm::mat4 viewProjectionMatrix;
             glm::vec4 cameraPosition;
             glm::vec4 cameraUp;
         };
-        struct Particle {
-            glm::vec4 position;
-            glm::vec4 velocity;
+        struct UpdateUniform {
+            float deltaTime;
+            unsigned int particleCount;
         };
         
         void createInstance();
