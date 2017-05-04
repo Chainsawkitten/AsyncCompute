@@ -31,8 +31,12 @@ class Renderer {
          */
         void setTexture(const char* textureData, unsigned int dataLength);
         
+        /// Update particles.
+        void update();
+        
         /// Render image to screen.
         void render();
+        
     private:
         struct SwapChainSupport {
             VkSurfaceCapabilitiesKHR capabilities;

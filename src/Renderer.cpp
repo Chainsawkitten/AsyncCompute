@@ -126,6 +126,10 @@ void Renderer::setTexture(const char* textureData, unsigned int dataLength) {
     particleTexture = new Texture(textureData, dataLength, device, physicalDevice, graphicsCommandPool, graphicsQueue, descriptorPool);
 }
 
+void Renderer::update() {
+    
+}
+
 void Renderer::render() {
     // Get image from swapchain.
     vkAcquireNextImageKHR(device, swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
