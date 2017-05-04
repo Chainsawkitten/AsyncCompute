@@ -74,8 +74,8 @@ Renderer::Renderer(Window& window) {
     positions[1] = glm::vec4(0.5, 0.5, 0.0, 1.0);
     positions[2] = glm::vec4(-0.5, 0.5, 0.0, 1.0);
     
-    particleBuffer = new StorageBuffer(positions, sizeof(positions), device, physicalDevice, descriptorPool);
-    
+    particleBuffer = new StorageBuffer(positions, sizeof(positions), device, physicalDevice, descriptorPool, graphicsQueue, graphicsCommandPool);
+
     CameraUniform cameraUniform;
     cameraUniform.viewProjectionMatrix = camera.getViewProjectionMatrix(glm::vec2(window.getWidth(), window.getHeight()));
     cameraUniform.cameraPosition = glm::vec4(camera.getPosition(), 1.0f);
