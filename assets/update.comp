@@ -22,6 +22,14 @@ layout(set = 1, binding = 0) uniform UpdateBuffer {
 void main() {
     uint myID = gl_GlobalInvocationID.x;
     
+    // Find neighbors.
+    uint neighbors[10];
+    uint neighborCount = 0;
+    for (uint i=0; i < particleCount && neighborCount < 10; ++i) {
+        if (i != myID && distance(particles[i].position.xyz, particles[myID].position.xyz) < 1.0)
+            neighbors[neighborCount++] = i;
+    }
+    
     // Rule 1.
     vec3 centerOfMass = vec3(0.0, 0.0, 0.0);
     for (uint i=0; i < particleCount; ++i) {
