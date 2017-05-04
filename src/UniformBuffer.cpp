@@ -11,10 +11,7 @@ UniformBuffer::UniformBuffer(const void* data, unsigned int size, VkDevice devic
     createBuffer(size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &buffer, &bufferMemory);
     
     // Copy data to mapped memory.
-    void* mappedMemory;
-    vkMapMemory(device, bufferMemory, 0, size, 0, &mappedMemory);
-    memcpy(mappedMemory, data, size);
-    vkUnmapMemory(device, bufferMemory);
+    setData(data, size);
     
     // Create descriptor set.
     createDescriptorSetLayout(flags);
@@ -29,6 +26,13 @@ UniformBuffer::~UniformBuffer() {
 
 VkDescriptorSet UniformBuffer::getDescriptorSet() const {
     return descriptorSet;
+}
+
+void UniformBuffer::setData(const void* data, unsigned int size) {
+    void* mappedMemory;
+    vkMapMemory(device, bufferMemory, 0, size, 0, &mappedMemory);
+    memcpy(mappedMemory, data, size);
+    vkUnmapMemory(device, bufferMemory);
 }
 
 void UniformBuffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory) {

@@ -25,6 +25,13 @@ class UniformBuffer {
          */
         VkDescriptorSet getDescriptorSet() const;
         
+        /// Update the buffer's data.
+        /**
+         * @param data Buffer data.
+         * @param size Buffer size.
+         */
+        void setData(const void* data, unsigned int size);
+        
     private:
         void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory);
         void createDescriptorSetLayout(VkShaderStageFlags flags);
