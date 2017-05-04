@@ -137,6 +137,7 @@ void Renderer::update() {
     
     // Update particles.
     vkCmdBindPipeline(computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipeline());
+    vkCmdDispatch(computeCommandBuffer, 1, 1, 1);
     
     if (vkEndCommandBuffer(computeCommandBuffer) != VK_SUCCESS) {
         std::cerr << "Failed to record command buffer" << std::endl;
