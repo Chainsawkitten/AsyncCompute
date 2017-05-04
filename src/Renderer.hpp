@@ -51,6 +51,10 @@ class Renderer {
             glm::vec4 cameraPosition;
             glm::vec4 cameraUp;
         };
+        struct Particle {
+            glm::vec4 position;
+            glm::vec4 velocity;
+        };
         
         void createInstance();
         void setupDebugCallback();

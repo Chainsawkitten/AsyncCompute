@@ -5,8 +5,13 @@
 
 layout (local_size_x = 1, local_size_y = 1) in;
 
+struct Particle {
+    vec4 position;
+    vec4 velocity;
+};
+
 layout(set = 0, binding = 0) buffer ParticleBuffer {
-    vec4 positions[];
+    Particle particles[];
 };
 
 layout(set = 1, binding = 0) uniform UpdateBuffer {
@@ -14,5 +19,5 @@ layout(set = 1, binding = 0) uniform UpdateBuffer {
 };
 
 void main() {
-    positions[gl_GlobalInvocationID.x].x += deltaTime * 0.5;
+    particles[gl_GlobalInvocationID.x].position.x += deltaTime * 0.5;
 }

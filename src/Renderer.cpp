@@ -73,11 +73,13 @@ Renderer::Renderer(Window& window) {
     std::mt19937 randomEngine;
     std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
     
-    glm::vec4 positions[particleCount];
-    for (int i=0; i < particleCount; ++i)
-        positions[i] = glm::vec4(distribution(randomEngine), distribution(randomEngine), distribution(randomEngine), 1.0f);
+    Particle particles[particleCount];
+    for (int i=0; i < particleCount; ++i) {
+        particles[i].position = glm::vec4(distribution(randomEngine), distribution(randomEngine), distribution(randomEngine), 1.0f);
+        particles[i].velocity = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    }
     
-    particleBuffer = new StorageBuffer(positions, sizeof(positions), device, physicalDevice, descriptorPool, graphicsQueue, graphicsCommandPool);
+    particleBuffer = new StorageBuffer(particles, sizeof(particles), device, physicalDevice, descriptorPool, graphicsQueue, graphicsCommandPool);
 
     CameraUniform cameraUniform;
     cameraUniform.viewProjectionMatrix = camera.getViewProjectionMatrix(glm::vec2(window.getWidth(), window.getHeight()));
