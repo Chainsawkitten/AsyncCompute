@@ -32,31 +32,27 @@ void main() {
     
     // Rule 1.
     vec3 centerOfMass = vec3(0.0, 0.0, 0.0);
-    for (uint i=0; i < particleCount; ++i) {
-        if (i != myID)
-            centerOfMass += particles[i].position.xyz;
+    for (uint i=0; i < neighborCount; ++i) {
+        centerOfMass += particles[neighbors[i]].position.xyz;
     }
-    centerOfMass /= particleCount - 1;
+    centerOfMass /= neighborCount + 1;
     vec3 rule1 = 0.1 * (centerOfMass - particles[myID].position.xyz);
     
     // Rule 2.
     vec3 rule2 = vec3(0.0, 0.0, 0.0);
-    for (uint i=0; i < particleCount; ++i) {
-        if (i != myID) {
-            vec3 diff = particles[i].position.xyz - particles[myID].position.xyz;
-            if (length(diff) < 0.2)
-                rule2 -= diff;
-        }
+    for (uint i=0; i < neighborCount; ++i) {
+        vec3 diff = particles[neighbors[i]].position.xyz - particles[myID].position.xyz;
+        if (length(diff) < 0.2)
+            rule2 -= diff;
     }
     
     // Rule 3.
     vec3 rule3 = vec3(0.0, 0.0, 0.0);
-    for (uint i=0; i < particleCount; ++i) {
-        if (i != myID)
-            rule3 += particles[i].velocity.xyz;
+    for (uint i=0; i < neighborCount; ++i) {
+        rule3 += particles[neighbors[i]].velocity.xyz;
     }
-    rule3 /= particleCount - 1;
-    rule3 = 0.25 * (rule3 - particles[myID].position.xyz);
+    rule3 /= neighborCount + 1;
+    rule3 *= 0.1;
     
     // Update boid.
     particles[myID].velocity += deltaTime * vec4(rule1 + rule2 + rule3, 0.0);
