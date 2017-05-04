@@ -81,9 +81,13 @@ Renderer::Renderer(Window& window) {
     cameraUniform.cameraPosition = glm::vec4(camera.getPosition(), 1.0f);
     cameraUniform.cameraUp = glm::vec4(camera.getUp(), 1.0f);
     cameraBuffer = new UniformBuffer(&cameraUniform, sizeof(cameraUniform), device, physicalDevice, descriptorPool, VK_SHADER_STAGE_GEOMETRY_BIT);
+    
+    float deltaTime = 1.f;
+    updateBuffer = new UniformBuffer(&deltaTime, sizeof(deltaTime), device, physicalDevice, descriptorPool, VK_SHADER_STAGE_COMPUTE_BIT);
 }
 
 Renderer::~Renderer() {
+    delete updateBuffer;
     delete cameraBuffer;
     delete particleBuffer;
     delete graphicsPipeline;
@@ -652,7 +656,7 @@ void Renderer::createDescriptorPool() {
     // Uniform buffers.
     poolSizes[1] = {};
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSizes[1].descriptorCount = 1;
+    poolSizes[1].descriptorCount = 2;
     
     // Samplers.
     poolSizes[2] = {};
@@ -664,7 +668,7 @@ void Renderer::createDescriptorPool() {
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = 3;
     poolInfo.pPoolSizes = poolSizes;
-    poolInfo.maxSets = 3;
+    poolInfo.maxSets = 4;
     
     if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
         std::cerr << "Failed to create descriptor pool." << std::endl;

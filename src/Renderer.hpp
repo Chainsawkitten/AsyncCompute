@@ -111,6 +111,7 @@ class Renderer {
         ComputePipeline* computePipeline;
         StorageBuffer* particleBuffer;
         UniformBuffer* cameraBuffer;
+        UniformBuffer* updateBuffer;
         
         Camera camera;
 };
