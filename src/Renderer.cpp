@@ -153,7 +153,7 @@ void Renderer::update(float deltaTime) {
     descriptorSets.push_back(particleBuffer->getDescriptorSet());
     descriptorSets.push_back(updateBuffer->getDescriptorSet());
     vkCmdBindDescriptorSets(computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
-    vkCmdDispatch(computeCommandBuffer, 1, 1, 1);
+    vkCmdDispatch(computeCommandBuffer, particleCount, 1, 1);
     
     if (vkEndCommandBuffer(computeCommandBuffer) != VK_SUCCESS) {
         std::cerr << "Failed to record command buffer" << std::endl;
