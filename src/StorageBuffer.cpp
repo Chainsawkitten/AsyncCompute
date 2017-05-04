@@ -130,7 +130,7 @@ void StorageBuffer::createDescriptorSetLayout() {
     vertexLayoutBinding.binding = 0;
     vertexLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
     vertexLayoutBinding.descriptorCount = 1;
-    vertexLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    vertexLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_COMPUTE_BIT;
     vertexLayoutBinding.pImmutableSamplers = nullptr;
     
     VkDescriptorSetLayoutCreateInfo layoutInfo = {};

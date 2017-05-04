@@ -138,6 +138,10 @@ void Renderer::update() {
     
     // Update particles.
     vkCmdBindPipeline(computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipeline());
+    
+    std::vector<VkDescriptorSet> descriptorSets;
+    descriptorSets.push_back(particleBuffer->getDescriptorSet());
+    vkCmdBindDescriptorSets(computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
     vkCmdDispatch(computeCommandBuffer, 1, 1, 1);
     
     if (vkEndCommandBuffer(computeCommandBuffer) != VK_SUCCESS) {
