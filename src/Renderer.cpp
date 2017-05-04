@@ -71,13 +71,15 @@ Renderer::Renderer(Window& window) {
     
     // Create buffers.
     std::mt19937 randomEngine;
-    std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
+    std::uniform_real_distribution<float> distribution(-3.0f, 3.0f);
     
-    glm::vec4 positions[particleCount];
-    for (int i=0; i < particleCount; ++i)
-        positions[i] = glm::vec4(distribution(randomEngine), distribution(randomEngine), distribution(randomEngine), 1.0f);
+    Particle particles[particleCount];
+    for (int i=0; i < particleCount; ++i) {
+        particles[i].position = glm::vec4(distribution(randomEngine), distribution(randomEngine), distribution(randomEngine), 1.0f);
+        particles[i].velocity = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    }
     
-    particleBuffer = new StorageBuffer(positions, sizeof(positions), device, physicalDevice, descriptorPool, graphicsQueue, graphicsCommandPool);
+    particleBuffer = new StorageBuffer(particles, sizeof(particles), device, physicalDevice, descriptorPool, graphicsQueue, graphicsCommandPool);
 
     CameraUniform cameraUniform;
     cameraUniform.viewProjectionMatrix = camera.getViewProjectionMatrix(glm::vec2(window.getWidth(), window.getHeight()));
@@ -85,8 +87,10 @@ Renderer::Renderer(Window& window) {
     cameraUniform.cameraUp = glm::vec4(camera.getUp(), 1.0f);
     cameraBuffer = new UniformBuffer(&cameraUniform, sizeof(cameraUniform), device, physicalDevice, descriptorPool, VK_SHADER_STAGE_GEOMETRY_BIT);
     
-    float deltaTime = 0.0f;
-    updateBuffer = new UniformBuffer(&deltaTime, sizeof(deltaTime), device, physicalDevice, descriptorPool, VK_SHADER_STAGE_COMPUTE_BIT);
+    UpdateUniform updateUniform;
+    updateUniform.deltaTime = 0.0f;
+    updateUniform.particleCount = particleCount;
+    updateBuffer = new UniformBuffer(&updateUniform, sizeof(updateUniform), device, physicalDevice, descriptorPool, VK_SHADER_STAGE_COMPUTE_BIT);
 }
 
 Renderer::~Renderer() {
@@ -136,7 +140,10 @@ void Renderer::setTexture(const char* textureData, unsigned int dataLength) {
 
 void Renderer::update(float deltaTime) {
     // Update buffer.
-    updateBuffer->setData(&deltaTime, sizeof(deltaTime));
+    UpdateUniform updateUniform;
+    updateUniform.deltaTime = deltaTime;
+    updateUniform.particleCount = particleCount;
+    updateBuffer->setData(&updateUniform, sizeof(updateUniform));
     
     // Start command buffer recording.
     VkCommandBufferBeginInfo beginInfo = {};
@@ -153,7 +160,7 @@ void Renderer::update(float deltaTime) {
     descriptorSets.push_back(particleBuffer->getDescriptorSet());
     descriptorSets.push_back(updateBuffer->getDescriptorSet());
     vkCmdBindDescriptorSets(computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
-    vkCmdDispatch(computeCommandBuffer, 1, 1, 1);
+    vkCmdDispatch(computeCommandBuffer, particleCount, 1, 1);
     
     if (vkEndCommandBuffer(computeCommandBuffer) != VK_SUCCESS) {
         std::cerr << "Failed to record command buffer" << std::endl;

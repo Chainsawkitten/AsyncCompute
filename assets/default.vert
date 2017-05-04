@@ -3,10 +3,20 @@
 */
 #version 430
 
-layout(set = 0, binding = 0) buffer ParticleBuffer {
-    vec4 positions[];
+struct Particle {
+    vec4 position;
+    vec4 velocity;
 };
 
+layout(set = 0, binding = 0) buffer ParticleBuffer {
+    Particle particles[];
+};
+
+out VertexData {
+    vec4 velocity;
+} vertexOut;
+
 void main() {
-    gl_Position = positions[gl_VertexIndex];
+    gl_Position = particles[gl_VertexIndex].position;
+    vertexOut.velocity = particles[gl_VertexIndex].velocity;
 }
