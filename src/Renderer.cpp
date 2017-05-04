@@ -71,7 +71,7 @@ Renderer::Renderer(Window& window) {
     
     // Create buffers.
     std::mt19937 randomEngine;
-    std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
+    std::uniform_real_distribution<float> distribution(-3.0f, 3.0f);
     
     Particle particles[particleCount];
     for (int i=0; i < particleCount; ++i) {
