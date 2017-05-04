@@ -20,6 +20,9 @@ ComputePipeline::ComputePipeline(VkDevice device) : shader(UPDATE_COMP_SPV, UPDA
         exit(-1);
     }
     
+    // Descriptor set layouts.
+    createDescriptorSetLayouts();
+    
     // Create pipeline.
     VkComputePipelineCreateInfo pipelineInfo = {};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
@@ -49,4 +52,27 @@ VkPipelineShaderStageCreateInfo ComputePipeline::createShaderStage(VkShaderStage
     createInfo.pName = "main";
     
     return createInfo;
+}
+
+void ComputePipeline::createDescriptorSetLayouts() {
+    VkDescriptorSetLayout layout;
+    
+    // Position storage buffer.
+    VkDescriptorSetLayoutBinding layoutBinding = {};
+    layoutBinding.binding = 0;
+    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    layoutBinding.descriptorCount = 1;
+    layoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_COMPUTE_BIT;
+    
+    VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.bindingCount = 1;
+    layoutInfo.pBindings = &layoutBinding;
+    
+    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &layout) != VK_SUCCESS) {
+        std::cerr << "Failed to create descriptor set layout." << std::endl;
+        exit(-1);
+    }
+    
+    descriptorSetLayouts.push_back(layout);
 }
