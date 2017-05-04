@@ -47,6 +47,10 @@ VkPipeline ComputePipeline::getPipeline() const {
     return pipeline;
 }
 
+VkPipelineLayout ComputePipeline::getPipelineLayout() const {
+    return pipelineLayout;
+}
+
 VkPipelineShaderStageCreateInfo ComputePipeline::createShaderStage(VkShaderStageFlagBits flags, VkShaderModule module) {
     VkPipelineShaderStageCreateInfo createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
