@@ -32,7 +32,10 @@ class Renderer {
         void setTexture(const char* textureData, unsigned int dataLength);
         
         /// Update particles.
-        void update();
+        /**
+         * @param deltaTime Time since last frame (in seconds).
+         */
+        void update(float deltaTime);
         
         /// Render image to screen.
         void render();

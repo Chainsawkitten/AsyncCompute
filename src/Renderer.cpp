@@ -127,7 +127,7 @@ void Renderer::setTexture(const char* textureData, unsigned int dataLength) {
     particleTexture = new Texture(textureData, dataLength, device, physicalDevice, graphicsCommandPool, graphicsQueue, descriptorPool);
 }
 
-void Renderer::update() {
+void Renderer::update(float deltaTime) {
     // Start command buffer recording.
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
