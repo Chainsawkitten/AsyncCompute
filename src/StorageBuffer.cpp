@@ -31,6 +31,10 @@ StorageBuffer::StorageBuffer(const void* data, unsigned int size, VkDevice devic
     // Create descriptor set.
     createDescriptorSetLayout();
     createDescriptorSet(size);
+    
+    // Destroy staging buffer.
+    vkDestroyBuffer(device, stagingBuffer, nullptr);
+    vkFreeMemory(device, stagingBufferMemory, nullptr);
 }
 
 StorageBuffer::~StorageBuffer() {
