@@ -76,7 +76,7 @@ Renderer::Renderer(Window& window) {
     Particle particles[particleCount];
     for (int i=0; i < particleCount; ++i) {
         particles[i].position = glm::vec4(distribution(randomEngine), distribution(randomEngine), distribution(randomEngine), 1.0f);
-        particles[i].velocity = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+        particles[i].velocity = glm::vec4(distribution(randomEngine), distribution(randomEngine), distribution(randomEngine), 0.0f);
     }
     
     particleBuffer = new StorageBuffer(particles, sizeof(particles), device, physicalDevice, descriptorPool, graphicsQueue, graphicsCommandPool);

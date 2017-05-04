@@ -19,5 +19,5 @@ layout(set = 1, binding = 0) uniform UpdateBuffer {
 };
 
 void main() {
-    particles[gl_GlobalInvocationID.x].position.x += deltaTime * 0.5;
+    particles[gl_GlobalInvocationID.x].position += deltaTime * particles[gl_GlobalInvocationID.x].velocity;
 }
