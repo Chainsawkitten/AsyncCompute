@@ -61,8 +61,8 @@ Renderer::Renderer(Window& window) {
     // Create semaphores.
     createSemaphores();
     
-    // Create fence.
-    createFence();
+    // Create fences.
+    createFences();
     
     // Create pipelines.
     graphicsPipeline = new GraphicsPipeline(device, swapChainExtent, renderPass);
@@ -90,7 +90,8 @@ Renderer::~Renderer() {
     delete computePipeline;
     delete particleTexture;
     
-    vkDestroyFence(device, fence, nullptr);
+    vkDestroyFence(device, graphicsFence, nullptr);
+    vkDestroyFence(device, computeFence, nullptr);
     vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
     vkDestroySemaphore(device, renderFinishedSemaphore, nullptr);
     
@@ -143,6 +144,15 @@ void Renderer::update() {
         std::cerr << "Failed to record command buffer" << std::endl;
         exit(-1);
     }
+    
+    // Create submit info.
+    VkSubmitInfo submitInfo = {};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &computeCommandBuffer;
+    
+    if (vkQueueSubmit(computeQueue, 1, &submitInfo, computeFence) != VK_SUCCESS)
+        std::cout << "Could not submit command buffer to compute queue." << std::endl;
 }
 
 void Renderer::render() {
@@ -203,7 +213,7 @@ void Renderer::render() {
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &graphicsCommandBuffer;
     
-    if(vkQueueSubmit(graphicsQueue, 1, &submitInfo, fence) != VK_SUCCESS)
+    if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, graphicsFence) != VK_SUCCESS)
         std::cout << "Could not submit command buffer to graphics queue." << std::endl;
     
     // Setup presentation
@@ -220,8 +230,8 @@ void Renderer::render() {
     vkQueuePresentKHR(presentQueue, &presentInfo);
     
     // Wait for finished rendering.
-    while (vkWaitForFences(device, 1, &fence, VK_TRUE, 1000) != VK_SUCCESS);
-    vkResetFences(device, 1, &fence);
+    while (vkWaitForFences(device, 1, &graphicsFence, VK_TRUE, 1000) != VK_SUCCESS);
+    vkResetFences(device, 1, &graphicsFence);
 }
 
 void Renderer::createInstance() {
@@ -665,11 +675,12 @@ void Renderer::createSemaphores() {
         std::cout << "Couldn't create semaphore" << std::endl;
 }
 
-void Renderer::createFence() {
+void Renderer::createFences() {
     VkFenceCreateInfo fenceInfo = {};
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.pNext = nullptr;
     fenceInfo.flags = 0;
     
-    vkCreateFence(device, &fenceInfo, nullptr, &fence);
+    vkCreateFence(device, &fenceInfo, nullptr, &graphicsFence);
+    vkCreateFence(device, &fenceInfo, nullptr, &computeFence);
 }

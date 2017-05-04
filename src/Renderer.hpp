@@ -68,7 +68,7 @@ class Renderer {
         void createDescriptorPool();
         
         void createSemaphores();
-        void createFence();
+        void createFences();
         
         VkInstance instance;
 #ifndef NDEBUG
@@ -100,7 +100,8 @@ class Renderer {
         VkSemaphore imageAvailableSemaphore;
         VkSemaphore renderFinishedSemaphore;
         uint32_t imageIndex = 0;
-        VkFence fence;
+        VkFence graphicsFence;
+        VkFence computeFence;
         
         Texture* particleTexture;
         GraphicsPipeline* graphicsPipeline;
