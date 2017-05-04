@@ -9,19 +9,19 @@ ComputePipeline::ComputePipeline(VkDevice device) : shader(UPDATE_COMP_SPV, UPDA
     // Create shader stages.
     VkPipelineShaderStageCreateInfo shaderStageCreateInfo = createShaderStage(VK_SHADER_STAGE_COMPUTE_BIT, shader.getModule());
     
+    // Descriptor set layouts.
+    createDescriptorSetLayouts();
+    
     // Pipeline layout.
     VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 0;
-    pipelineLayoutInfo.pSetLayouts = nullptr;
+    pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size();
+    pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
     
     if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
         std::cerr << "Failed to create compute pipeline layout." << std::endl;
         exit(-1);
     }
-    
-    // Descriptor set layouts.
-    createDescriptorSetLayouts();
     
     // Create pipeline.
     VkComputePipelineCreateInfo pipelineInfo = {};
