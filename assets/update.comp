@@ -21,6 +21,7 @@ layout(set = 1, binding = 0) uniform UpdateBuffer {
 
 void main() {
     uint myID = gl_GlobalInvocationID.x;
+    vec3 velocity = particles[myID].velocity.xyz;
     
     // Find neighbors.
     uint neighbors[10];
@@ -54,7 +55,13 @@ void main() {
     rule3 /= neighborCount + 1;
     rule3 *= 0.1;
     
+    // Limit speed.
+    velocity += deltaTime * (rule1 + rule2 + rule3);
+    float velocityLength = length(velocity);
+    if (velocityLength > 1.0)
+        velocity /= velocityLength;
+    
     // Update boid.
-    particles[myID].velocity += deltaTime * vec4(rule1 + rule2 + rule3, 0.0);
-    particles[myID].position += deltaTime * particles[myID].velocity;
+    particles[myID].velocity = vec4(velocity, 0.0);
+    particles[myID].position += deltaTime * vec4(velocity, 0.0);
 }
