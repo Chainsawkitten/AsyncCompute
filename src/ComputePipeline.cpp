@@ -38,6 +38,9 @@ ComputePipeline::ComputePipeline(VkDevice device) : shader(UPDATE_COMP_SPV, UPDA
 ComputePipeline::~ComputePipeline() {
     vkDestroyPipeline(device, pipeline, nullptr);
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+    
+    for (VkDescriptorSetLayout layout : descriptorSetLayouts)
+        vkDestroyDescriptorSetLayout(device, layout, nullptr);
 }
 
 VkPipeline ComputePipeline::getPipeline() const {
