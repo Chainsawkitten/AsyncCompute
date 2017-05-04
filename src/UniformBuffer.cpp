@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cstring>
 
-UniformBuffer::UniformBuffer(const void* data, unsigned int size, VkDevice device, VkPhysicalDevice physicalDevice, VkDescriptorPool descriptorPool) {
+UniformBuffer::UniformBuffer(const void* data, unsigned int size, VkDevice device, VkPhysicalDevice physicalDevice, VkDescriptorPool descriptorPool, VkShaderStageFlags flags) {
     this->device = device;
     this->physicalDevice = physicalDevice;
     this->descriptorPool = descriptorPool;
@@ -17,7 +17,7 @@ UniformBuffer::UniformBuffer(const void* data, unsigned int size, VkDevice devic
     vkUnmapMemory(device, bufferMemory);
     
     // Create descriptor set.
-    createDescriptorSetLayout();
+    createDescriptorSetLayout(flags);
     createDescriptorSet(size);
 }
 
@@ -72,12 +72,12 @@ void UniformBuffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, Vk
     vkBindBufferMemory(device, *buffer, *bufferMemory, 0);
 }
 
-void UniformBuffer::createDescriptorSetLayout() {
+void UniformBuffer::createDescriptorSetLayout(VkShaderStageFlags flags) {
     VkDescriptorSetLayoutBinding vertexLayoutBinding = {};
     vertexLayoutBinding.binding = 0;
     vertexLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     vertexLayoutBinding.descriptorCount = 1;
-    vertexLayoutBinding.stageFlags = VK_SHADER_STAGE_GEOMETRY_BIT;
+    vertexLayoutBinding.stageFlags = flags;
     vertexLayoutBinding.pImmutableSamplers = nullptr;
     
     VkDescriptorSetLayoutCreateInfo layoutInfo = {};

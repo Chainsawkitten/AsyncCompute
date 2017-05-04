@@ -80,7 +80,7 @@ Renderer::Renderer(Window& window) {
     cameraUniform.viewProjectionMatrix = camera.getViewProjectionMatrix(glm::vec2(window.getWidth(), window.getHeight()));
     cameraUniform.cameraPosition = glm::vec4(camera.getPosition(), 1.0f);
     cameraUniform.cameraUp = glm::vec4(camera.getUp(), 1.0f);
-    cameraBuffer = new UniformBuffer(&cameraUniform, sizeof(cameraUniform), device, physicalDevice, descriptorPool);
+    cameraBuffer = new UniformBuffer(&cameraUniform, sizeof(cameraUniform), device, physicalDevice, descriptorPool, VK_SHADER_STAGE_GEOMETRY_BIT);
 }
 
 Renderer::~Renderer() {
