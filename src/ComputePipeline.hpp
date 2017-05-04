@@ -14,6 +14,12 @@ class ComputePipeline {
         /// Destructor.
         ~ComputePipeline();
         
+        /// Get pipeline.
+        /**
+         * @return The pipeline.
+         */
+        VkPipeline getPipeline() const;
+        
     private:
         VkPipelineShaderStageCreateInfo createShaderStage(VkShaderStageFlagBits flags, VkShaderModule module);
         

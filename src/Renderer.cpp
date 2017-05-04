@@ -134,6 +134,9 @@ void Renderer::update() {
     beginInfo.pInheritanceInfo = nullptr;
     
     vkBeginCommandBuffer(computeCommandBuffer, &beginInfo);
+    
+    // Update particles.
+    vkCmdBindPipeline(computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipeline());
 }
 
 void Renderer::render() {
