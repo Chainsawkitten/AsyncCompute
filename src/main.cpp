@@ -9,8 +9,12 @@ int main(int argc, char* argv[]) {
     Renderer* renderer = new Renderer(window);
     renderer->setTexture(PARTICLE_PNG, PARTICLE_PNG_LENGTH);
     
+    double lastTime = glfwGetTime();
     while(!glfwWindowShouldClose(window.getWindow())){
         glfwPollEvents();
+        
+        double deltaTime = glfwGetTime() - lastTime;
+        lastTime = glfwGetTime();
         
         renderer->update();
         renderer->render();
