@@ -41,7 +41,16 @@ void main() {
         }
     }
     
+    // Rule 3.
+    vec3 rule3 = vec3(0.0, 0.0, 0.0);
+    for (uint i=0; i < particleCount; ++i) {
+        if (i != myID)
+            rule3 += particles[i].velocity.xyz;
+    }
+    rule3 /= particleCount - 1;
+    rule3 = 0.25 * (rule3 - particles[myID].position.xyz);
+    
     // Update boid.
-    particles[myID].velocity += deltaTime * vec4(rule1 + rule2, 0.0);
+    particles[myID].velocity += deltaTime * vec4(rule1 + rule2 + rule3, 0.0);
     particles[myID].position += deltaTime * particles[myID].velocity;
 }
