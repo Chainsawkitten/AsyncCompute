@@ -80,10 +80,14 @@ Renderer::Renderer(Window& window) {
     cameraUniform.viewProjectionMatrix = camera.getViewProjectionMatrix(glm::vec2(window.getWidth(), window.getHeight()));
     cameraUniform.cameraPosition = glm::vec4(camera.getPosition(), 1.0f);
     cameraUniform.cameraUp = glm::vec4(camera.getUp(), 1.0f);
-    cameraBuffer = new UniformBuffer(&cameraUniform, sizeof(cameraUniform), device, physicalDevice, descriptorPool);
+    cameraBuffer = new UniformBuffer(&cameraUniform, sizeof(cameraUniform), device, physicalDevice, descriptorPool, VK_SHADER_STAGE_GEOMETRY_BIT);
+    
+    float deltaTime = 0.f;
+    updateBuffer = new UniformBuffer(&deltaTime, sizeof(deltaTime), device, physicalDevice, descriptorPool, VK_SHADER_STAGE_COMPUTE_BIT);
 }
 
 Renderer::~Renderer() {
+    delete updateBuffer;
     delete cameraBuffer;
     delete particleBuffer;
     delete graphicsPipeline;
@@ -127,7 +131,10 @@ void Renderer::setTexture(const char* textureData, unsigned int dataLength) {
     particleTexture = new Texture(textureData, dataLength, device, physicalDevice, graphicsCommandPool, graphicsQueue, descriptorPool);
 }
 
-void Renderer::update() {
+void Renderer::update(float deltaTime) {
+    // Update buffer.
+    updateBuffer->setData(&deltaTime, sizeof(deltaTime));
+    
     // Start command buffer recording.
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -141,6 +148,7 @@ void Renderer::update() {
     
     std::vector<VkDescriptorSet> descriptorSets;
     descriptorSets.push_back(particleBuffer->getDescriptorSet());
+    descriptorSets.push_back(updateBuffer->getDescriptorSet());
     vkCmdBindDescriptorSets(computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
     vkCmdDispatch(computeCommandBuffer, 1, 1, 1);
     
@@ -652,7 +660,7 @@ void Renderer::createDescriptorPool() {
     // Uniform buffers.
     poolSizes[1] = {};
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSizes[1].descriptorCount = 1;
+    poolSizes[1].descriptorCount = 2;
     
     // Samplers.
     poolSizes[2] = {};
@@ -664,7 +672,7 @@ void Renderer::createDescriptorPool() {
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = 3;
     poolInfo.pPoolSizes = poolSizes;
-    poolInfo.maxSets = 3;
+    poolInfo.maxSets = 4;
     
     if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
         std::cerr << "Failed to create descriptor pool." << std::endl;
