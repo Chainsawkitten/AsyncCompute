@@ -31,7 +31,17 @@ void main() {
     centerOfMass /= particleCount - 1;
     vec3 rule1 = 0.1 * (centerOfMass - particles[myID].position.xyz);
     
+    // Rule 2.
+    vec3 rule2 = vec3(0.0, 0.0, 0.0);
+    for (uint i=0; i < particleCount; ++i) {
+        if (i != myID) {
+            vec3 diff = particles[i].position.xyz - particles[myID].position.xyz;
+            if (length(diff) < 0.2)
+                rule2 -= diff;
+        }
+    }
+    
     // Update boid.
-    particles[myID].velocity += deltaTime * vec4(rule1, 0.0);
+    particles[myID].velocity += deltaTime * vec4(rule1 + rule2, 0.0);
     particles[myID].position += deltaTime * particles[myID].velocity;
 }
