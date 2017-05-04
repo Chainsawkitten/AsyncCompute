@@ -14,6 +14,7 @@
 #include "StorageBuffer.hpp"
 #include "UniformBuffer.hpp"
 #include <glm/glm.hpp>
+#include <random>
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
@@ -69,10 +70,12 @@ Renderer::Renderer(Window& window) {
     computePipeline = new ComputePipeline(device);
     
     // Create buffers.
+    std::mt19937 randomEngine;
+    std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
+    
     glm::vec4 positions[3];
-    positions[0] = glm::vec4(0.0, 0.0, 0.0, 1.0);
-    positions[1] = glm::vec4(0.5, 0.5, 0.0, 1.0);
-    positions[2] = glm::vec4(-0.5, 0.5, 0.0, 1.0);
+    for (int i=0; i < 3; ++i)
+        positions[i] = glm::vec4(distribution(randomEngine), distribution(randomEngine), distribution(randomEngine), 1.0f);
     
     particleBuffer = new StorageBuffer(positions, sizeof(positions), device, physicalDevice, descriptorPool, graphicsQueue, graphicsCommandPool);
 
@@ -82,7 +85,7 @@ Renderer::Renderer(Window& window) {
     cameraUniform.cameraUp = glm::vec4(camera.getUp(), 1.0f);
     cameraBuffer = new UniformBuffer(&cameraUniform, sizeof(cameraUniform), device, physicalDevice, descriptorPool, VK_SHADER_STAGE_GEOMETRY_BIT);
     
-    float deltaTime = 0.f;
+    float deltaTime = 0.0f;
     updateBuffer = new UniformBuffer(&deltaTime, sizeof(deltaTime), device, physicalDevice, descriptorPool, VK_SHADER_STAGE_COMPUTE_BIT);
 }
 
