@@ -16,7 +16,7 @@ ComputePipeline::ComputePipeline(VkDevice device) : shader(UPDATE_COMP_SPV, UPDA
     pipelineLayoutInfo.pSetLayouts = nullptr;
     
     if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
-        std::cerr << "Failed to create graphics pipeline layout." << std::endl;
+        std::cerr << "Failed to create compute pipeline layout." << std::endl;
         exit(-1);
     }
     
@@ -26,7 +26,10 @@ ComputePipeline::ComputePipeline(VkDevice device) : shader(UPDATE_COMP_SPV, UPDA
     pipelineInfo.layout = pipelineLayout;
     pipelineInfo.stage = shaderStageCreateInfo;
     
-    if (vkCreateComputePipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline));
+    if (vkCreateComputePipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline) != VK_SUCCESS) {
+        std::cerr << "Failed to create compute pipeline." << std::endl;
+        exit(-1);
+    }
 }
 
 ComputePipeline::~ComputePipeline() {
