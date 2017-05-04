@@ -9,6 +9,10 @@ layout(set = 0, binding = 0) buffer ParticleBuffer {
     vec4 positions[];
 };
 
+layout(set = 1, binding = 0) uniform UpdateBuffer {
+    float deltaTime;
+};
+
 void main() {
-    positions[0].x += 0.01;
+    positions[0].x += deltaTime * 0.01;
 }
