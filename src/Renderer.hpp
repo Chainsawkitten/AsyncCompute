@@ -8,6 +8,7 @@
 
 class Texture;
 class GraphicsPipeline;
+class ComputePipeline;
 class StorageBuffer;
 class UniformBuffer;
 
@@ -99,6 +100,7 @@ class Renderer {
         
         Texture* particleTexture;
         GraphicsPipeline* graphicsPipeline;
+        ComputePipeline* computePipeline;
         StorageBuffer* particleBuffer;
         UniformBuffer* cameraBuffer;
         
