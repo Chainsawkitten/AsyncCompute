@@ -153,6 +153,10 @@ void Renderer::update() {
     
     if (vkQueueSubmit(computeQueue, 1, &submitInfo, computeFence) != VK_SUCCESS)
         std::cout << "Could not submit command buffer to compute queue." << std::endl;
+    
+    // Wait for finished computing.
+    while (vkWaitForFences(device, 1, &computeFence, VK_TRUE, 1000) != VK_SUCCESS);
+    vkResetFences(device, 1, &computeFence);
 }
 
 void Renderer::render() {
