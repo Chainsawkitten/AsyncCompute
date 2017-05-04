@@ -19,5 +19,18 @@ layout(set = 1, binding = 0) uniform UpdateBuffer {
 };
 
 void main() {
-    particles[gl_GlobalInvocationID.x].position += deltaTime * particles[gl_GlobalInvocationID.x].velocity;
+    uint myID = gl_GlobalInvocationID.x;
+    
+    // Rule 1.
+    vec3 centerOfMass = vec3(0.0, 0.0, 0.0);
+    for (uint i=0; i < 1000; ++i) {
+        if (i != myID)
+            centerOfMass += particles[i].position.xyz;
+    }
+    centerOfMass /= 999.0;
+    vec3 rule1 = 0.1 * (centerOfMass - particles[myID].position.xyz);
+    
+    // Update boid.
+    particles[myID].velocity += deltaTime * vec4(rule1, 0.0);
+    particles[myID].position += deltaTime * particles[myID].velocity;
 }
