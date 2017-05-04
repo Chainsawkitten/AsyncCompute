@@ -109,6 +109,7 @@ class Renderer {
         Texture* particleTexture;
         GraphicsPipeline* graphicsPipeline;
         ComputePipeline* computePipeline;
+        int particleCount = 1000;
         StorageBuffer* particleBuffer;
         UniformBuffer* cameraBuffer;
         UniformBuffer* updateBuffer;

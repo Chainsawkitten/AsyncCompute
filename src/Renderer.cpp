@@ -73,8 +73,8 @@ Renderer::Renderer(Window& window) {
     std::mt19937 randomEngine;
     std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
     
-    glm::vec4 positions[3];
-    for (int i=0; i < 3; ++i)
+    glm::vec4 positions[particleCount];
+    for (int i=0; i < particleCount; ++i)
         positions[i] = glm::vec4(distribution(randomEngine), distribution(randomEngine), distribution(randomEngine), 1.0f);
     
     particleBuffer = new StorageBuffer(positions, sizeof(positions), device, physicalDevice, descriptorPool, graphicsQueue, graphicsCommandPool);
@@ -208,7 +208,7 @@ void Renderer::render() {
     descriptorSets.push_back(cameraBuffer->getDescriptorSet());
     descriptorSets.push_back(particleTexture->getDescriptorSet());
     vkCmdBindDescriptorSets(graphicsCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
-    vkCmdDraw(graphicsCommandBuffer, 3, 1, 0, 0);
+    vkCmdDraw(graphicsCommandBuffer, particleCount, 1, 0, 0);
     
     // End render pass.
     vkCmdEndRenderPass(graphicsCommandBuffer);
