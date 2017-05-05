@@ -34,7 +34,6 @@ class UniformBuffer : public Buffer {
         void setData(const void* data, unsigned int size);
         
     private:
-        void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory);
         void createDescriptorSetLayout(VkShaderStageFlags flags);
         void createDescriptorSet(VkDeviceSize size);
         
