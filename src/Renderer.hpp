@@ -118,7 +118,7 @@ class Renderer {
         GraphicsPipeline* graphicsPipeline;
         ComputePipeline* computePipeline;
         int particleCount = 5000;
-        StorageBuffer* particleBuffer;
+        StorageBuffer* particleBuffer[2];
         UniformBuffer* cameraBuffer;
         UniformBuffer* updateBuffer;
         

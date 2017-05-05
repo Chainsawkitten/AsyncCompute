@@ -79,7 +79,8 @@ Renderer::Renderer(Window& window) {
         particles[i].velocity = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
     }
     
-    particleBuffer = new StorageBuffer(particles, sizeof(particles), device, physicalDevice, descriptorPool, graphicsQueue, graphicsCommandPool);
+    particleBuffer[0] = new StorageBuffer(particles, sizeof(particles), device, physicalDevice, descriptorPool, graphicsQueue, graphicsCommandPool);
+    particleBuffer[1] = new StorageBuffer(particles, sizeof(particles), device, physicalDevice, descriptorPool, graphicsQueue, graphicsCommandPool);
 
     CameraUniform cameraUniform;
     cameraUniform.viewProjectionMatrix = camera.getViewProjectionMatrix(glm::vec2(window.getWidth(), window.getHeight()));
@@ -96,7 +97,8 @@ Renderer::Renderer(Window& window) {
 Renderer::~Renderer() {
     delete updateBuffer;
     delete cameraBuffer;
-    delete particleBuffer;
+    delete particleBuffer[0];
+    delete particleBuffer[1];
     delete graphicsPipeline;
     delete computePipeline;
     delete particleTexture;
@@ -157,7 +159,7 @@ void Renderer::update(float deltaTime) {
     vkCmdBindPipeline(computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipeline());
     
     std::vector<VkDescriptorSet> descriptorSets;
-    descriptorSets.push_back(particleBuffer->getDescriptorSet());
+    descriptorSets.push_back(particleBuffer[0]->getDescriptorSet());
     descriptorSets.push_back(updateBuffer->getDescriptorSet());
     vkCmdBindDescriptorSets(computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
     vkCmdDispatch(computeCommandBuffer, particleCount, 1, 1);
@@ -211,7 +213,7 @@ void Renderer::render() {
     vkCmdBindPipeline(graphicsCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipeline());
     
     std::vector<VkDescriptorSet> descriptorSets;
-    descriptorSets.push_back(particleBuffer->getDescriptorSet());
+    descriptorSets.push_back(particleBuffer[0]->getDescriptorSet());
     descriptorSets.push_back(cameraBuffer->getDescriptorSet());
     descriptorSets.push_back(particleTexture->getDescriptorSet());
     vkCmdBindDescriptorSets(graphicsCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
@@ -665,7 +667,7 @@ void Renderer::createDescriptorPool() {
     // Storage buffers.
     poolSizes[0] = {};
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-    poolSizes[0].descriptorCount = 1;
+    poolSizes[0].descriptorCount = 2;
     
     // Uniform buffers.
     poolSizes[1] = {};
@@ -682,7 +684,7 @@ void Renderer::createDescriptorPool() {
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = 3;
     poolInfo.pPoolSizes = poolSizes;
-    poolInfo.maxSets = 4;
+    poolInfo.maxSets = 5;
     
     if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
         std::cerr << "Failed to create descriptor pool." << std::endl;
