@@ -4,6 +4,10 @@
 
 /// Buffer used to store data.
 class Buffer {
+    public:
+        /// Destructor.
+        ~Buffer();
+        
     protected:
         /// Create new buffer.
         /**
@@ -22,7 +26,22 @@ class Buffer {
          */
         void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory);
         
+        /// Create descriptor set layout.
+        /**
+         * @param bufferType The type of buffer.
+         * @param shaderStages Which shader stages the buffer will be used in.
+         */
+        void createDescriptorSetLayout(VkDescriptorType bufferType, VkShaderStageFlags shaderStages);
+        
+        /// Get descriptor set layout.
+        /**
+         * @return The descriptor set layout.
+         */
+        const VkDescriptorSetLayout* getDescriptorSetLayout() const;
+        
     private:
         VkDevice device;
         VkPhysicalDevice physicalDevice;
+        
+        VkDescriptorSetLayout descriptorSetLayout;
 };

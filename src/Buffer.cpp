@@ -2,6 +2,10 @@
 
 #include <iostream>
 
+Buffer::~Buffer() {
+    vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
+}
+
 Buffer::Buffer(VkDevice device, VkPhysicalDevice physicalDevice) {
     this->device = device;
     this->physicalDevice = physicalDevice;
@@ -46,4 +50,27 @@ void Buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryP
     }
     
     vkBindBufferMemory(device, *buffer, *bufferMemory, 0);
+}
+
+void Buffer::createDescriptorSetLayout(VkDescriptorType bufferType, VkShaderStageFlags flags) {
+    VkDescriptorSetLayoutBinding vertexLayoutBinding = {};
+    vertexLayoutBinding.binding = 0;
+    vertexLayoutBinding.descriptorType = bufferType;
+    vertexLayoutBinding.descriptorCount = 1;
+    vertexLayoutBinding.stageFlags = flags;
+    vertexLayoutBinding.pImmutableSamplers = nullptr;
+    
+    VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.bindingCount = 1;
+    layoutInfo.pBindings = &vertexLayoutBinding;
+    
+    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout)) {
+        std::cerr << "Could not create descriptor set layout!" << std::endl;
+        exit(-1);
+    }
+}
+
+const VkDescriptorSetLayout* Buffer::getDescriptorSetLayout() const {
+    return &descriptorSetLayout;
 }

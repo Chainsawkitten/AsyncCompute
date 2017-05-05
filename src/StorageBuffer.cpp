@@ -29,7 +29,7 @@ StorageBuffer::StorageBuffer(const void* data, unsigned int size, VkDevice devic
     copyBuffer(stagingBuffer, buffer, size);
 
     // Create descriptor set.
-    createDescriptorSetLayout();
+    createDescriptorSetLayout(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_COMPUTE_BIT);
     createDescriptorSet(size);
     
     // Destroy staging buffer.
@@ -38,7 +38,6 @@ StorageBuffer::StorageBuffer(const void* data, unsigned int size, VkDevice devic
 }
 
 StorageBuffer::~StorageBuffer() {
-    vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
     vkDestroyBuffer(device, buffer, nullptr);
     vkFreeMemory(device, bufferMemory, nullptr);
 }
@@ -84,32 +83,13 @@ void StorageBuffer::copyBuffer(VkBuffer source, VkBuffer destination, VkDeviceSi
     vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 }
 
-void StorageBuffer::createDescriptorSetLayout() {
-    VkDescriptorSetLayoutBinding vertexLayoutBinding = {};
-    vertexLayoutBinding.binding = 0;
-    vertexLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-    vertexLayoutBinding.descriptorCount = 1;
-    vertexLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_COMPUTE_BIT;
-    vertexLayoutBinding.pImmutableSamplers = nullptr;
-    
-    VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    layoutInfo.bindingCount = 1;
-    layoutInfo.pBindings = &vertexLayoutBinding;
-    
-    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout)) {
-        std::cerr << "Could not create descriptor set layout!" << std::endl;
-        exit(-1);
-    }
-}
-
 void StorageBuffer::createDescriptorSet(VkDeviceSize size) {
     // Allocate descriptor set.
     VkDescriptorSetAllocateInfo allocateInfo = {};
     allocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocateInfo.descriptorPool = descriptorPool;
     allocateInfo.descriptorSetCount = 1;
-    allocateInfo.pSetLayouts = &descriptorSetLayout;
+    allocateInfo.pSetLayouts = getDescriptorSetLayout();
     
     if (vkAllocateDescriptorSets(device, &allocateInfo, &descriptorSet) != VK_SUCCESS) {
         std::cerr << "Failed to allocate descriptor set" << std::endl;

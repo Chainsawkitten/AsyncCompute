@@ -27,7 +27,6 @@ class StorageBuffer : public Buffer {
         
     private:
         void copyBuffer(VkBuffer source, VkBuffer destination, VkDeviceSize size);
-        void createDescriptorSetLayout();
         void createDescriptorSet(VkDeviceSize size);
         
         VkDevice device;
@@ -38,6 +37,5 @@ class StorageBuffer : public Buffer {
         
         VkBuffer buffer;
         VkDeviceMemory bufferMemory;
-        VkDescriptorSetLayout descriptorSetLayout;
         VkDescriptorSet descriptorSet;
 };

@@ -14,12 +14,11 @@ UniformBuffer::UniformBuffer(const void* data, unsigned int size, VkDevice devic
     setData(data, size);
     
     // Create descriptor set.
-    createDescriptorSetLayout(flags);
+    createDescriptorSetLayout(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, flags);
     createDescriptorSet(size);
 }
 
 UniformBuffer::~UniformBuffer() {
-    vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
     vkDestroyBuffer(device, buffer, nullptr);
     vkFreeMemory(device, bufferMemory, nullptr);
 }
@@ -35,32 +34,13 @@ void UniformBuffer::setData(const void* data, unsigned int size) {
     vkUnmapMemory(device, bufferMemory);
 }
 
-void UniformBuffer::createDescriptorSetLayout(VkShaderStageFlags flags) {
-    VkDescriptorSetLayoutBinding vertexLayoutBinding = {};
-    vertexLayoutBinding.binding = 0;
-    vertexLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    vertexLayoutBinding.descriptorCount = 1;
-    vertexLayoutBinding.stageFlags = flags;
-    vertexLayoutBinding.pImmutableSamplers = nullptr;
-    
-    VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    layoutInfo.bindingCount = 1;
-    layoutInfo.pBindings = &vertexLayoutBinding;
-    
-    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout)) {
-        std::cerr << "Could not create descriptor set layout!" << std::endl;
-        exit(-1);
-    }
-}
-
 void UniformBuffer::createDescriptorSet(VkDeviceSize size) {
     // Allocate descriptor set.
     VkDescriptorSetAllocateInfo allocateInfo = {};
     allocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocateInfo.descriptorPool = descriptorPool;
     allocateInfo.descriptorSetCount = 1;
-    allocateInfo.pSetLayouts = &descriptorSetLayout;
+    allocateInfo.pSetLayouts = getDescriptorSetLayout();
     
     if (vkAllocateDescriptorSets(device, &allocateInfo, &descriptorSet) != VK_SUCCESS) {
         std::cerr << "Failed to allocate descriptor set" << std::endl;
