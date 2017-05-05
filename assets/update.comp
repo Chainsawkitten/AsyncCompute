@@ -26,12 +26,13 @@ layout(set = 2, binding = 0) uniform UpdateBuffer {
 void main() {
     uint myID = gl_GlobalInvocationID.x;
     vec3 velocity = particlesIn[myID].velocity.xyz;
+    vec3 position = particlesIn[myID].position.xyz;
     
     // Find neighbors.
     uint neighbors[10];
     uint neighborCount = 0;
     for (uint i=0; i < particleCount && neighborCount < 10; ++i) {
-        if (i != myID && distance(particlesIn[i].position.xyz, particlesIn[myID].position.xyz) < 1.0)
+        if (i != myID && distance(particlesIn[i].position.xyz, position) < 1.0)
             neighbors[neighborCount++] = i;
     }
     
@@ -41,12 +42,12 @@ void main() {
         centerOfMass += particlesIn[neighbors[i]].position.xyz;
     }
     centerOfMass /= neighborCount + 1;
-    vec3 rule1 = 0.1 * (centerOfMass - particlesIn[myID].position.xyz);
+    vec3 rule1 = 0.1 * (centerOfMass - position);
     
     // Rule 2.
     vec3 rule2 = vec3(0.0, 0.0, 0.0);
     for (uint i=0; i < neighborCount; ++i) {
-        vec3 diff = particlesIn[neighbors[i]].position.xyz - particlesIn[myID].position.xyz;
+        vec3 diff = particlesIn[neighbors[i]].position.xyz - position;
         if (length(diff) < 0.2)
             rule2 -= diff;
     }
@@ -66,6 +67,6 @@ void main() {
         velocity /= velocityLength;
     
     // Update boid.
-    particlesIn[myID].velocity = vec4(velocity, 0.0);
-    particlesIn[myID].position += deltaTime * vec4(velocity, 0.0);
+    particlesOut[myID].velocity = vec4(velocity, 0.0);
+    particlesOut[myID].position = vec4(position + deltaTime * velocity, 1.0);
 }
