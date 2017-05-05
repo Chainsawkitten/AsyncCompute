@@ -8,13 +8,20 @@ class Buffer {
         /// Destructor.
         ~Buffer();
         
+        /// Get the descriptor set.
+        /**
+         * @return The descriptor set.
+         */
+        VkDescriptorSet getDescriptorSet() const;
+        
     protected:
         /// Create new buffer.
         /**
          * @param device Logical Vulkan device.
          * @param physicalDevice Physical Vulkan device.
+         * @param descriptorPool Pool to allocate descriptor sets from.
          */
-        Buffer(VkDevice device, VkPhysicalDevice physicalDevice);
+        Buffer(VkDevice device, VkPhysicalDevice physicalDevice, VkDescriptorPool descriptorPool);
         
         /// Create buffer.
         /**
@@ -39,9 +46,19 @@ class Buffer {
          */
         const VkDescriptorSetLayout* getDescriptorSetLayout() const;
         
+        /// Create descriptor set.
+        /**
+         * @param bufferType The type of buffer.
+         * @param buffer The buffer.
+         * @param size Size of the buffer.
+         */
+        void createDescriptorSet(VkDescriptorType bufferType, VkBuffer buffer, VkDeviceSize size);
+        
     private:
         VkDevice device;
         VkPhysicalDevice physicalDevice;
+        VkDescriptorPool descriptorPool;
         
         VkDescriptorSetLayout descriptorSetLayout;
+        VkDescriptorSet descriptorSet;
 };

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cstring>
 
-StorageBuffer::StorageBuffer(const void* data, unsigned int size, VkDevice device, VkPhysicalDevice physicalDevice, VkDescriptorPool descriptorPool, VkQueue graphicsQueue, VkCommandPool commandPool) : Buffer(device, physicalDevice) {
+StorageBuffer::StorageBuffer(const void* data, unsigned int size, VkDevice device, VkPhysicalDevice physicalDevice, VkDescriptorPool descriptorPool, VkQueue graphicsQueue, VkCommandPool commandPool) : Buffer(device, physicalDevice, descriptorPool) {
     this->device = device;
     this->physicalDevice = physicalDevice;
     this->descriptorPool = descriptorPool;
@@ -30,7 +30,7 @@ StorageBuffer::StorageBuffer(const void* data, unsigned int size, VkDevice devic
 
     // Create descriptor set.
     createDescriptorSetLayout(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_COMPUTE_BIT);
-    createDescriptorSet(size);
+    createDescriptorSet(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, buffer, size);
     
     // Destroy staging buffer.
     vkDestroyBuffer(device, stagingBuffer, nullptr);
@@ -40,10 +40,6 @@ StorageBuffer::StorageBuffer(const void* data, unsigned int size, VkDevice devic
 StorageBuffer::~StorageBuffer() {
     vkDestroyBuffer(device, buffer, nullptr);
     vkFreeMemory(device, bufferMemory, nullptr);
-}
-
-VkDescriptorSet StorageBuffer::getDescriptorSet() const {
-    return descriptorSet;
 }
 
 void StorageBuffer::copyBuffer(VkBuffer source, VkBuffer destination, VkDeviceSize size){
@@ -81,37 +77,4 @@ void StorageBuffer::copyBuffer(VkBuffer source, VkBuffer destination, VkDeviceSi
     vkQueueWaitIdle(graphicsQueue);
 
     vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
-}
-
-void StorageBuffer::createDescriptorSet(VkDeviceSize size) {
-    // Allocate descriptor set.
-    VkDescriptorSetAllocateInfo allocateInfo = {};
-    allocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocateInfo.descriptorPool = descriptorPool;
-    allocateInfo.descriptorSetCount = 1;
-    allocateInfo.pSetLayouts = getDescriptorSetLayout();
-    
-    if (vkAllocateDescriptorSets(device, &allocateInfo, &descriptorSet) != VK_SUCCESS) {
-        std::cerr << "Failed to allocate descriptor set" << std::endl;
-        exit(-1);
-    }
-    
-    // Update descriptor set.
-    VkDescriptorBufferInfo bufferInfo = {};
-    bufferInfo.buffer = buffer;
-    bufferInfo.offset = 0;
-    bufferInfo.range = size;
-    
-    VkWriteDescriptorSet descriptorWrite = {};
-    descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrite.dstSet = descriptorSet;
-    descriptorWrite.dstBinding = 0;
-    descriptorWrite.dstArrayElement = 0;
-    descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-    descriptorWrite.descriptorCount = 1;
-    descriptorWrite.pBufferInfo = &bufferInfo;
-    descriptorWrite.pImageInfo = nullptr;
-    descriptorWrite.pTexelBufferView = nullptr;
-    
-    vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
 }

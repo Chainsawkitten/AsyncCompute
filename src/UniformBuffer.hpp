@@ -20,12 +20,6 @@ class UniformBuffer : public Buffer {
         /// Destructor.
         ~UniformBuffer();
         
-        /// Get the descriptor set.
-        /**
-         * @return The descriptor set.
-         */
-        VkDescriptorSet getDescriptorSet() const;
-        
         /// Update the buffer's data.
         /**
          * @param data Buffer data.
@@ -34,13 +28,10 @@ class UniformBuffer : public Buffer {
         void setData(const void* data, unsigned int size);
         
     private:
-        void createDescriptorSet(VkDeviceSize size);
-        
         VkDevice device;
         VkPhysicalDevice physicalDevice;
         VkDescriptorPool descriptorPool;
         
         VkBuffer buffer;
         VkDeviceMemory bufferMemory;
-        VkDescriptorSet descriptorSet;
 };

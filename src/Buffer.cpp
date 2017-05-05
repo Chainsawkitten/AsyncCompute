@@ -6,9 +6,14 @@ Buffer::~Buffer() {
     vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
 }
 
-Buffer::Buffer(VkDevice device, VkPhysicalDevice physicalDevice) {
+VkDescriptorSet Buffer::getDescriptorSet() const {
+    return descriptorSet;
+}
+
+Buffer::Buffer(VkDevice device, VkPhysicalDevice physicalDevice, VkDescriptorPool descriptorPool) {
     this->device = device;
     this->physicalDevice = physicalDevice;
+    this->descriptorPool = descriptorPool;
 }
 
 void Buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory) {
@@ -73,4 +78,37 @@ void Buffer::createDescriptorSetLayout(VkDescriptorType bufferType, VkShaderStag
 
 const VkDescriptorSetLayout* Buffer::getDescriptorSetLayout() const {
     return &descriptorSetLayout;
+}
+
+void Buffer::createDescriptorSet(VkDescriptorType bufferType, VkBuffer buffer, VkDeviceSize size) {
+    // Allocate descriptor set.
+    VkDescriptorSetAllocateInfo allocateInfo = {};
+    allocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocateInfo.descriptorPool = descriptorPool;
+    allocateInfo.descriptorSetCount = 1;
+    allocateInfo.pSetLayouts = &descriptorSetLayout;
+    
+    if (vkAllocateDescriptorSets(device, &allocateInfo, &descriptorSet) != VK_SUCCESS) {
+        std::cerr << "Failed to allocate descriptor set" << std::endl;
+        exit(-1);
+    }
+    
+    // Update descriptor set.
+    VkDescriptorBufferInfo bufferInfo = {};
+    bufferInfo.buffer = buffer;
+    bufferInfo.offset = 0;
+    bufferInfo.range = size;
+    
+    VkWriteDescriptorSet descriptorWrite = {};
+    descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrite.dstSet = descriptorSet;
+    descriptorWrite.dstBinding = 0;
+    descriptorWrite.dstArrayElement = 0;
+    descriptorWrite.descriptorType = bufferType;
+    descriptorWrite.descriptorCount = 1;
+    descriptorWrite.pBufferInfo = &bufferInfo;
+    descriptorWrite.pImageInfo = nullptr;
+    descriptorWrite.pTexelBufferView = nullptr;
+    
+    vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
 }

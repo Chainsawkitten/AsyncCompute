@@ -19,15 +19,8 @@ class StorageBuffer : public Buffer {
         /// Destructor.
         ~StorageBuffer();
         
-        /// Get descriptor set.
-        /**
-         * @return The descriptor set.
-         */
-        VkDescriptorSet getDescriptorSet() const;
-        
     private:
         void copyBuffer(VkBuffer source, VkBuffer destination, VkDeviceSize size);
-        void createDescriptorSet(VkDeviceSize size);
         
         VkDevice device;
         VkQueue graphicsQueue;
@@ -37,5 +30,4 @@ class StorageBuffer : public Buffer {
         
         VkBuffer buffer;
         VkDeviceMemory bufferMemory;
-        VkDescriptorSet descriptorSet;
 };
