@@ -159,6 +159,7 @@ void Renderer::update(float deltaTime) {
     vkCmdBindPipeline(computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipeline());
     
     std::vector<VkDescriptorSet> descriptorSets;
+    descriptorSets.push_back(particleBuffer[1-bufferIndex]->getDescriptorSet());
     descriptorSets.push_back(particleBuffer[bufferIndex]->getDescriptorSet());
     descriptorSets.push_back(updateBuffer->getDescriptorSet());
     vkCmdBindDescriptorSets(computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
