@@ -1,9 +1,10 @@
 #pragma once
 
+#include "Buffer.hpp"
 #include <vulkan/vulkan.h>
 
 /// Used for storing camera data.
-class UniformBuffer {
+class UniformBuffer : public Buffer {
     public:
         /// Create new uniform buffer.
         /**

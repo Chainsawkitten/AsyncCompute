@@ -1,9 +1,10 @@
 #pragma once
 
+#include "Buffer.hpp"
 #include <vulkan/vulkan.h>
 
 /// Used for storing particle data.
-class StorageBuffer {
+class StorageBuffer : public Buffer {
     public:
         /// Create new storage buffer.
         /**
