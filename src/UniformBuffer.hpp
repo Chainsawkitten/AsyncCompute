@@ -1,9 +1,10 @@
 #pragma once
 
+#include "Buffer.hpp"
 #include <vulkan/vulkan.h>
 
 /// Used for storing camera data.
-class UniformBuffer {
+class UniformBuffer : public Buffer {
     public:
         /// Create new uniform buffer.
         /**
@@ -19,12 +20,6 @@ class UniformBuffer {
         /// Destructor.
         ~UniformBuffer();
         
-        /// Get the descriptor set.
-        /**
-         * @return The descriptor set.
-         */
-        VkDescriptorSet getDescriptorSet() const;
-        
         /// Update the buffer's data.
         /**
          * @param data Buffer data.
@@ -33,16 +28,10 @@ class UniformBuffer {
         void setData(const void* data, unsigned int size);
         
     private:
-        void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory);
-        void createDescriptorSetLayout(VkShaderStageFlags flags);
-        void createDescriptorSet(VkDeviceSize size);
-        
         VkDevice device;
         VkPhysicalDevice physicalDevice;
         VkDescriptorPool descriptorPool;
         
         VkBuffer buffer;
         VkDeviceMemory bufferMemory;
-        VkDescriptorSetLayout descriptorSetLayout;
-        VkDescriptorSet descriptorSet;
 };
