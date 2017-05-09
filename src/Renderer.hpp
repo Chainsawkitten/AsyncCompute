@@ -108,7 +108,7 @@ class Renderer {
         VkCommandPool graphicsCommandPool;
         VkCommandPool computeCommandPool;
         VkCommandBuffer graphicsCommandBuffer;
-        VkCommandBuffer computeCommandBuffer;
+        VkCommandBuffer computeCommandBuffers[2];
         VkDescriptorPool descriptorPool;
         
         VkSemaphore imageAvailableSemaphore;

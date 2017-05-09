@@ -147,13 +147,13 @@ void Renderer::update(float deltaTime) {
     updateUniform.particleCount = particleCount;
     updateBuffer->setData(&updateUniform, sizeof(updateUniform));
     
-    recordUpdateCommandBuffer(computeCommandBuffer, particleBuffer[1-bufferIndex], particleBuffer[bufferIndex]);
+    recordUpdateCommandBuffer(computeCommandBuffers[0], particleBuffer[1-bufferIndex], particleBuffer[bufferIndex]);
     
     // Create submit info.
     VkSubmitInfo submitInfo = {};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &computeCommandBuffer;
+    submitInfo.pCommandBuffers = &computeCommandBuffers[0];
     
     if (vkQueueSubmit(computeQueue, 1, &submitInfo, computeFence) != VK_SUCCESS)
         std::cout << "Could not submit command buffer to compute queue." << std::endl;
@@ -596,8 +596,9 @@ void Renderer::createCommandBuffers() {
     
     // Compute command buffer.
     allocInfo.commandPool = computeCommandPool;
+    allocInfo.commandBufferCount = 2;
     
-    if (vkAllocateCommandBuffers(device, &allocInfo, &computeCommandBuffer) != VK_SUCCESS) {
+    if (vkAllocateCommandBuffers(device, &allocInfo, computeCommandBuffers) != VK_SUCCESS) {
         std::cerr << "Failed to allocate compute command buffer!" << std::endl;
         exit(-1);
     }
