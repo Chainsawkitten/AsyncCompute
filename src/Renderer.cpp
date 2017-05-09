@@ -167,7 +167,7 @@ void Renderer::render() {
     // Get image from swapchain.
     vkAcquireNextImageKHR(device, swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
     
-    recordRenderCommandBuffer();
+    recordRenderCommandBuffer(bufferIndex);
     
     // Create submit info.
     VkSubmitInfo submitInfo = {};
@@ -181,7 +181,7 @@ void Renderer::render() {
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &graphicsCommandBuffers[0];
+    submitInfo.pCommandBuffers = &graphicsCommandBuffers[bufferIndex];
     
     if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, graphicsFence) != VK_SUCCESS)
         std::cout << "Could not submit command buffer to graphics queue." << std::endl;
@@ -202,6 +202,9 @@ void Renderer::render() {
     // Wait for finished rendering.
     while (vkWaitForFences(device, 1, &graphicsFence, VK_TRUE, 1000) != VK_SUCCESS);
     vkResetFences(device, 1, &graphicsFence);
+    
+    // Swap particle buffers.
+    bufferIndex = 1 - bufferIndex;
 }
 
 void Renderer::createInstance() {
@@ -680,14 +683,14 @@ void Renderer::recordUpdateCommandBuffer(VkCommandBuffer commandBuffer, const St
     }
 }
 
-void Renderer::recordRenderCommandBuffer() {
+void Renderer::recordRenderCommandBuffer(int frame) {
     // Start command buffer recording.
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     beginInfo.pInheritanceInfo = nullptr;
     
-    vkBeginCommandBuffer(graphicsCommandBuffers[0], &beginInfo);
+    vkBeginCommandBuffer(graphicsCommandBuffers[frame], &beginInfo);
     
     // Start render pass.
     VkRenderPassBeginInfo renderPassInfo = {};
@@ -701,25 +704,22 @@ void Renderer::recordRenderCommandBuffer() {
     renderPassInfo.clearValueCount = 1;
     renderPassInfo.pClearValues = &clearValues;
     
-    vkCmdBeginRenderPass(graphicsCommandBuffers[0], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBeginRenderPass(graphicsCommandBuffers[frame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     
     // Render particles.
-    vkCmdBindPipeline(graphicsCommandBuffers[0], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipeline());
+    vkCmdBindPipeline(graphicsCommandBuffers[frame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipeline());
     
     std::vector<VkDescriptorSet> descriptorSets;
-    descriptorSets.push_back(particleBuffer[bufferIndex]->getDescriptorSet());
+    descriptorSets.push_back(particleBuffer[frame]->getDescriptorSet());
     descriptorSets.push_back(cameraBuffer->getDescriptorSet());
     descriptorSets.push_back(particleTexture->getDescriptorSet());
-    vkCmdBindDescriptorSets(graphicsCommandBuffers[0], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
-    vkCmdDraw(graphicsCommandBuffers[0], particleCount, 1, 0, 0);
-    
-    // Swap particle buffers.
-    bufferIndex = 1 - bufferIndex;
+    vkCmdBindDescriptorSets(graphicsCommandBuffers[frame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+    vkCmdDraw(graphicsCommandBuffers[frame], particleCount, 1, 0, 0);
     
     // End render pass.
-    vkCmdEndRenderPass(graphicsCommandBuffers[0]);
+    vkCmdEndRenderPass(graphicsCommandBuffers[frame]);
     
-    if (vkEndCommandBuffer(graphicsCommandBuffers[0]) != VK_SUCCESS) {
+    if (vkEndCommandBuffer(graphicsCommandBuffers[frame]) != VK_SUCCESS) {
         std::cerr << "Failed to record command buffer" << std::endl;
         exit(-1);
     }
