@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
         double deltaTime = glfwGetTime() - lastTime;
         lastTime = glfwGetTime();
         
-        renderer->update(deltaTime);
+        renderer->update(measure ? 1.0/60.0 : deltaTime);
         renderer->render();
         
         glfwSwapBuffers(window.getWindow());
