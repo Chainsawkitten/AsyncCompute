@@ -18,6 +18,7 @@ int main(int argc, char* argv[]) {
     
     double totalTime = 0.0;
     unsigned int frame = 0;
+    double maxTime = 0.0;
     double lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window.getWindow())){
         glfwPollEvents();
@@ -31,6 +32,8 @@ int main(int argc, char* argv[]) {
         glfwSwapBuffers(window.getWindow());
         
         totalTime += deltaTime;
+        if (deltaTime > maxTime)
+            maxTime = deltaTime;
         
         if (frame++ >= 3600 && measure)
             break;
@@ -40,6 +43,7 @@ int main(int argc, char* argv[]) {
     
     // Output results.
     std::cout << "Average frame time: " << totalTime / frame * 1000.0 << " ms" << std::endl;
+    std::cout << "Max frame time: " << maxTime * 1000.0 << " ms" << std::endl;
     
     return 0;
 }
