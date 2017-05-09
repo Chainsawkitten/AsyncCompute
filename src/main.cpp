@@ -14,6 +14,7 @@ int main(int argc, char* argv[]) {
         glfwPollEvents();
         
         double deltaTime = glfwGetTime() - lastTime;
+        glfwSetWindowTitle(window.getWindow(), (std::to_string(deltaTime * 1000.0) + " ms").c_str());
         lastTime = glfwGetTime();
         
         renderer->update(deltaTime);
