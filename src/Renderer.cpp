@@ -141,6 +141,9 @@ void Renderer::setTexture(const char* textureData, unsigned int dataLength) {
 }
 
 void Renderer::recordCommandBuffers() {
+    recordUpdateCommandBuffer(computeCommandBuffers[0], particleBuffer[1-bufferIndex], particleBuffer[bufferIndex]);
+    recordUpdateCommandBuffer(computeCommandBuffers[1], particleBuffer[bufferIndex], particleBuffer[1-bufferIndex]);
+    
     recordRenderCommandBuffer(0);
     recordRenderCommandBuffer(1);
 }
@@ -152,13 +155,11 @@ void Renderer::update(float deltaTime) {
     updateUniform.particleCount = particleCount;
     updateBuffer->setData(&updateUniform, sizeof(updateUniform));
     
-    recordUpdateCommandBuffer(computeCommandBuffers[0], particleBuffer[1-bufferIndex], particleBuffer[bufferIndex]);
-    
     // Create submit info.
     VkSubmitInfo submitInfo = {};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &computeCommandBuffers[0];
+    submitInfo.pCommandBuffers = &computeCommandBuffers[bufferIndex];
     
     if (vkQueueSubmit(computeQueue, 1, &submitInfo, computeFence) != VK_SUCCESS)
         std::cout << "Could not submit command buffer to compute queue." << std::endl;
@@ -665,7 +666,7 @@ void Renderer::recordUpdateCommandBuffer(VkCommandBuffer commandBuffer, const St
     // Start command buffer recording.
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+    beginInfo.flags = 0;
     beginInfo.pInheritanceInfo = nullptr;
     
     vkBeginCommandBuffer(commandBuffer, &beginInfo);
