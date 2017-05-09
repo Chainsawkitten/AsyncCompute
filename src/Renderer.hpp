@@ -84,7 +84,7 @@ class Renderer {
         void createSemaphores();
         void createFences();
         
-        void recordUpdateCommandBuffer(VkCommandBuffer commandBuffer, const StorageBuffer* inBuffer, const StorageBuffer* outBuffer);
+        void recordUpdateCommandBuffer(int frame);
         void recordRenderCommandBuffer(int frame);
         
         VkInstance instance;

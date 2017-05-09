@@ -141,8 +141,8 @@ void Renderer::setTexture(const char* textureData, unsigned int dataLength) {
 }
 
 void Renderer::recordCommandBuffers() {
-    recordUpdateCommandBuffer(computeCommandBuffers[0], particleBuffer[1-bufferIndex], particleBuffer[bufferIndex]);
-    recordUpdateCommandBuffer(computeCommandBuffers[1], particleBuffer[bufferIndex], particleBuffer[1-bufferIndex]);
+    recordUpdateCommandBuffer(0);
+    recordUpdateCommandBuffer(1);
     
     recordRenderCommandBuffer(0);
     recordRenderCommandBuffer(1);
@@ -662,26 +662,26 @@ void Renderer::createFences() {
     vkCreateFence(device, &fenceInfo, nullptr, &computeFence);
 }
 
-void Renderer::recordUpdateCommandBuffer(VkCommandBuffer commandBuffer, const StorageBuffer* inBuffer, const StorageBuffer* outBuffer) {
+void Renderer::recordUpdateCommandBuffer(int frame) {
     // Start command buffer recording.
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = 0;
     beginInfo.pInheritanceInfo = nullptr;
     
-    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+    vkBeginCommandBuffer(computeCommandBuffers[frame], &beginInfo);
     
     // Update particles.
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipeline());
+    vkCmdBindPipeline(computeCommandBuffers[frame], VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipeline());
     
     std::vector<VkDescriptorSet> descriptorSets;
-    descriptorSets.push_back(inBuffer->getDescriptorSet());
-    descriptorSets.push_back(outBuffer->getDescriptorSet());
+    descriptorSets.push_back(particleBuffer[1-frame]->getDescriptorSet());
+    descriptorSets.push_back(particleBuffer[frame]->getDescriptorSet());
     descriptorSets.push_back(updateBuffer->getDescriptorSet());
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
-    vkCmdDispatch(commandBuffer, particleCount, 1, 1);
+    vkCmdBindDescriptorSets(computeCommandBuffers[frame], VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+    vkCmdDispatch(computeCommandBuffers[frame], particleCount, 1, 1);
     
-    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+    if (vkEndCommandBuffer(computeCommandBuffers[frame]) != VK_SUCCESS) {
         std::cerr << "Failed to record command buffer" << std::endl;
         exit(-1);
     }
