@@ -21,22 +21,25 @@ int main(int argc, char* argv[]) {
     double maxTime = 0.0;
     double lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window.getWindow())){
-        glfwPollEvents();
-        
         double deltaTime = glfwGetTime() - lastTime;
         lastTime = glfwGetTime();
         
+        // Update and render.
         renderer->update(measure ? 1.0/60.0 : deltaTime);
         renderer->render();
         
         glfwSwapBuffers(window.getWindow());
         
+        // Measurements.
         totalTime += deltaTime;
         if (deltaTime > maxTime)
             maxTime = deltaTime;
         
         if (frame++ >= 3600 && measure)
             break;
+        
+        // Poll events.
+        glfwPollEvents();
     }
     
     delete renderer;
