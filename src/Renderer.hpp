@@ -107,7 +107,7 @@ class Renderer {
         std::vector<VkFramebuffer> swapChainFramebuffers;
         VkCommandPool graphicsCommandPool;
         VkCommandPool computeCommandPool;
-        VkCommandBuffer graphicsCommandBuffer;
+        VkCommandBuffer graphicsCommandBuffers[2];
         VkCommandBuffer computeCommandBuffers[2];
         VkDescriptorPool descriptorPool;
         
