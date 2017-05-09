@@ -30,15 +30,16 @@ int main(int argc, char* argv[]) {
         
         glfwSwapBuffers(window.getWindow());
         
-        if (measure) {
-            totalTime += deltaTime;
-            
-            if (frame++ >= 3600)
-                break;
-        }
+        totalTime += deltaTime;
+        
+        if (frame++ >= 3600 && measure)
+            break;
     }
     
     delete renderer;
+    
+    // Output results.
+    std::cout << "Average frame time: " << totalTime / frame * 1000.0 << " ms" << std::endl;
     
     return 0;
 }
