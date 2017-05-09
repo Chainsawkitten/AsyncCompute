@@ -81,6 +81,8 @@ class Renderer {
         void createSemaphores();
         void createFences();
         
+        void recordUpdateCommandBuffer();
+        
         VkInstance instance;
 #ifndef NDEBUG
         VkDebugReportCallbackEXT callback;
