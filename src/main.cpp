@@ -16,8 +16,10 @@ int main(int argc, char* argv[]) {
     Renderer* renderer = new Renderer(window);
     renderer->setTexture(PARTICLE_PNG, PARTICLE_PNG_LENGTH);
     
+    double totalTime = 0.0;
+    unsigned int frame = 0;
     double lastTime = glfwGetTime();
-    while(!glfwWindowShouldClose(window.getWindow())){
+    while (!glfwWindowShouldClose(window.getWindow())){
         glfwPollEvents();
         
         double deltaTime = glfwGetTime() - lastTime;
@@ -27,6 +29,13 @@ int main(int argc, char* argv[]) {
         renderer->render();
         
         glfwSwapBuffers(window.getWindow());
+        
+        if (measure) {
+            totalTime += deltaTime;
+            
+            if (frame++ >= 3600)
+                break;
+        }
     }
     
     delete renderer;
