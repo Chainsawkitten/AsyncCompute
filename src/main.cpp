@@ -8,6 +8,7 @@ int main(int argc, char* argv[]) {
     
     Renderer* renderer = new Renderer(window);
     renderer->setTexture(PARTICLE_PNG, PARTICLE_PNG_LENGTH);
+    renderer->recordCommandBuffers();
     
     double lastTime = glfwGetTime();
     while(!glfwWindowShouldClose(window.getWindow())){

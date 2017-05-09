@@ -31,6 +31,9 @@ class Renderer {
          */
         void setTexture(const char* textureData, unsigned int dataLength);
         
+        /// Record command buffers.
+        void recordCommandBuffers();
+        
         /// Update particles.
         /**
          * @param deltaTime Time since last frame (in seconds).

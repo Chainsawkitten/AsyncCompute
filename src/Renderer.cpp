@@ -140,6 +140,11 @@ void Renderer::setTexture(const char* textureData, unsigned int dataLength) {
     particleTexture = new Texture(textureData, dataLength, device, physicalDevice, graphicsCommandPool, graphicsQueue, descriptorPool);
 }
 
+void Renderer::recordCommandBuffers() {
+    recordRenderCommandBuffer(0);
+    recordRenderCommandBuffer(1);
+}
+
 void Renderer::update(float deltaTime) {
     // Update buffer.
     UpdateUniform updateUniform;
@@ -166,8 +171,6 @@ void Renderer::update(float deltaTime) {
 void Renderer::render() {
     // Get image from swapchain.
     vkAcquireNextImageKHR(device, swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
-    
-    recordRenderCommandBuffer(bufferIndex);
     
     // Create submit info.
     VkSubmitInfo submitInfo = {};
@@ -687,7 +690,7 @@ void Renderer::recordRenderCommandBuffer(int frame) {
     // Start command buffer recording.
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+    beginInfo.flags = 0;
     beginInfo.pInheritanceInfo = nullptr;
     
     vkBeginCommandBuffer(graphicsCommandBuffers[frame], &beginInfo);
@@ -696,7 +699,7 @@ void Renderer::recordRenderCommandBuffer(int frame) {
     VkRenderPassBeginInfo renderPassInfo = {};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = renderPass;
-    renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
+    renderPassInfo.framebuffer = swapChainFramebuffers[frame];
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = swapChainExtent;
     VkClearValue clearValues = {};
