@@ -3,7 +3,7 @@
 */
 #version 430
 
-layout (local_size_x = 1, local_size_y = 1) in;
+layout (local_size_x = 2, local_size_y = 1) in;
 
 struct Particle {
     vec4 position;
@@ -25,48 +25,50 @@ layout(set = 2, binding = 0) uniform UpdateBuffer {
 
 void main() {
     uint myID = gl_GlobalInvocationID.x;
-    vec3 velocity = particlesIn[myID].velocity.xyz;
-    vec3 position = particlesIn[myID].position.xyz;
-    
-    // Find neighbors.
-    uint neighbors[10];
-    uint neighborCount = 0;
-    for (uint i=0; i < particleCount && neighborCount < 10; ++i) {
-        if (i != myID && distance(particlesIn[i].position.xyz, position) < 1.0)
-            neighbors[neighborCount++] = i;
+    if (gl_GlobalInvocationID.x < particleCount) {
+        vec3 velocity = particlesIn[myID].velocity.xyz;
+        vec3 position = particlesIn[myID].position.xyz;
+        
+        // Find neighbors.
+        uint neighbors[10];
+        uint neighborCount = 0;
+        for (uint i=0; i < particleCount && neighborCount < 10; ++i) {
+            if (i != myID && distance(particlesIn[i].position.xyz, position) < 1.0)
+                neighbors[neighborCount++] = i;
+        }
+        
+        // Rule 1.
+        vec3 centerOfMass = vec3(0.0, 0.0, 0.0);
+        for (uint i=0; i < neighborCount; ++i) {
+            centerOfMass += particlesIn[neighbors[i]].position.xyz;
+        }
+        centerOfMass /= neighborCount + 1;
+        vec3 rule1 = 0.1 * (centerOfMass - position);
+        
+        // Rule 2.
+        vec3 rule2 = vec3(0.0, 0.0, 0.0);
+        for (uint i=0; i < neighborCount; ++i) {
+            vec3 diff = particlesIn[neighbors[i]].position.xyz - position;
+            if (length(diff) < 0.2)
+                rule2 -= diff;
+        }
+        
+        // Rule 3.
+        vec3 rule3 = vec3(0.0, 0.0, 0.0);
+        for (uint i=0; i < neighborCount; ++i) {
+            rule3 += particlesIn[neighbors[i]].velocity.xyz;
+        }
+        rule3 /= neighborCount + 1;
+        rule3 *= 0.1;
+        
+        // Limit speed.
+        velocity += deltaTime * (rule1 + rule2 + rule3);
+        float velocityLength = length(velocity);
+        if (velocityLength > 1.0)
+            velocity /= velocityLength;
+        
+        // Update boid.
+        particlesOut[myID].velocity = vec4(velocity, 0.0);
+        particlesOut[myID].position = vec4(position + deltaTime * velocity, 1.0);
     }
-    
-    // Rule 1.
-    vec3 centerOfMass = vec3(0.0, 0.0, 0.0);
-    for (uint i=0; i < neighborCount; ++i) {
-        centerOfMass += particlesIn[neighbors[i]].position.xyz;
-    }
-    centerOfMass /= neighborCount + 1;
-    vec3 rule1 = 0.1 * (centerOfMass - position);
-    
-    // Rule 2.
-    vec3 rule2 = vec3(0.0, 0.0, 0.0);
-    for (uint i=0; i < neighborCount; ++i) {
-        vec3 diff = particlesIn[neighbors[i]].position.xyz - position;
-        if (length(diff) < 0.2)
-            rule2 -= diff;
-    }
-    
-    // Rule 3.
-    vec3 rule3 = vec3(0.0, 0.0, 0.0);
-    for (uint i=0; i < neighborCount; ++i) {
-        rule3 += particlesIn[neighbors[i]].velocity.xyz;
-    }
-    rule3 /= neighborCount + 1;
-    rule3 *= 0.1;
-    
-    // Limit speed.
-    velocity += deltaTime * (rule1 + rule2 + rule3);
-    float velocityLength = length(velocity);
-    if (velocityLength > 1.0)
-        velocity /= velocityLength;
-    
-    // Update boid.
-    particlesOut[myID].velocity = vec4(velocity, 0.0);
-    particlesOut[myID].position = vec4(position + deltaTime * velocity, 1.0);
 }
