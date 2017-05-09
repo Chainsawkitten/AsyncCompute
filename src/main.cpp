@@ -15,6 +15,7 @@ int main(int argc, char* argv[]) {
     
     Renderer* renderer = new Renderer(window);
     renderer->setTexture(PARTICLE_PNG, PARTICLE_PNG_LENGTH);
+    renderer->recordCommandBuffers();
     
     double totalTime = 0.0;
     unsigned int frame = 0;
@@ -22,6 +23,7 @@ int main(int argc, char* argv[]) {
     double lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window.getWindow())){
         double deltaTime = glfwGetTime() - lastTime;
+        glfwSetWindowTitle(window.getWindow(), (std::to_string(deltaTime * 1000.0) + " ms").c_str());
         lastTime = glfwGetTime();
         
         // Update and render.

@@ -31,6 +31,9 @@ class Renderer {
          */
         void setTexture(const char* textureData, unsigned int dataLength);
         
+        /// Record command buffers.
+        void recordCommandBuffers();
+        
         /// Update particles.
         /**
          * @param deltaTime Time since last frame (in seconds).
@@ -81,6 +84,9 @@ class Renderer {
         void createSemaphores();
         void createFences();
         
+        void recordUpdateCommandBuffer(int frame);
+        void recordRenderCommandBuffer(int frame);
+        
         VkInstance instance;
 #ifndef NDEBUG
         VkDebugReportCallbackEXT callback;
@@ -104,8 +110,8 @@ class Renderer {
         std::vector<VkFramebuffer> swapChainFramebuffers;
         VkCommandPool graphicsCommandPool;
         VkCommandPool computeCommandPool;
-        VkCommandBuffer graphicsCommandBuffer;
-        VkCommandBuffer computeCommandBuffer;
+        VkCommandBuffer graphicsCommandBuffers[2];
+        VkCommandBuffer computeCommandBuffers[2];
         VkDescriptorPool descriptorPool;
         
         VkSemaphore imageAvailableSemaphore;
