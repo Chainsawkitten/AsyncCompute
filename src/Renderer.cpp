@@ -167,48 +167,7 @@ void Renderer::render() {
     // Get image from swapchain.
     vkAcquireNextImageKHR(device, swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
     
-    // Start command buffer recording.
-    VkCommandBufferBeginInfo beginInfo = {};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-    beginInfo.pInheritanceInfo = nullptr;
-    
-    vkBeginCommandBuffer(graphicsCommandBuffer, &beginInfo);
-    
-    // Start render pass.
-    VkRenderPassBeginInfo renderPassInfo = {};
-    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = renderPass;
-    renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
-    renderPassInfo.renderArea.offset = {0, 0};
-    renderPassInfo.renderArea.extent = swapChainExtent;
-    VkClearValue clearValues = {};
-    clearValues.color = {0.0f, 0.0f, 0.0f, 0.0f};
-    renderPassInfo.clearValueCount = 1;
-    renderPassInfo.pClearValues = &clearValues;
-    
-    vkCmdBeginRenderPass(graphicsCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    
-    // Render particles.
-    vkCmdBindPipeline(graphicsCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipeline());
-    
-    std::vector<VkDescriptorSet> descriptorSets;
-    descriptorSets.push_back(particleBuffer[bufferIndex]->getDescriptorSet());
-    descriptorSets.push_back(cameraBuffer->getDescriptorSet());
-    descriptorSets.push_back(particleTexture->getDescriptorSet());
-    vkCmdBindDescriptorSets(graphicsCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
-    vkCmdDraw(graphicsCommandBuffer, particleCount, 1, 0, 0);
-    
-    // Swap particle buffers.
-    bufferIndex = 1 - bufferIndex;
-    
-    // End render pass.
-    vkCmdEndRenderPass(graphicsCommandBuffer);
-    
-    if (vkEndCommandBuffer(graphicsCommandBuffer) != VK_SUCCESS) {
-        std::cerr << "Failed to record command buffer" << std::endl;
-        exit(-1);
-    }
+    recordRenderCommandBuffer();
     
     // Create submit info.
     VkSubmitInfo submitInfo = {};
@@ -716,6 +675,51 @@ void Renderer::recordUpdateCommandBuffer() {
     vkCmdDispatch(computeCommandBuffer, particleCount, 1, 1);
     
     if (vkEndCommandBuffer(computeCommandBuffer) != VK_SUCCESS) {
+        std::cerr << "Failed to record command buffer" << std::endl;
+        exit(-1);
+    }
+}
+
+void Renderer::recordRenderCommandBuffer() {
+    // Start command buffer recording.
+    VkCommandBufferBeginInfo beginInfo = {};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+    beginInfo.pInheritanceInfo = nullptr;
+    
+    vkBeginCommandBuffer(graphicsCommandBuffer, &beginInfo);
+    
+    // Start render pass.
+    VkRenderPassBeginInfo renderPassInfo = {};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassInfo.renderPass = renderPass;
+    renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
+    renderPassInfo.renderArea.offset = {0, 0};
+    renderPassInfo.renderArea.extent = swapChainExtent;
+    VkClearValue clearValues = {};
+    clearValues.color = {0.0f, 0.0f, 0.0f, 0.0f};
+    renderPassInfo.clearValueCount = 1;
+    renderPassInfo.pClearValues = &clearValues;
+    
+    vkCmdBeginRenderPass(graphicsCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    
+    // Render particles.
+    vkCmdBindPipeline(graphicsCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipeline());
+    
+    std::vector<VkDescriptorSet> descriptorSets;
+    descriptorSets.push_back(particleBuffer[bufferIndex]->getDescriptorSet());
+    descriptorSets.push_back(cameraBuffer->getDescriptorSet());
+    descriptorSets.push_back(particleTexture->getDescriptorSet());
+    vkCmdBindDescriptorSets(graphicsCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+    vkCmdDraw(graphicsCommandBuffer, particleCount, 1, 0, 0);
+    
+    // Swap particle buffers.
+    bufferIndex = 1 - bufferIndex;
+    
+    // End render pass.
+    vkCmdEndRenderPass(graphicsCommandBuffer);
+    
+    if (vkEndCommandBuffer(graphicsCommandBuffer) != VK_SUCCESS) {
         std::cerr << "Failed to record command buffer" << std::endl;
         exit(-1);
     }

@@ -82,6 +82,7 @@ class Renderer {
         void createFences();
         
         void recordUpdateCommandBuffer();
+        void recordRenderCommandBuffer();
         
         VkInstance instance;
 #ifndef NDEBUG
