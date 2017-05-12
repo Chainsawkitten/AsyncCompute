@@ -8,9 +8,11 @@ int main(int argc, char* argv[]) {
     Window window;
     
     bool measure = false;
-    if (argc > 1 && strcmp(argv[1], "measure") == 0) {
-        std::cout << "Measuring..." << std::endl;
-        measure = true;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "measure") == 0) {
+            std::cout << "Measuring..." << std::endl;
+            measure = true;
+        }
     }
     
     Renderer* renderer = new Renderer(window);
