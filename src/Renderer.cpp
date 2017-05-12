@@ -679,7 +679,8 @@ void Renderer::recordUpdateCommandBuffer(int frame) {
     descriptorSets.push_back(particleBuffer[frame]->getDescriptorSet());
     descriptorSets.push_back(updateBuffer->getDescriptorSet());
     vkCmdBindDescriptorSets(computeCommandBuffers[frame], VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
-    vkCmdDispatch(computeCommandBuffers[frame], particleCount, 1, 1);
+    int groupSize = 256;
+    vkCmdDispatch(computeCommandBuffers[frame], particleCount / groupSize + (particleCount % groupSize != 0), 1, 1);
     
     if (vkEndCommandBuffer(computeCommandBuffers[frame]) != VK_SUCCESS) {
         std::cerr << "Failed to record command buffer" << std::endl;
