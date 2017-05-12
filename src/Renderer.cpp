@@ -148,67 +148,28 @@ void Renderer::recordCommandBuffers() {
     recordRenderCommandBuffer(1);
 }
 
-void Renderer::update(float deltaTime) {
-    // Update buffer.
-    UpdateUniform updateUniform;
-    updateUniform.deltaTime = deltaTime;
-    updateUniform.particleCount = particleCount;
-    updateBuffer->setData(&updateUniform, sizeof(updateUniform));
-    
-    // Create submit info.
-    VkSubmitInfo submitInfo = {};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &computeCommandBuffers[bufferIndex];
-    
-    if (vkQueueSubmit(computeQueue, 1, &submitInfo, computeFence) != VK_SUCCESS)
-        std::cout << "Could not submit command buffer to compute queue." << std::endl;
-    
-    // Wait for finished computing.
-    while (vkWaitForFences(device, 1, &computeFence, VK_TRUE, 1000) != VK_SUCCESS);
-    vkResetFences(device, 1, &computeFence);
-}
-
-void Renderer::render() {
-    // Get image from swapchain.
-    vkAcquireNextImageKHR(device, swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
-    
-    // Create submit info.
-    VkSubmitInfo submitInfo = {};
-    VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
-    VkSemaphore signalSemaphores[] = {renderFinishedSemaphore};
-    VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.waitSemaphoreCount = 1;
-    submitInfo.pWaitSemaphores = waitSemaphores;
-    submitInfo.pWaitDstStageMask = waitStages;
-    submitInfo.signalSemaphoreCount = 1;
-    submitInfo.pSignalSemaphores = signalSemaphores;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &graphicsCommandBuffers[bufferIndex];
-    
-    if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, graphicsFence) != VK_SUCCESS)
-        std::cout << "Could not submit command buffer to graphics queue." << std::endl;
-    
-    // Setup presentation
-    VkPresentInfoKHR presentInfo = {};
-    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-    presentInfo.waitSemaphoreCount = 1;
-    presentInfo.pWaitSemaphores = signalSemaphores;
-    presentInfo.swapchainCount = 1;
-    presentInfo.pSwapchains = &swapChain;
-    presentInfo.pImageIndices = &imageIndex;
-    presentInfo.pResults = nullptr;
-    
-    // Submit presentation request.
-    vkQueuePresentKHR(presentQueue, &presentInfo);
+void Renderer::frame(float deltaTime) {
+    // Render boids.
+    render();
     
     // Wait for finished rendering.
-    while (vkWaitForFences(device, 1, &graphicsFence, VK_TRUE, 1000) != VK_SUCCESS);
-    vkResetFences(device, 1, &graphicsFence);
+    if (!async)
+        waitFence(graphicsFence);
+    
+    // Update boids.
+    update(deltaTime);
+    
+    // Wait for finished rendering.
+    if (async)
+        waitFence(graphicsFence);
     
     // Swap particle buffers.
     bufferIndex = 1 - bufferIndex;
+}
+
+void Renderer::waitForUpdate() {
+    // Wait for finished computing.
+    waitFence(computeFence);
 }
 
 void Renderer::createInstance() {
@@ -728,4 +689,61 @@ void Renderer::recordRenderCommandBuffer(int frame) {
         std::cerr << "Failed to record command buffer" << std::endl;
         exit(-1);
     }
+}
+
+void Renderer::update(float deltaTime) {
+    // Update buffer.
+    UpdateUniform updateUniform;
+    updateUniform.deltaTime = deltaTime;
+    updateUniform.particleCount = particleCount;
+    updateBuffer->setData(&updateUniform, sizeof(updateUniform));
+    
+    // Create submit info.
+    VkSubmitInfo submitInfo = {};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &computeCommandBuffers[bufferIndex];
+    
+    if (vkQueueSubmit(computeQueue, 1, &submitInfo, computeFence) != VK_SUCCESS)
+        std::cout << "Could not submit command buffer to compute queue." << std::endl;
+}
+
+void Renderer::render() {
+    // Get image from swapchain.
+    vkAcquireNextImageKHR(device, swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+    
+    // Create submit info.
+    VkSubmitInfo submitInfo = {};
+    VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
+    VkSemaphore signalSemaphores[] = {renderFinishedSemaphore};
+    VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &graphicsCommandBuffers[bufferIndex];
+    
+    if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, graphicsFence) != VK_SUCCESS)
+        std::cout << "Could not submit command buffer to graphics queue." << std::endl;
+    
+    // Setup presentation
+    VkPresentInfoKHR presentInfo = {};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = signalSemaphores;
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = &swapChain;
+    presentInfo.pImageIndices = &imageIndex;
+    presentInfo.pResults = nullptr;
+    
+    // Submit presentation request.
+    vkQueuePresentKHR(presentQueue, &presentInfo);
+}
+
+void Renderer::waitFence(VkFence& fence) {
+    while (vkWaitForFences(device, 1, &fence, VK_TRUE, 1000) != VK_SUCCESS);
+    vkResetFences(device, 1, &fence);
 }

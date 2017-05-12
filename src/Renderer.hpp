@@ -34,14 +34,14 @@ class Renderer {
         /// Record command buffers.
         void recordCommandBuffers();
         
-        /// Update particles.
+        /// Update boids and render frame.
         /**
          * @param deltaTime Time since last frame (in seconds).
          */
-        void update(float deltaTime);
+        void frame(float deltaTime);
         
-        /// Render image to screen.
-        void render();
+        /// Wait until update is complete.
+        void waitForUpdate();
         
     private:
         struct SwapChainSupport {
@@ -87,6 +87,10 @@ class Renderer {
         void recordUpdateCommandBuffer(int frame);
         void recordRenderCommandBuffer(int frame);
         
+        void update(float deltaTime);
+        void render();
+        void waitFence(VkFence& fence);
+        
         VkInstance instance;
 #ifndef NDEBUG
         VkDebugReportCallbackEXT callback;
@@ -123,11 +127,12 @@ class Renderer {
         Texture* particleTexture;
         GraphicsPipeline* graphicsPipeline;
         ComputePipeline* computePipeline;
-        int particleCount = 5000;
+        int particleCount = 20000;
         StorageBuffer* particleBuffer[2];
         int bufferIndex = 0;
         UniformBuffer* cameraBuffer;
         UniformBuffer* updateBuffer;
         
         Camera camera;
+        bool async = true;
 };
