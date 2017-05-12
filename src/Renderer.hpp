@@ -86,6 +86,7 @@ class Renderer {
         
         void update(float deltaTime);
         void render();
+        void waitFence(VkFence& fence);
         
         VkInstance instance;
 #ifndef NDEBUG

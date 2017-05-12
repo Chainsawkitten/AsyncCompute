@@ -154,15 +154,13 @@ void Renderer::frame(float deltaTime) {
     render();
     
     // Wait for finished rendering.
-    while (vkWaitForFences(device, 1, &graphicsFence, VK_TRUE, 1000) != VK_SUCCESS);
-    vkResetFences(device, 1, &graphicsFence);
+    waitFence(graphicsFence);
     
     // Update boids.
     update(deltaTime);
     
     // Wait for finished computing.
-    while (vkWaitForFences(device, 1, &computeFence, VK_TRUE, 1000) != VK_SUCCESS);
-    vkResetFences(device, 1, &computeFence);
+    waitFence(computeFence);
     
     // Swap particle buffers.
     bufferIndex = 1 - bufferIndex;
@@ -737,4 +735,9 @@ void Renderer::render() {
     
     // Submit presentation request.
     vkQueuePresentKHR(presentQueue, &presentInfo);
+}
+
+void Renderer::waitFence(VkFence& fence) {
+    while (vkWaitForFences(device, 1, &fence, VK_TRUE, 1000) != VK_SUCCESS);
+    vkResetFences(device, 1, &fence);
 }
