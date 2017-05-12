@@ -34,14 +34,11 @@ class Renderer {
         /// Record command buffers.
         void recordCommandBuffers();
         
-        /// Update particles.
+        /// Update boids and render frame.
         /**
          * @param deltaTime Time since last frame (in seconds).
          */
-        void update(float deltaTime);
-        
-        /// Render image to screen.
-        void render();
+        void frame(float deltaTime);
         
     private:
         struct SwapChainSupport {
@@ -86,6 +83,9 @@ class Renderer {
         
         void recordUpdateCommandBuffer(int frame);
         void recordRenderCommandBuffer(int frame);
+        
+        void update(float deltaTime);
+        void render();
         
         VkInstance instance;
 #ifndef NDEBUG

@@ -27,8 +27,7 @@ int main(int argc, char* argv[]) {
         lastTime = glfwGetTime();
         
         // Update and render.
-        renderer->update(measure ? 1.0/60.0 : deltaTime);
-        renderer->render();
+        renderer->frame(measure ? 1.0/60.0 : deltaTime);
         
         glfwSwapBuffers(window.getWindow());
         
