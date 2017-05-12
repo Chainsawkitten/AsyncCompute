@@ -149,12 +149,6 @@ void Renderer::recordCommandBuffers() {
 }
 
 void Renderer::frame(float deltaTime) {
-    // Update boids.
-    update(deltaTime);
-    
-    // Wait for finished computing.
-    while (vkWaitForFences(device, 1, &computeFence, VK_TRUE, 1000) != VK_SUCCESS);
-    vkResetFences(device, 1, &computeFence);
     
     // Render boids.
     render();
@@ -162,6 +156,13 @@ void Renderer::frame(float deltaTime) {
     // Wait for finished rendering.
     while (vkWaitForFences(device, 1, &graphicsFence, VK_TRUE, 1000) != VK_SUCCESS);
     vkResetFences(device, 1, &graphicsFence);
+    
+    // Update boids.
+    update(deltaTime);
+    
+    // Wait for finished computing.
+    while (vkWaitForFences(device, 1, &computeFence, VK_TRUE, 1000) != VK_SUCCESS);
+    vkResetFences(device, 1, &computeFence);
     
     // Swap particle buffers.
     bufferIndex = 1 - bufferIndex;
