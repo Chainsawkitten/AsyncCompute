@@ -40,6 +40,9 @@ class Renderer {
          */
         void frame(float deltaTime);
         
+        /// Wait until update is complete.
+        void waitForUpdate();
+        
     private:
         struct SwapChainSupport {
             VkSurfaceCapabilitiesKHR capabilities;

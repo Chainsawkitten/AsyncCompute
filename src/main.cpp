@@ -29,7 +29,11 @@ int main(int argc, char* argv[]) {
         // Update and render.
         renderer->frame(measure ? 1.0/60.0 : deltaTime);
         
+        // Swap buffers.
         glfwSwapBuffers(window.getWindow());
+        
+        // Wait for update to finish.
+        renderer->waitForUpdate();
         
         // Measurements.
         totalTime += deltaTime;

@@ -163,11 +163,13 @@ void Renderer::frame(float deltaTime) {
     if (async)
         waitFence(graphicsFence);
     
-    // Wait for finished computing.
-    waitFence(computeFence);
-    
     // Swap particle buffers.
     bufferIndex = 1 - bufferIndex;
+}
+
+void Renderer::waitForUpdate() {
+    // Wait for finished computing.
+    waitFence(computeFence);
 }
 
 void Renderer::createInstance() {
