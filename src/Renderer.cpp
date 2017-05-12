@@ -149,8 +149,22 @@ void Renderer::recordCommandBuffers() {
 }
 
 void Renderer::frame(float deltaTime) {
+    // Update boids.
     update(deltaTime);
+    
+    // Wait for finished computing.
+    while (vkWaitForFences(device, 1, &computeFence, VK_TRUE, 1000) != VK_SUCCESS);
+    vkResetFences(device, 1, &computeFence);
+    
+    // Render boids.
     render();
+    
+    // Wait for finished rendering.
+    while (vkWaitForFences(device, 1, &graphicsFence, VK_TRUE, 1000) != VK_SUCCESS);
+    vkResetFences(device, 1, &graphicsFence);
+    
+    // Swap particle buffers.
+    bufferIndex = 1 - bufferIndex;
 }
 
 void Renderer::createInstance() {
@@ -687,10 +701,6 @@ void Renderer::update(float deltaTime) {
     
     if (vkQueueSubmit(computeQueue, 1, &submitInfo, computeFence) != VK_SUCCESS)
         std::cout << "Could not submit command buffer to compute queue." << std::endl;
-    
-    // Wait for finished computing.
-    while (vkWaitForFences(device, 1, &computeFence, VK_TRUE, 1000) != VK_SUCCESS);
-    vkResetFences(device, 1, &computeFence);
 }
 
 void Renderer::render() {
@@ -726,11 +736,4 @@ void Renderer::render() {
     
     // Submit presentation request.
     vkQueuePresentKHR(presentQueue, &presentInfo);
-    
-    // Wait for finished rendering.
-    while (vkWaitForFences(device, 1, &graphicsFence, VK_TRUE, 1000) != VK_SUCCESS);
-    vkResetFences(device, 1, &graphicsFence);
-    
-    // Swap particle buffers.
-    bufferIndex = 1 - bufferIndex;
 }
