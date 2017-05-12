@@ -149,15 +149,19 @@ void Renderer::recordCommandBuffers() {
 }
 
 void Renderer::frame(float deltaTime) {
-    
     // Render boids.
     render();
     
     // Wait for finished rendering.
-    waitFence(graphicsFence);
+    if (!async)
+        waitFence(graphicsFence);
     
     // Update boids.
     update(deltaTime);
+    
+    // Wait for finished rendering.
+    if (async)
+        waitFence(graphicsFence);
     
     // Wait for finished computing.
     waitFence(computeFence);

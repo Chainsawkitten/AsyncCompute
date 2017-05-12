@@ -131,4 +131,5 @@ class Renderer {
         UniformBuffer* updateBuffer;
         
         Camera camera;
+        bool async = true;
 };
