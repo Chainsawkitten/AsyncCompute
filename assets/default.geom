@@ -23,7 +23,7 @@ out VertexData {
 } vertexOut;
 
 void main() {
-    vec2 size = vec2(0.1, 0.1);
+    vec2 size = vec2(0.4, 0.4);
     
     // Vector from camera to point, cameras position extracted from view matrix
     vec4 look = vec4(cameraPosition.xyz - gl_in[0].gl_Position.xyz, 0.0);
