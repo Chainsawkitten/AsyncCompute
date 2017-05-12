@@ -37,8 +37,9 @@ class Renderer {
         /// Update boids and render frame.
         /**
          * @param deltaTime Time since last frame (in seconds).
+         * @param async Whether to use async compute.
          */
-        void frame(float deltaTime);
+        void frame(float deltaTime, bool async);
         
         /// Wait until update is complete.
         void waitForUpdate();
@@ -134,5 +135,4 @@ class Renderer {
         UniformBuffer* updateBuffer;
         
         Camera camera;
-        bool async = true;
 };

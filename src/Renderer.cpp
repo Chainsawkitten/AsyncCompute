@@ -148,7 +148,7 @@ void Renderer::recordCommandBuffers() {
     recordRenderCommandBuffer(1);
 }
 
-void Renderer::frame(float deltaTime) {
+void Renderer::frame(float deltaTime, bool async) {
     // Render boids.
     render();
     
