@@ -44,7 +44,7 @@ class Window {
         int getHeight() const;
 
     private:
-        int width = 1024;
-        int height = 768;
+        int width = 1280;
+        int height = 800;
         GLFWwindow* window;
 };

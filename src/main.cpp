@@ -8,9 +8,17 @@ int main(int argc, char* argv[]) {
     Window window;
     
     bool measure = false;
-    if (argc > 1 && strcmp(argv[1], "measure") == 0) {
-        std::cout << "Measuring..." << std::endl;
-        measure = true;
+    bool async = false;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "measure") == 0) {
+            std::cout << "Measuring..." << std::endl;
+            measure = true;
+        }
+        
+        if (strcmp(argv[i], "async") == 0) {
+            std::cout << "Using async." << std::endl;
+            async = true;
+        }
     }
     
     Renderer* renderer = new Renderer(window);
@@ -27,7 +35,7 @@ int main(int argc, char* argv[]) {
         lastTime = glfwGetTime();
         
         // Update and render.
-        renderer->frame(measure ? 1.0/60.0 : deltaTime);
+        renderer->frame(measure ? 1.0/60.0 : deltaTime, async);
         
         // Swap buffers.
         glfwSwapBuffers(window.getWindow());

@@ -148,7 +148,7 @@ void Renderer::recordCommandBuffers() {
     recordRenderCommandBuffer(1);
 }
 
-void Renderer::frame(float deltaTime) {
+void Renderer::frame(float deltaTime, bool async) {
     // Render boids.
     render();
     
@@ -288,16 +288,16 @@ void Renderer::createDevice() {
     std::cout << "Compute family: " << computeFamily << std::endl;
     
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-    std::set<int> uniqueQueueFamilies = { graphicsFamily, presentFamily };
+    std::set<int> uniqueQueueFamilies = { graphicsFamily, presentFamily, computeFamily };
     
     // Queue priority between 0-1.
-    float queuePriority = 1.0f;
+    float queuePriority[2] = { 1.0f, 1.0f };
     for (int queueFamily : uniqueQueueFamilies) {
         VkDeviceQueueCreateInfo queueCreateInfo = {};
         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         queueCreateInfo.queueFamilyIndex = queueFamily;
-        queueCreateInfo.queueCount = 1;
-        queueCreateInfo.pQueuePriorities = &queuePriority;
+        queueCreateInfo.queueCount = (queueFamily == graphicsFamily && queueFamily == computeFamily) ? 2 : 1;
+        queueCreateInfo.pQueuePriorities = queuePriority;
         queueCreateInfos.push_back(queueCreateInfo);
     }
     
@@ -325,8 +325,11 @@ void Renderer::createDevice() {
         std::cout << "Logical device created." << std::endl;
     
     vkGetDeviceQueue(device, graphicsFamily, 0, &graphicsQueue);
-    vkGetDeviceQueue(device, computeFamily, 0, &computeQueue);
+    vkGetDeviceQueue(device, computeFamily, (graphicsFamily == computeFamily) ? 1 : 0, &computeQueue);
     vkGetDeviceQueue(device, presentFamily, 0, &presentQueue);
+    
+    std::cout << "Graphics queue: " << graphicsQueue << std::endl;
+    std::cout << "Compute queue: " << computeQueue << std::endl;
 }
 
 void Renderer::createSurface(GLFWwindow* window) {
