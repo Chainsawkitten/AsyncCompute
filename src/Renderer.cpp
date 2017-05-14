@@ -263,6 +263,8 @@ void Renderer::createDevice() {
     std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
     vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies.data());
     
+    std::cout << "Queue families: " << queueFamilyCount << std::endl;
+    
     // Check for available queue families.
     int i = 0;
     for (const VkQueueFamilyProperties& queueFamily : queueFamilies){
