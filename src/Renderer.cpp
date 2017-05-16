@@ -65,6 +65,9 @@ Renderer::Renderer(Window& window) {
     // Create fences.
     createFences();
     
+    // Create query pool.
+    createQueryPool();
+    
     // Create pipelines.
     graphicsPipeline = new GraphicsPipeline(device, swapChainExtent, renderPass);
     computePipeline = new ComputePipeline(device);
@@ -103,6 +106,7 @@ Renderer::~Renderer() {
     delete computePipeline;
     delete particleTexture;
     
+    vkDestroyQueryPool(device, queryPool, nullptr);
     vkDestroyFence(device, graphicsFence, nullptr);
     vkDestroyFence(device, computeFence, nullptr);
     vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
@@ -624,6 +628,18 @@ void Renderer::createFences() {
     
     vkCreateFence(device, &fenceInfo, nullptr, &graphicsFence);
     vkCreateFence(device, &fenceInfo, nullptr, &computeFence);
+}
+
+void Renderer::createQueryPool() {
+    VkQueryPoolCreateInfo queryPoolInfo = {};
+    queryPoolInfo.sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
+    queryPoolInfo.queryType = VK_QUERY_TYPE_TIMESTAMP;
+    queryPoolInfo.queryCount = 4;
+    
+    if (vkCreateQueryPool(device, &queryPoolInfo, nullptr, &queryPool) != VK_SUCCESS) {
+        std::cerr << "Failed to create query pool." << std::endl;
+        exit(-1);
+    }
 }
 
 void Renderer::recordUpdateCommandBuffer(int frame) {
