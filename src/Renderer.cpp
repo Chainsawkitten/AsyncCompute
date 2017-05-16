@@ -694,16 +694,17 @@ void Renderer::recordRenderCommandBuffer(int frame) {
     vkCmdBeginRenderPass(graphicsCommandBuffers[frame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     
     // Render particles.
-    vkCmdWriteTimestamp(graphicsCommandBuffers[frame], VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, queryPool, 0);
     vkCmdBindPipeline(graphicsCommandBuffers[frame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipeline());
-    vkCmdWriteTimestamp(graphicsCommandBuffers[frame], VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, queryPool, 1);
     
     std::vector<VkDescriptorSet> descriptorSets;
     descriptorSets.push_back(particleBuffer[frame]->getDescriptorSet());
     descriptorSets.push_back(cameraBuffer->getDescriptorSet());
     descriptorSets.push_back(particleTexture->getDescriptorSet());
     vkCmdBindDescriptorSets(graphicsCommandBuffers[frame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+    
+    vkCmdWriteTimestamp(graphicsCommandBuffers[frame], VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, queryPool, 0);
     vkCmdDraw(graphicsCommandBuffers[frame], particleCount, 1, 0, 0);
+    vkCmdWriteTimestamp(graphicsCommandBuffers[frame], VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, queryPool, 1);
     
     // End render pass.
     vkCmdEndRenderPass(graphicsCommandBuffers[frame]);
