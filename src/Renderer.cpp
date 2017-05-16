@@ -174,6 +174,15 @@ void Renderer::frame(float deltaTime, bool async) {
 void Renderer::waitForUpdate() {
     // Wait for finished computing.
     waitFence(computeFence);
+    
+    // Fetch results.
+    std::uint64_t results[4];
+    vkGetQueryPoolResults(device, queryPool, 0, 4, sizeof(std::uint64_t) * 4, results, 0, VK_QUERY_RESULT_64_BIT);
+    
+    // Output results.
+    for (int i=1; i < 4; ++i) {
+        std::cout << i << ": " << results[i] - results[0] << std::endl;
+    }
 }
 
 void Renderer::createInstance() {
