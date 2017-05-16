@@ -660,7 +660,9 @@ void Renderer::recordUpdateCommandBuffer(int frame) {
     descriptorSets.push_back(updateBuffer->getDescriptorSet());
     vkCmdBindDescriptorSets(computeCommandBuffers[frame], VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
     int groupSize = 256;
+    vkCmdWriteTimestamp(computeCommandBuffers[frame], VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, queryPool, 2);
     vkCmdDispatch(computeCommandBuffers[frame], particleCount / groupSize + (particleCount % groupSize != 0), 1, 1);
+    vkCmdWriteTimestamp(computeCommandBuffers[frame], VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, queryPool, 3);
     
     if (vkEndCommandBuffer(computeCommandBuffers[frame]) != VK_SUCCESS) {
         std::cerr << "Failed to record command buffer" << std::endl;
@@ -692,7 +694,9 @@ void Renderer::recordRenderCommandBuffer(int frame) {
     vkCmdBeginRenderPass(graphicsCommandBuffers[frame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     
     // Render particles.
+    vkCmdWriteTimestamp(graphicsCommandBuffers[frame], VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, queryPool, 0);
     vkCmdBindPipeline(graphicsCommandBuffers[frame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipeline());
+    vkCmdWriteTimestamp(graphicsCommandBuffers[frame], VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, queryPool, 1);
     
     std::vector<VkDescriptorSet> descriptorSets;
     descriptorSets.push_back(particleBuffer[frame]->getDescriptorSet());
