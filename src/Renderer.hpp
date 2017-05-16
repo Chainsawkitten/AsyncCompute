@@ -126,6 +126,7 @@ class Renderer {
         VkFence graphicsFence;
         VkFence computeFence;
         VkQueryPool queryPool;
+        double timestampPeriod;
         
         Texture* particleTexture;
         GraphicsPipeline* graphicsPipeline;

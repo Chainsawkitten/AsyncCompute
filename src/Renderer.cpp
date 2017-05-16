@@ -181,7 +181,7 @@ void Renderer::waitForUpdate() {
     
     // Output results.
     for (int i=1; i < 4; ++i) {
-        std::cout << i << ": " << results[i] - results[0] << std::endl;
+        std::cout << i << ": " << (results[i] - results[0]) * timestampPeriod / 1000000.0 << " ms" << std::endl;
     }
 }
 
@@ -259,6 +259,7 @@ void Renderer::createDevice() {
         if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU){
             std::cout << "Found suitable GPU." << std::endl;
             physicalDevice = device;
+            timestampPeriod = deviceProperties.limits.timestampPeriod;
             break;
         }
     }
