@@ -277,15 +277,20 @@ void Renderer::createDevice() {
     std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
     vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies.data());
     
+    std::cout << "Queue families: " << queueFamilyCount << std::endl;
+    
     // Check for available queue families.
     int i = 0;
     for (const VkQueueFamilyProperties& queueFamily : queueFamilies){
-        if (queueFamily.queueCount > 0) {
+        int queueCount = queueFamily.queueCount;
+        if (queueCount > 0) {
+            queueCount--;
             if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
                 graphicsFamily = i;
             
-            if (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)
-                computeFamily = i;
+            if (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT && queueCount > 0){
+                    computeFamily = i;
+            }
             
             VkBool32 presentSupport = false;
             vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, surface, &presentSupport);
