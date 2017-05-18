@@ -176,12 +176,21 @@ void Renderer::waitForUpdate() {
     waitFence(computeFence);
     
     // Fetch results.
-    std::uint64_t results[4];
-    vkGetQueryPoolResults(device, queryPool, 0, 4, sizeof(std::uint64_t) * 4, results, 0, VK_QUERY_RESULT_64_BIT);
+    std::uint64_t results[8];
+    vkGetQueryPoolResults(device, queryPool, 0, 4, sizeof(std::uint64_t) * 8, results, 0, VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WITH_AVAILABILITY_BIT);
     
     // Output results.
-    for (int i=1; i < 4; ++i) {
-        std::cout << i << ": " << (results[i] - results[0]) * timestampPeriod / 1000000.0 << " ms" << std::endl;
+    std::uint64_t initial;
+    if (results[0] < results[4]) {
+        initial = results[0];
+        std::cout << "R" << std::endl;;
+    } else {
+        initial = results[4];
+        std::cout << "C" << std::endl;;
+    }
+        
+    for (int i=0; i < 4; ++i) {
+        std::cout << i << ": " << (results[i*2] - initial) * timestampPeriod / 1000000.0 << " ms" << "|" << results[i*2+1] << std::endl;
     }
 }
 
