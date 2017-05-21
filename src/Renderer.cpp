@@ -380,7 +380,9 @@ VkFormat Renderer::createSwapChain(unsigned int width, unsigned int height) {
     VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
     swapChainExtent = chooseSwapExtent(swapChainSupport.capabilities, width, height);
     
-    uint32_t imageCount = swapChainSupport.capabilities.minImageCount;
+    // Always use double buffering.
+    // Might be necessary to check if swapChainSupport.capabilities.minImageCount is >= 2.
+    uint32_t imageCount = 2;
     
     VkSwapchainCreateInfoKHR swapChainCreateInfo = {};
     swapChainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
