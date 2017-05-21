@@ -176,17 +176,20 @@ void Renderer::waitForUpdate() {
     waitFence(computeFence);
     
     // Fetch results.
-    std::uint64_t results[8];
-    vkGetQueryPoolResults(device, queryPool, 0, 4, sizeof(std::uint64_t) * 8, results, 0, VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WITH_AVAILABILITY_BIT);
+    std::uint64_t results[8] = {};
+    vkGetQueryPoolResults(device, queryPool, 0, 1, sizeof(std::uint64_t) * 2, &results[0], 0, VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT | VK_QUERY_RESULT_WITH_AVAILABILITY_BIT);
+    vkGetQueryPoolResults(device, queryPool, 1, 1, sizeof(std::uint64_t) * 2, &results[2], 0, VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT | VK_QUERY_RESULT_WITH_AVAILABILITY_BIT);
+    vkGetQueryPoolResults(device, queryPool, 2, 1, sizeof(std::uint64_t) * 2, &results[4], 0, VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT | VK_QUERY_RESULT_WITH_AVAILABILITY_BIT);
+    vkGetQueryPoolResults(device, queryPool, 3, 1, sizeof(std::uint64_t) * 2, &results[6], 0, VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT | VK_QUERY_RESULT_WITH_AVAILABILITY_BIT);
     
     // Output results.
     std::uint64_t initial;
     if (results[0] < results[4]) {
         initial = results[0];
-        std::cout << "R" << std::endl;;
+        std::cout << "R" << std::endl;
     } else {
         initial = results[4];
-        std::cout << "C" << std::endl;;
+        std::cout << "C" << std::endl;
     }
         
     for (int i=0; i < 4; ++i) {
