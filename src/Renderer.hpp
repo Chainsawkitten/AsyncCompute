@@ -84,7 +84,7 @@ class Renderer {
         
         void createSemaphores();
         void createFences();
-        void createQueryPool();
+        void createQueryPools();
         
         void recordUpdateCommandBuffer(int frame);
         void recordRenderCommandBuffer(int frame);
@@ -125,7 +125,8 @@ class Renderer {
         uint32_t imageIndex = 0;
         VkFence graphicsFence;
         VkFence computeFence;
-        VkQueryPool queryPool;
+        VkQueryPool renderQueryPool;
+        VkQueryPool computeQueryPool;
         double timestampPeriod;
         
         Texture* particleTexture;
