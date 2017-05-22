@@ -25,15 +25,13 @@ int main(int argc, char* argv[]) {
     renderer->setTexture(PARTICLE_PNG, PARTICLE_PNG_LENGTH);
     renderer->recordCommandBuffers();
     
-    glfwSetWindowPos(window.getWindow(), 0, 0);
-    
     double totalTime = 0.0;
     unsigned int frame = 0;
     double maxTime = 0.0;
     double lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window.getWindow())){
         double deltaTime = glfwGetTime() - lastTime;
-        //glfwSetWindowTitle(window.getWindow(), (std::to_string(deltaTime * 1000.0) + " ms").c_str());
+        glfwSetWindowTitle(window.getWindow(), (std::to_string(deltaTime * 1000.0) + " ms").c_str());
         lastTime = glfwGetTime();
         
         // Update and render.
