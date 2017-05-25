@@ -791,7 +791,6 @@ void Renderer::render() {
     submitInfo.pSignalSemaphores = signalSemaphores;
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &graphicsCommandBuffers[bufferIndex];
-    std::cout << bufferIndex << " ";
     
     if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, graphicsFence) != VK_SUCCESS)
         std::cout << "Could not submit command buffer to graphics queue." << std::endl;
