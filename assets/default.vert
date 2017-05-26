@@ -12,11 +12,9 @@ layout(set = 0, binding = 0) buffer ParticleBuffer {
     Particle particles[];
 };
 
-out VertexData {
-    vec4 velocity;
-} vertexOut;
+layout(location = 0) out vec4 velocityOut;
 
 void main() {
     gl_Position = particles[gl_VertexIndex].position;
-    vertexOut.velocity = particles[gl_VertexIndex].velocity;
+    velocityOut = particles[gl_VertexIndex].velocity;
 }

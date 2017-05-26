@@ -7,9 +7,7 @@
 layout(points) in;
 layout(triangle_strip, max_vertices=4) out;
 
-in VertexData {
-    vec4 velocity;
-} vertexIn[1];
+layout(location = 0) in vec4 velocityIn[1];
 
 layout(set = 1, binding = 0) uniform CameraUniform {
     mat4 viewProjectionMatrix;
@@ -17,10 +15,8 @@ layout(set = 1, binding = 0) uniform CameraUniform {
     vec4 cameraUp;
 };
 
-out VertexData {
-    vec4 velocity;
-    vec2 texCoords;
-} vertexOut;
+layout(location = 0) out vec4 velocityOut;
+layout(location = 1) out vec2 texCoordsOut;
 
 void main() {
     vec2 size = vec2(0.4, 0.4);
@@ -35,23 +31,23 @@ void main() {
     vec4 up = normalize(vec4(cross(look.xyz, right.xyz), 0.0)) * size.y * 0.5;
     
     gl_Position = viewProjectionMatrix * (gl_in[0].gl_Position - right + up);
-    vertexOut.velocity = vertexIn[0].velocity;
-    vertexOut.texCoords = vec2(0.0, 0.0);
+    velocityOut = velocityIn[0];
+    texCoordsOut = vec2(0.0, 0.0);
     EmitVertex();
     
     gl_Position = viewProjectionMatrix * (gl_in[0].gl_Position - right - up);
-    vertexOut.velocity = vertexIn[0].velocity;
-    vertexOut.texCoords = vec2(1.0, 0.0);
+    velocityOut = velocityIn[0];
+    texCoordsOut = vec2(1.0, 0.0);
     EmitVertex();
     
     gl_Position = viewProjectionMatrix * (gl_in[0].gl_Position + right + up);
-    vertexOut.velocity = vertexIn[0].velocity;
-    vertexOut.texCoords = vec2(0.0, 1.0);
+    velocityOut = velocityIn[0];
+    texCoordsOut = vec2(0.0, 1.0);
     EmitVertex();
     
     gl_Position = viewProjectionMatrix * (gl_in[0].gl_Position + right - up);
-    vertexOut.velocity = vertexIn[0].velocity;
-    vertexOut.texCoords = vec2(1.0, 1.0);
+    velocityOut = velocityIn[0];
+    texCoordsOut = vec2(1.0, 1.0);
     EmitVertex();
     
     EndPrimitive();

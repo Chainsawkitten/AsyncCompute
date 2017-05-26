@@ -65,6 +65,9 @@ Renderer::Renderer(Window& window) {
     // Create fences.
     createFences();
     
+    // Create query pool.
+    createQueryPools();
+    
     // Create pipelines.
     graphicsPipeline = new GraphicsPipeline(device, swapChainExtent, renderPass);
     computePipeline = new ComputePipeline(device);
@@ -103,6 +106,8 @@ Renderer::~Renderer() {
     delete computePipeline;
     delete particleTexture;
     
+    vkDestroyQueryPool(device, renderQueryPool, nullptr);
+    vkDestroyQueryPool(device, computeQueryPool, nullptr);
     vkDestroyFence(device, graphicsFence, nullptr);
     vkDestroyFence(device, computeFence, nullptr);
     vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
@@ -170,6 +175,32 @@ void Renderer::frame(float deltaTime, bool async) {
 void Renderer::waitForUpdate() {
     // Wait for finished computing.
     waitFence(computeFence);
+    
+    // Fetch results.
+    std::uint64_t results[8] = {};
+    vkGetQueryPoolResults(device, renderQueryPool, 0, 1, sizeof(std::uint64_t) * 2, &results[0], 0, VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT | VK_QUERY_RESULT_WITH_AVAILABILITY_BIT);
+    vkGetQueryPoolResults(device, renderQueryPool, 1, 1, sizeof(std::uint64_t) * 2, &results[2], 0, VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT | VK_QUERY_RESULT_WITH_AVAILABILITY_BIT);
+    vkGetQueryPoolResults(device, computeQueryPool, 0, 1, sizeof(std::uint64_t) * 2, &results[4], 0, VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT | VK_QUERY_RESULT_WITH_AVAILABILITY_BIT);
+    vkGetQueryPoolResults(device, computeQueryPool, 1, 1, sizeof(std::uint64_t) * 2, &results[6], 0, VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT | VK_QUERY_RESULT_WITH_AVAILABILITY_BIT);
+    
+    // Output results.
+    std::uint64_t initial;
+    if (results[0] < results[4]) {
+        initial = results[0];
+        std::cout << "R" << std::endl;
+    } else {
+        initial = results[4];
+        std::cout << "C" << std::endl;
+    }
+        
+    for (int i=0; i < 4; ++i) {
+        std::cout << i << ": " << (results[i*2] - initial) * timestampPeriod / 1000000.0 << " ms" << "|" << results[i*2+1] << std::endl;
+    }
+    
+    if (results[4] < results[2]) {
+        std::cout << "ASYNCASYNCASYNC" << std::endl;
+        exit(0);
+    }
 }
 
 void Renderer::createInstance() {
@@ -246,6 +277,7 @@ void Renderer::createDevice() {
         if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU){
             std::cout << "Found suitable GPU." << std::endl;
             physicalDevice = device;
+            timestampPeriod = deviceProperties.limits.timestampPeriod;
             break;
         }
     }
@@ -263,15 +295,20 @@ void Renderer::createDevice() {
     std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
     vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies.data());
     
+    std::cout << "Queue families: " << queueFamilyCount << std::endl;
+    
     // Check for available queue families.
     int i = 0;
     for (const VkQueueFamilyProperties& queueFamily : queueFamilies){
-        if (queueFamily.queueCount > 0) {
+        int queueCount = queueFamily.queueCount;
+        if (queueCount > 0) {
+            queueCount--;
             if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
                 graphicsFamily = i;
             
-            if (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)
-                computeFamily = i;
+            if (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT && queueCount > 0){
+                    computeFamily = i;
+            }
             
             VkBool32 presentSupport = false;
             vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, surface, &presentSupport);
@@ -352,7 +389,9 @@ VkFormat Renderer::createSwapChain(unsigned int width, unsigned int height) {
     VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
     swapChainExtent = chooseSwapExtent(swapChainSupport.capabilities, width, height);
     
-    uint32_t imageCount = swapChainSupport.capabilities.minImageCount;
+    // Always use double buffering.
+    // Might be necessary to check if swapChainSupport.capabilities.minImageCount is >= 2.
+    uint32_t imageCount = 2;
     
     VkSwapchainCreateInfoKHR swapChainCreateInfo = {};
     swapChainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -626,6 +665,23 @@ void Renderer::createFences() {
     vkCreateFence(device, &fenceInfo, nullptr, &computeFence);
 }
 
+void Renderer::createQueryPools() {
+    VkQueryPoolCreateInfo queryPoolInfo = {};
+    queryPoolInfo.sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
+    queryPoolInfo.queryType = VK_QUERY_TYPE_TIMESTAMP;
+    queryPoolInfo.queryCount = 2;
+    
+    if (vkCreateQueryPool(device, &queryPoolInfo, nullptr, &renderQueryPool) != VK_SUCCESS) {
+        std::cerr << "Failed to create query pool." << std::endl;
+        exit(-1);
+    }
+    
+    if (vkCreateQueryPool(device, &queryPoolInfo, nullptr, &computeQueryPool) != VK_SUCCESS) {
+        std::cerr << "Failed to create query pool." << std::endl;
+        exit(-1);
+    }
+}
+
 void Renderer::recordUpdateCommandBuffer(int frame) {
     // Start command buffer recording.
     VkCommandBufferBeginInfo beginInfo = {};
@@ -644,7 +700,10 @@ void Renderer::recordUpdateCommandBuffer(int frame) {
     descriptorSets.push_back(updateBuffer->getDescriptorSet());
     vkCmdBindDescriptorSets(computeCommandBuffers[frame], VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
     int groupSize = 256;
+    vkCmdResetQueryPool(computeCommandBuffers[frame], computeQueryPool, 0, 2);
+    vkCmdWriteTimestamp(computeCommandBuffers[frame], VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, computeQueryPool, 0);
     vkCmdDispatch(computeCommandBuffers[frame], particleCount / groupSize + (particleCount % groupSize != 0), 1, 1);
+    vkCmdWriteTimestamp(computeCommandBuffers[frame], VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, computeQueryPool, 1);
     
     if (vkEndCommandBuffer(computeCommandBuffers[frame]) != VK_SUCCESS) {
         std::cerr << "Failed to record command buffer" << std::endl;
@@ -660,6 +719,7 @@ void Renderer::recordRenderCommandBuffer(int frame) {
     beginInfo.pInheritanceInfo = nullptr;
     
     vkBeginCommandBuffer(graphicsCommandBuffers[frame], &beginInfo);
+    vkCmdResetQueryPool(graphicsCommandBuffers[frame], renderQueryPool, 0, 2);
     
     // Start render pass.
     VkRenderPassBeginInfo renderPassInfo = {};
@@ -683,7 +743,10 @@ void Renderer::recordRenderCommandBuffer(int frame) {
     descriptorSets.push_back(cameraBuffer->getDescriptorSet());
     descriptorSets.push_back(particleTexture->getDescriptorSet());
     vkCmdBindDescriptorSets(graphicsCommandBuffers[frame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getPipelineLayout(), 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+    
+    vkCmdWriteTimestamp(graphicsCommandBuffers[frame], VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, renderQueryPool, 0);
     vkCmdDraw(graphicsCommandBuffers[frame], particleCount, 1, 0, 0);
+    vkCmdWriteTimestamp(graphicsCommandBuffers[frame], VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, renderQueryPool, 1);
     
     // End render pass.
     vkCmdEndRenderPass(graphicsCommandBuffers[frame]);
